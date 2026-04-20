@@ -2,6 +2,7 @@
 
 import { env } from '@/env';
 import { Routes } from '@/utils/constants';
+import { createAdminClient } from '@/utils/supabase/admin';
 import { createClient } from '@/utils/supabase/server';
 import { SEED_USER } from '@onlook/db';
 import { SignInMethod } from '@onlook/models';
@@ -47,6 +48,28 @@ export async function devLogin() {
 
     if (session) {
         redirect(Routes.AUTH_REDIRECT);
+    }
+
+    const adminSupabase = createAdminClient();
+    const { data: existingUser } = await adminSupabase.auth.admin.getUserById(SEED_USER.ID);
+
+    if (!existingUser.user) {
+        const { error: createUserError } = await adminSupabase.auth.admin.createUser({
+            id: SEED_USER.ID,
+            email: SEED_USER.EMAIL,
+            password: SEED_USER.PASSWORD,
+            email_confirm: true,
+            user_metadata: {
+                first_name: SEED_USER.FIRST_NAME,
+                last_name: SEED_USER.LAST_NAME,
+                display_name: SEED_USER.DISPLAY_NAME,
+                avatar_url: SEED_USER.AVATAR_URL,
+            },
+        });
+
+        if (createUserError) {
+            throw new Error(`Failed to create demo user: ${createUserError.message}`);
+        }
     }
 
     const { data, error } = await supabase.auth.signInWithPassword({

@@ -84,16 +84,26 @@ export const env = createEnv({
      */
     runtimeEnv: {
         NODE_ENV: process.env.NODE_ENV,
-        CSB_API_KEY: process.env.CSB_API_KEY,
+        CSB_API_KEY: process.env.CSB_API_KEY ?? (process.env.NODE_ENV === 'development' ? 'dev_csb_api_key' : undefined),
         RESEND_API_KEY: process.env.RESEND_API_KEY,
         NEXT_PUBLIC_FEATURE_COLLABORATION: process.env.NEXT_PUBLIC_FEATURE_COLLABORATION,
 
         // Supabase
-        SUPABASE_DATABASE_URL: process.env.SUPABASE_DATABASE_URL,
-        SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
-        NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
-        NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
-        NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+        SUPABASE_DATABASE_URL:
+            process.env.SUPABASE_DATABASE_URL ??
+            (process.env.NODE_ENV === 'development'
+                ? 'postgresql://postgres:postgres@127.0.0.1:54322/postgres'
+                : undefined),
+        SUPABASE_SERVICE_ROLE_KEY:
+            process.env.SUPABASE_SERVICE_ROLE_KEY ??
+            (process.env.NODE_ENV === 'development' ? 'dev_supabase_service_role_key' : undefined),
+        NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000',
+        NEXT_PUBLIC_SUPABASE_URL:
+            process.env.NEXT_PUBLIC_SUPABASE_URL ??
+            (process.env.NODE_ENV === 'development' ? 'http://127.0.0.1:54321' : undefined),
+        NEXT_PUBLIC_SUPABASE_ANON_KEY:
+            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ??
+            (process.env.NODE_ENV === 'development' ? 'dev_supabase_anon_key' : undefined),
 
         // Posthog
         NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,
@@ -129,7 +139,8 @@ export const env = createEnv({
         ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY,
         GOOGLE_AI_STUDIO_API_KEY: process.env.GOOGLE_AI_STUDIO_API_KEY,
         OPENAI_API_KEY: process.env.OPENAI_API_KEY,
-        OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY,
+        OPENROUTER_API_KEY:
+            process.env.OPENROUTER_API_KEY ?? (process.env.NODE_ENV === 'development' ? 'dev_openrouter_api_key' : undefined),
 
         // n8n
         N8N_WEBHOOK_URL: process.env.N8N_WEBHOOK_URL,
