@@ -3,6 +3,7 @@
 import { LocalForageKeys } from '@/utils/constants';
 import { SignInMethod } from '@onlook/models/auth';
 import localforage from 'localforage';
+import { useRouter } from 'next/navigation';
 import type { ReactNode } from 'react';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { devLogin, login } from '../login/actions';
@@ -21,6 +22,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
+    const router = useRouter();
     const [lastSignInMethod, setLastSignInMethod] = useState<SignInMethod | null>(null);
     const [signingInMethod, setSigningInMethod] = useState<SignInMethod | null>(null);
     const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -55,13 +57,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             if (returnUrl) {
                 await localforage.setItem(LocalForageKeys.RETURN_URL, returnUrl);
             }
-            await devLogin();
+            await localforage.setItem(LAST_SIGN_IN_METHOD_KEY, SignInMethod.DEV);
+            const result = await devLogin();
+
+            if (result?.redirectTo) {
+                router.replace(result.redirectTo);
+            }
         } catch (error) {
             console.error('Error signing in with password:', error);
         } finally {
             setSigningInMethod(null);
         }
-    }
+    };
 
     return (
         <AuthContext.Provider value={{ signingInMethod, lastSignInMethod, handleLogin, handleDevLogin, isAuthModalOpen, setIsAuthModalOpen }}>

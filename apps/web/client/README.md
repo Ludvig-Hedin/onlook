@@ -18,6 +18,10 @@ our [Discord](https://t3.gg/discord) and ask for help.
 - [Tailwind CSS](https://tailwindcss.com)
 - [tRPC](https://trpc.io)
 
+## Auth Notes
+
+- The development-only "Sign in as demo user" button uses the seeded Supabase demo account and then routes through `/auth/redirect` so the browser session is established before protected queries run.
+
 ## Learn More
 
 To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the

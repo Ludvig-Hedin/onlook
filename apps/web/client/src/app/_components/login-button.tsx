@@ -75,7 +75,6 @@ export const DevLoginButton = ({
     className?: string;
     returnUrl: string | null;
 }) => {
-    const t = useTranslations();
     const { handleDevLogin, signingInMethod } = useAuthContext();
     const isSigningIn = signingInMethod === SignInMethod.DEV;
 
@@ -83,12 +82,14 @@ export const DevLoginButton = ({
         <Button
             variant="outline"
             className="w-full text-active text-small"
-            onClick={() => handleDevLogin(returnUrl)}
+            onClick={() => {
+                void handleDevLogin(returnUrl);
+            }}
             disabled={!!signingInMethod}
         >
             {isSigningIn ? (
                 <Icons.LoadingSpinner className="w-4 h-4 mr-2 animate-spin" />
             ) : 'DEV MODE: Sign in as demo user'}
         </Button>
-    )
-}
+    );
+};

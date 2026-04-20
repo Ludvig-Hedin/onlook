@@ -72,7 +72,7 @@ export async function devLogin() {
         }
     }
 
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { error } = await supabase.auth.signInWithPassword({
         email: SEED_USER.EMAIL,
         password: SEED_USER.PASSWORD,
     });
@@ -81,5 +81,8 @@ export async function devLogin() {
         console.error('Error signing in with password:', error);
         throw new Error(error.message);
     }
-    redirect(Routes.AUTH_REDIRECT);
+
+    return {
+        redirectTo: Routes.AUTH_REDIRECT,
+    };
 }
