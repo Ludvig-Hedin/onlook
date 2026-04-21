@@ -23,6 +23,13 @@ const handler = (req: NextRequest) =>
         onError:
             env.NODE_ENV === 'development'
                 ? ({ path, error }) => {
+                    const isExpectedLoggedOutUserQuery =
+                        path === 'user.get' &&
+                        (error.message === 'UNAUTHORIZED' || error.message === 'Auth session missing!');
+
+                    if (isExpectedLoggedOutUserQuery) {
+                        return;
+                    }
                     console.error(`❌ tRPC failed on ${path ?? '<no-path>'}: ${error.message}`);
                 }
                 : undefined,

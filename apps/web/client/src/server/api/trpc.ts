@@ -36,6 +36,14 @@ export const createTRPCContext = async (opts: { headers: Headers }) => {
     } = await supabase.auth.getUser();
 
     if (error) {
+        if (error.message === 'Auth session missing!') {
+            return {
+                db,
+                supabase,
+                user: null,
+                ...opts,
+            };
+        }
         throw new TRPCError({ code: 'UNAUTHORIZED', message: error.message });
     }
 
@@ -180,4 +188,3 @@ export const adminProcedure = t.procedure.use(timingMiddleware).use(({ ctx, next
         },
     });
 });
-

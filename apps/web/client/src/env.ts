@@ -9,6 +9,7 @@ export const env = createEnv({
     server: {
         NODE_ENV: z.enum(['development', 'test', 'production']),
         CSB_API_KEY: z.string(),
+        SUPABASE_URL: z.url(),
         SUPABASE_DATABASE_URL: z.url(),
         SUPABASE_SERVICE_ROLE_KEY: z.string(),
         RESEND_API_KEY: z.string().optional(),
@@ -89,6 +90,9 @@ export const env = createEnv({
         NEXT_PUBLIC_FEATURE_COLLABORATION: process.env.NEXT_PUBLIC_FEATURE_COLLABORATION,
 
         // Supabase
+        SUPABASE_URL:
+            process.env.SUPABASE_URL ??
+            (process.env.NODE_ENV === 'development' ? 'http://127.0.0.1:54321' : undefined),
         SUPABASE_DATABASE_URL:
             process.env.SUPABASE_DATABASE_URL ??
             (process.env.NODE_ENV === 'development'

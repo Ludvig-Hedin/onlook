@@ -43,6 +43,9 @@ export async function devLogin() {
         throw new Error('Dev login is only available in development mode');
     }
 
+    const localBackendHint =
+        'Local Supabase backend is unavailable. Start it with `bun backend:start` and wait for ports 54321 and 54322 to be ready.';
+
     const supabase = await createClient();
     const { data: { session } } = await supabase.auth.getSession();
 
@@ -68,6 +71,9 @@ export async function devLogin() {
         });
 
         if (createUserError) {
+            if (createUserError.message === 'fetch failed') {
+                throw new Error(localBackendHint);
+            }
             throw new Error(`Failed to create demo user: ${createUserError.message}`);
         }
     }
@@ -79,6 +85,9 @@ export async function devLogin() {
 
     if (error) {
         console.error('Error signing in with password:', error);
+        if (error.message === 'fetch failed') {
+            throw new Error(localBackendHint);
+        }
         throw new Error(error.message);
     }
 
