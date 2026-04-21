@@ -6,7 +6,7 @@ import {
     createCodeProviderClient,
     getStaticCodeProvider,
 } from '@onlook/code-provider';
-import { getSandboxPreviewUrl, SandboxTemplates, Templates } from '@onlook/constants';
+import { DEFAULT_NEW_PROJECT_TEMPLATE, getSandboxPreviewUrl } from '@onlook/constants';
 import { shortenUuid } from '@onlook/utility/src/id';
 
 import { createTRPCRouter, protectedProcedure } from '../../trpc';
@@ -49,12 +49,9 @@ export const sandboxRouter = createTRPCRouter({
             // Create a new sandbox using the static provider
             const CodesandboxProvider = await getStaticCodeProvider(CodeProvider.CodeSandbox);
 
-            // Use the empty Next.js template
-            const template = SandboxTemplates[Templates.EMPTY_NEXTJS];
-
             const newSandbox = await CodesandboxProvider.createProject({
                 source: 'template',
-                id: template.id,
+                id: DEFAULT_NEW_PROJECT_TEMPLATE.id,
                 title: input.title || 'Onlook Test Sandbox',
                 description: 'Test sandbox for Onlook sync engine',
                 tags: ['onlook-test'],
@@ -62,7 +59,10 @@ export const sandboxRouter = createTRPCRouter({
 
             return {
                 sandboxId: newSandbox.id,
-                previewUrl: getSandboxPreviewUrl(newSandbox.id, template.port),
+                previewUrl: getSandboxPreviewUrl(
+                    newSandbox.id,
+                    DEFAULT_NEW_PROJECT_TEMPLATE.port,
+                ),
             };
         }),
 

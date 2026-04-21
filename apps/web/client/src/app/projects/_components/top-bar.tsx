@@ -5,7 +5,7 @@ import { CurrentUserAvatar } from '@/components/ui/avatar-dropdown';
 import { transKeys } from '@/i18n/keys';
 import { api } from '@/trpc/react';
 import { LocalForageKeys, Routes } from '@/utils/constants';
-import { SandboxTemplates, Templates } from '@onlook/constants';
+import { DEFAULT_NEW_PROJECT_TEMPLATE } from '@onlook/constants';
 import { Button } from '@onlook/ui/button';
 import {
     DropdownMenu,
@@ -123,9 +123,8 @@ export const TopBar = ({ searchQuery, onSearchChange }: TopBarProps) => {
 
         setIsCreatingProject(true);
         try {
-            // Create a blank project using the BLANK template
             const { sandboxId, previewUrl } = await forkSandbox({
-                sandbox: SandboxTemplates[Templates.EMPTY_NEXTJS],
+                sandbox: DEFAULT_NEW_PROJECT_TEMPLATE,
                 config: {
                     title: `Blank project - ${user.id}`,
                     tags: ['blank', user.id],

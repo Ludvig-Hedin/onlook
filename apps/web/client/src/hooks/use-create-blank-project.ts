@@ -3,7 +3,7 @@
 import { useAuthContext } from '@/app/auth/auth-context';
 import { api } from '@/trpc/react';
 import { LocalForageKeys, Routes } from '@/utils/constants';
-import { SandboxTemplates, Templates } from '@onlook/constants';
+import { DEFAULT_NEW_PROJECT_TEMPLATE } from '@onlook/constants';
 import localforage from 'localforage';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -27,9 +27,8 @@ export function useCreateBlankProject() {
 
         setIsCreatingProject(true);
         try {
-            // Create a blank project using the BLANK template
             const { sandboxId, previewUrl } = await forkSandbox({
-                sandbox: SandboxTemplates[Templates.EMPTY_NEXTJS],
+                sandbox: DEFAULT_NEW_PROJECT_TEMPLATE,
                 config: {
                     title: `Blank project - ${user.id}`,
                     tags: ['blank', user.id],

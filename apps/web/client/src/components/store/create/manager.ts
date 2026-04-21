@@ -1,5 +1,5 @@
 import { api } from '@/trpc/client';
-import { SandboxTemplates, Templates } from '@onlook/constants';
+import { DEFAULT_NEW_PROJECT_TEMPLATE } from '@onlook/constants';
 import { createDefaultProject } from '@onlook/db';
 import { CreateRequestContextType } from '@onlook/models';
 import { type ImageMessageContext } from '@onlook/models/chat';
@@ -39,7 +39,7 @@ export class CreateManager {
 
             const [{ sandboxId, previewUrl }, projectName] = await Promise.all([
                 api.sandbox.fork.mutate({
-                    sandbox: SandboxTemplates[Templates.EMPTY_NEXTJS],
+                    sandbox: DEFAULT_NEW_PROJECT_TEMPLATE,
                     config,
                 }),
                 this.generateProjectName(prompt)
@@ -125,4 +125,3 @@ export class CreateManager {
         });
     }
 }
-

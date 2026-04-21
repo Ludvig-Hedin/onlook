@@ -1,5 +1,5 @@
 import { CodeProvider, getStaticCodeProvider } from '@onlook/code-provider';
-import { getSandboxPreviewUrl, SandboxTemplates, Templates } from '@onlook/constants';
+import { DEFAULT_NEW_PROJECT_TEMPLATE, getSandboxPreviewUrl } from '@onlook/constants';
 import { branches, branchInsertSchema, branchUpdateSchema, canvases, createDefaultFrame, frames, fromDbBranch, fromDbFrame } from '@onlook/db';
 import type { Frame } from '@onlook/models';
 import { calculateNonOverlappingPosition, generateUniqueBranchName } from '@onlook/utility';
@@ -261,7 +261,7 @@ export const branchRouter = createTRPCRouter({
                     const CodesandboxProvider = await getStaticCodeProvider(CodeProvider.CodeSandbox);
                     const blankSandbox = await CodesandboxProvider.createProject({
                         source: 'template',
-                        id: SandboxTemplates[Templates.EMPTY_NEXTJS].id,
+                        id: DEFAULT_NEW_PROJECT_TEMPLATE.id,
                         title: branchName,
                         tags: ['blank'],
                     });
