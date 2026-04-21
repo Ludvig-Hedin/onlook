@@ -4,7 +4,8 @@ import { env } from '@/env';
 import { Routes } from '@/utils/constants';
 import { createAdminClient } from '@/utils/supabase/admin';
 import { createClient } from '@/utils/supabase/server';
-import { SEED_USER } from '@onlook/db';
+import { SEED_USER, users } from '@onlook/db';
+import { db } from '@onlook/db/src/client';
 import { SignInMethod } from '@onlook/models';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
@@ -78,7 +79,7 @@ export async function devLogin() {
         }
     }
 
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
         email: SEED_USER.EMAIL,
         password: SEED_USER.PASSWORD,
     });
@@ -90,6 +91,33 @@ export async function devLogin() {
         }
         throw new Error(error.message);
     }
+
+    const signedInUser = data.user;
+    if (!signedInUser) {
+        throw new Error('Demo user sign-in succeeded without a user payload.');
+    }
+
+    await db
+        .insert(users)
+        .values({
+            id: signedInUser.id,
+            email: signedInUser.email ?? SEED_USER.EMAIL,
+            firstName: SEED_USER.FIRST_NAME,
+            lastName: SEED_USER.LAST_NAME,
+            displayName: SEED_USER.DISPLAY_NAME,
+            avatarUrl: signedInUser.user_metadata.avatar_url ?? SEED_USER.AVATAR_URL,
+        })
+        .onConflictDoUpdate({
+            target: [users.id],
+            set: {
+                email: signedInUser.email ?? SEED_USER.EMAIL,
+                firstName: SEED_USER.FIRST_NAME,
+                lastName: SEED_USER.LAST_NAME,
+                displayName: SEED_USER.DISPLAY_NAME,
+                avatarUrl: signedInUser.user_metadata.avatar_url ?? SEED_USER.AVATAR_URL,
+                updatedAt: new Date(),
+            },
+        });
 
     return {
         redirectTo: Routes.AUTH_REDIRECT,

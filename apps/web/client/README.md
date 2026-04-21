@@ -21,6 +21,7 @@ our [Discord](https://t3.gg/discord) and ask for help.
 ## Auth Notes
 
 - The development-only "Sign in as demo user" button uses the seeded Supabase demo account and then routes through `/auth/redirect` so the browser session is established before protected queries run.
+- When pointing the app at a hosted Supabase project, you must set all of `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, and `SUPABASE_DATABASE_URL`, then run the database schema and seed steps against that hosted database before the demo account can use the app end-to-end.
 
 ## Learn More
 
