@@ -43,5 +43,5 @@ EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD bun -e "fetch('http://localhost:3000').then(r => r.ok ? process.exit(0) : process.exit(1)).catch(() => process.exit(1))"
 
-# Start the Next.js production server with Node instead of Bun for runtime stability.
-CMD ["sh", "-lc", "cd apps/web/client && node ../../node_modules/next/dist/bin/next start -H 0.0.0.0 -p ${PORT:-3000}"]
+# Start the Next.js production server with Bun because the base image does not ship Node.
+CMD ["sh", "-lc", "cd apps/web/client && bun run start -- -H 0.0.0.0 -p ${PORT:-3000}"]
