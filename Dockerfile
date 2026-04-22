@@ -6,12 +6,11 @@ WORKDIR /app
 # Set build and production environment
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
-ENV STANDALONE_BUILD=true
 ENV HOSTNAME=0.0.0.0
 ENV PORT=3000
 
 # Render exposes service environment variables to Docker builds as build args.
-# Declare the required keys so Next.js env validation passes during `build:standalone`.
+# Declare the required keys so Next.js env validation passes during `build`.
 ARG NEXT_PUBLIC_SITE_URL
 ARG NEXT_PUBLIC_SUPABASE_URL
 ARG NEXT_PUBLIC_SUPABASE_ANON_KEY
@@ -35,7 +34,7 @@ RUN export NEXT_PUBLIC_SITE_URL="${NEXT_PUBLIC_SITE_URL}" \
     OPENROUTER_API_KEY="${OPENROUTER_API_KEY}" \
     && bun install --frozen-lockfile \
     && cd apps/web/client \
-    && bun run build:standalone
+    && bun run build
 
 # Expose the application port
 EXPOSE 3000
@@ -44,5 +43,5 @@ EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD bun -e "fetch('http://localhost:3000').then(r => r.ok ? process.exit(0) : process.exit(1)).catch(() => process.exit(1))"
 
-# Start the Next.js standalone server
-CMD ["bun", "apps/web/client/.next/standalone/apps/web/client/server.js"]
+# Start the Next.js production server with Node instead of Bun for runtime stability.
+CMD ["sh", "-lc", "cd apps/web/client && node ../../node_modules/next/dist/bin/next start -H 0.0.0.0 -p ${PORT:-3000}"]
