@@ -81,7 +81,7 @@ export const DevLoginButton = ({
     return (
         <Button
             variant="outline"
-            className="w-full text-active text-small"
+            className={cn('w-full text-active text-small', className)}
             onClick={() => {
                 void handleDevLogin(returnUrl);
             }}

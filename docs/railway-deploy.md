@@ -14,6 +14,7 @@ The web app validates environment variables during build in [apps/web/client/src
 NEXT_PUBLIC_SITE_URL=https://<your-railway-domain>
 NEXT_PUBLIC_SUPABASE_URL=https://<your-project-ref>.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=<your-supabase-anon-key>
+NEXT_PUBLIC_SHOW_DEV_LOGIN=true
 SUPABASE_URL=https://<your-project-ref>.supabase.co
 SUPABASE_DATABASE_URL=<your-supabase-postgres-connection-string>
 SUPABASE_SERVICE_ROLE_KEY=<your-supabase-service-role-key>
@@ -34,6 +35,8 @@ Optional variables can stay unset unless you actively use those features.
 6. Deploy once.
 7. Copy the generated Railway public domain and set `NEXT_PUBLIC_SITE_URL` to that exact URL.
 8. Redeploy after updating `NEXT_PUBLIC_SITE_URL`.
+
+If you want to hide the demo login button later, set `NEXT_PUBLIC_SHOW_DEV_LOGIN=false` and redeploy.
 
 ## Healthcheck
 

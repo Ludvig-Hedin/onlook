@@ -69,7 +69,7 @@ const signInWithGitHub = async () => {
 5. Choose **"Web application"**
 6. Add authorized redirect URIs:
    - **Local development**: `http://localhost:54321/auth/v1/callback`
-   - **Production**: `https://your-production-domain/auth/v1/callback`
+   - **Production**: `https://your-supabase-project-ref.supabase.co/auth/v1/callback`
 7. Copy your **Client ID** and **Client Secret**
 
 ### 2. Configure Supabase
@@ -78,6 +78,8 @@ const signInWithGitHub = async () => {
 2. Find **Google** and click **Enable**
 3. Paste your **Client ID** and **Client Secret**
 4. Click **Save**
+
+> Your app callback URL is not the Google redirect URI. Google should redirect to Supabase's `/auth/v1/callback`, and Supabase should then redirect back to your app at `/auth/callback`.
 
 ### 3. Add to Your App
 
@@ -102,6 +104,7 @@ Popular providers include:
 - **Apple**: Set up at [Apple Developer](https://developer.apple.com/)
 
 > **Note**: For each provider, remember to add both local (`http://localhost:54321/auth/v1/callback`) and production (`https://your-production-domain/auth/v1/callback`) redirect URIs to avoid redirect_uri_mismatch errors.
+> **Note**: For this app, the production redirect URI above should be your Supabase project URL, not the Railway app URL.
 
 ## Important Notes
 
@@ -126,7 +129,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
 
 **"Invalid redirect URI"**
 - Double-check your callback URL in the OAuth app settings
-- Make sure it matches exactly: `http://localhost:54321/auth/v1/callback`
+- Make sure it matches exactly: `http://localhost:54321/auth/v1/callback` locally, or `https://your-supabase-project-ref.supabase.co/auth/v1/callback` in production
 
 **"Client ID not found"**
 - Verify you copied the Client ID and Client Secret correctly
@@ -145,3 +148,11 @@ Once OAuth is working:
 - Configure email notifications
 
 That's it! Your users can now sign in with their social accounts. 🎉
+
+### Dev Login Visibility
+
+The demo login button is controlled by `NEXT_PUBLIC_SHOW_DEV_LOGIN`.
+
+- `true` shows it on the login page and auth modal.
+- `false` hides it everywhere.
+- If unset, it defaults to visible.

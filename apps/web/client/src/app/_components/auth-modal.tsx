@@ -1,3 +1,4 @@
+import { env } from '@/env';
 import { transKeys } from '@/i18n/keys';
 import {
     AlertDialog,
@@ -10,7 +11,7 @@ import {
 import { Button } from '@onlook/ui/button';
 import { useTranslations } from 'next-intl';
 import { useAuthContext } from '../auth/auth-context';
-import { LoginButton } from './login-button';
+import { DevLoginButton, LoginButton } from './login-button';
 import { SignInMethod } from '@onlook/models/auth';
 import { Icons } from '@onlook/ui/icons';
 
@@ -44,6 +45,9 @@ export function AuthModal() {
                         translationKey="google"
                         providerName="Google"
                     />
+                    {env.NEXT_PUBLIC_SHOW_DEV_LOGIN && (
+                        <DevLoginButton className="!bg-black" returnUrl={null} />
+                    )}
                 </div>
                 <AlertDialogFooter className="flex !justify-center w-full">
                     <Button variant={'ghost'} onClick={() => setIsAuthModalOpen(false)}>

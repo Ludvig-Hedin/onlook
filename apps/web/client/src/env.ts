@@ -69,6 +69,11 @@ export const env = createEnv({
      */
     client: {
         NEXT_PUBLIC_SITE_URL: z.url().default('http://localhost:3000'),
+        NEXT_PUBLIC_SHOW_DEV_LOGIN: z.preprocess((value) => {
+            if (value === undefined) return true;
+            if (typeof value === 'string') return value === 'true';
+            return value;
+        }, z.boolean()),
         NEXT_PUBLIC_SUPABASE_URL: z.string(),
         NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string(),
         NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: z.string().optional(),
@@ -103,6 +108,7 @@ export const env = createEnv({
             process.env.SUPABASE_SERVICE_ROLE_KEY ??
             (process.env.NODE_ENV === 'development' ? 'dev_supabase_service_role_key' : undefined),
         NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000',
+        NEXT_PUBLIC_SHOW_DEV_LOGIN: process.env.NEXT_PUBLIC_SHOW_DEV_LOGIN,
         NEXT_PUBLIC_SUPABASE_URL:
             process.env.NEXT_PUBLIC_SUPABASE_URL ??
             (process.env.NODE_ENV === 'development' ? 'http://127.0.0.1:54321' : undefined),
