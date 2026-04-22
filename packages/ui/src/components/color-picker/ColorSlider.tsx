@@ -54,126 +54,126 @@ const ColorSliderGradient = styled.div`
 `;
 
 export function createGradient(
-    direction: 'right' | 'top',
-    length: number,
-    handleSize: number,
-    colors: [string, number][],
-): string {
-    const offset = handleSize / 2 / length;
-    const gradientLength = (length - handleSize) / length;
+direction: 'right' | 'top',
+length: number,
+handleSize: number,
+colors: [string, number][])
+: string {
+  const offset = handleSize / 2 / length;
+  const gradientLength = (length - handleSize) / length;
 
-    const stops = colors.map(
-        ([color, pos]) => `${color} ${(pos * gradientLength + offset) * 100}%`,
-    );
+  const stops = colors.map(
+    ([color, pos]) => `${color} ${(pos * gradientLength + offset) * 100}%`
+  );
 
-    return `linear-gradient(${direction === 'right' ? 'to right' : 'to top'}, ${stops.join(',')})`;
+  return `linear-gradient(${direction === 'right' ? 'to right' : 'to top'}, ${stops.join(',')})`;
 }
 
 export const ColorSlider: React.FC<{
-    direction: 'right' | 'top';
-    length: number;
-    handleSize: number;
-    railWidth: number;
-    value: number;
-    color: string;
-    colorStops: string[];
-    onChangeEnd?: (value: number) => void;
-    onChange?: (value: number) => void;
-    onMouseDown?: (value: number) => void;
+  direction: 'right' | 'top';
+  length: number;
+  handleSize: number;
+  railWidth: number;
+  value: number;
+  color: string;
+  colorStops: string[];
+  onChangeEnd?: (value: number) => void;
+  onChange?: (value: number) => void;
+  onMouseDown?: (value: number) => void;
 }> = ({
+  direction,
+  length,
+  handleSize,
+  railWidth,
+  color,
+  colorStops,
+  value,
+  onChangeEnd,
+  onChange,
+  onMouseDown
+}) => {
+  const gradient = createGradient(
     direction,
     length,
     handleSize,
-    railWidth,
-    color,
-    colorStops,
-    value,
-    onChangeEnd,
-    onChange,
-    onMouseDown,
-}) => {
-    const gradient = createGradient(
-        direction,
-        length,
-        handleSize,
-        colorStops.map((stop, i) => [stop, i / (colorStops.length - 1)]),
-    );
-    const range = length - handleSize;
+    colorStops.map((stop, i) => [stop, i / (colorStops.length - 1)])
+  );
+  const range = length - handleSize;
 
-    const pointerProps = usePointerStroke<HTMLElement>({
-        onBegin: (e) => {
-            onMouseDown?.(valueAtEvent(e));
-        },
-        onMove: (e) => {
-            onChange?.(valueAtEvent(e));
-        },
-        onEnd: (e) => {
-            onChangeEnd?.(valueAtEvent(e));
-        },
-    });
+  const pointerProps = usePointerStroke<HTMLElement>({
+    onBegin: (e) => {
+      onMouseDown?.(valueAtEvent(e));
+    },
+    onMove: (e) => {
+      onChange?.(valueAtEvent(e));
+    },
+    onEnd: (e) => {
+      onChangeEnd?.(valueAtEvent(e));
+    }
+  });
 
-    const valueAtEvent = (e: React.MouseEvent<HTMLElement>) => {
-        // TODO: Fix value is wrong when CSS transform is applied
-        const rect = e.currentTarget.getBoundingClientRect();
-        let value;
-        if (direction === 'right') {
-            const offset = e.clientX - rect.left - handleSize / 2;
-            value = clamp(offset / range, 0, 1);
-        } else {
-            const offset = e.clientY - rect.top - handleSize / 2;
-            value = clamp(1 - offset / range, 0, 1);
-        }
+  const valueAtEvent = (e: React.MouseEvent<HTMLElement>) => {
+    // TODO: Fix value is wrong when CSS transform is applied
+    const rect = e.currentTarget.getBoundingClientRect();
+    let value;
+    if (direction === 'right') {
+      const offset = e.clientX - rect.left - handleSize / 2;
+      value = clamp(offset / range, 0, 1);
+    } else {
+      const offset = e.clientY - rect.top - handleSize / 2;
+      value = clamp(1 - offset / range, 0, 1);
+    }
 
-        return value;
-    };
+    return value;
+  };
 
-    return (
-        <ColorSliderWrap
-            tabIndex={0}
-            style={
-                direction === 'right'
-                    ? { width: `${length}px`, height: `${handleSize}px` }
-                    : { height: `${length}px`, width: `${handleSize}px` }
-            }
-            {...pointerProps}
-        >
+  return (
+    <ColorSliderWrap
+      tabIndex={0}
+      style={
+      direction === 'right' ?
+      { width: `${length}px`, height: `${handleSize}px` } :
+      { height: `${length}px`, width: `${handleSize}px` }
+      }
+      {...pointerProps} data-oid="5508eb0897">
+      
             <ColorSliderBar
-                style={{
-                    borderRadius: `${railWidth / 2}px`,
-                    ...(direction === 'right'
-                        ? {
-                              width: length,
-                              height: railWidth,
-                          }
-                        : {
-                              height: length,
-                              width: railWidth,
-                          }),
-                }}
-            >
+        style={{
+          borderRadius: `${railWidth / 2}px`,
+          ...(direction === 'right' ?
+          {
+            width: length,
+            height: railWidth
+          } :
+          {
+            height: length,
+            width: railWidth
+          })
+        }} data-oid="219c7e3d63">
+        
                 <ColorSliderGradient
-                    style={{
-                        background: gradient,
-                    }}
-                />
+          style={{
+            background: gradient
+          }} data-oid="943e0f6d1e" />
+        
             </ColorSliderBar>
             <ColorHandle
-                style={{
-                    position: 'absolute',
-                    width: `${handleSize}px`,
-                    height: `${handleSize}px`,
-                    color: color,
-                    ...(direction === 'right'
-                        ? {
-                              left: `${range * value}px`,
-                              top: 0,
-                          }
-                        : {
-                              left: 0,
-                              top: `${range * (1 - value)}px`,
-                          }),
-                }}
-            />
-        </ColorSliderWrap>
-    );
+        style={{
+          position: 'absolute',
+          width: `${handleSize}px`,
+          height: `${handleSize}px`,
+          color: color,
+          ...(direction === 'right' ?
+          {
+            left: `${range * value}px`,
+            top: 0
+          } :
+          {
+            left: 0,
+            top: `${range * (1 - value)}px`
+          })
+        }} data-oid="ff267909d2" />
+      
+        </ColorSliderWrap>);
+
 };

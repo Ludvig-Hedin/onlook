@@ -10,218 +10,218 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../../
 import { cn } from '../../utils/index';
 
 export type WebPreviewContextValue = {
-    url: string;
-    setUrl: (url: string) => void;
-    consoleOpen: boolean;
-    setConsoleOpen: (open: boolean) => void;
+  url: string;
+  setUrl: (url: string) => void;
+  consoleOpen: boolean;
+  setConsoleOpen: (open: boolean) => void;
 };
 
 const WebPreviewContext = createContext<WebPreviewContextValue | null>(null);
 
 const useWebPreview = () => {
-    const context = useContext(WebPreviewContext);
-    if (!context) {
-        throw new Error('WebPreview components must be used within a WebPreview');
-    }
-    return context;
+  const context = useContext(WebPreviewContext);
+  if (!context) {
+    throw new Error('WebPreview components must be used within a WebPreview');
+  }
+  return context;
 };
 
 export type WebPreviewProps = ComponentProps<'div'> & {
-    defaultUrl?: string;
-    onUrlChange?: (url: string) => void;
+  defaultUrl?: string;
+  onUrlChange?: (url: string) => void;
 };
 
 export const WebPreview = ({
-    className,
-    children,
-    defaultUrl = '',
-    onUrlChange,
-    ...props
+  className,
+  children,
+  defaultUrl = '',
+  onUrlChange,
+  ...props
 }: WebPreviewProps) => {
-    const [url, setUrl] = useState(defaultUrl);
-    const [consoleOpen, setConsoleOpen] = useState(false);
+  const [url, setUrl] = useState(defaultUrl);
+  const [consoleOpen, setConsoleOpen] = useState(false);
 
-    const handleUrlChange = (newUrl: string) => {
-        setUrl(newUrl);
-        onUrlChange?.(newUrl);
-    };
+  const handleUrlChange = (newUrl: string) => {
+    setUrl(newUrl);
+    onUrlChange?.(newUrl);
+  };
 
-    const contextValue: WebPreviewContextValue = {
-        url,
-        setUrl: handleUrlChange,
-        consoleOpen,
-        setConsoleOpen,
-    };
+  const contextValue: WebPreviewContextValue = {
+    url,
+    setUrl: handleUrlChange,
+    consoleOpen,
+    setConsoleOpen
+  };
 
-    return (
-        <WebPreviewContext.Provider value={contextValue}>
+  return (
+    <WebPreviewContext.Provider value={contextValue} data-oid="843dbf9f11">
             <div
-                className={cn('flex size-full flex-col rounded-lg border bg-card', className)}
-                {...props}
-            >
+        className={cn('flex size-full flex-col rounded-lg border bg-card', className)}
+        {...props} data-oid="165a8f9ea7">
+        
                 {children}
             </div>
-        </WebPreviewContext.Provider>
-    );
+        </WebPreviewContext.Provider>);
+
 };
 
 export type WebPreviewNavigationProps = ComponentProps<'div'>;
 
 export const WebPreviewNavigation = ({
-    className,
-    children,
-    ...props
-}: WebPreviewNavigationProps) => (
-    <div className={cn('flex items-center gap-1 border-b p-2', className)} {...props}>
+  className,
+  children,
+  ...props
+}: WebPreviewNavigationProps) =>
+<div className={cn('flex items-center gap-1 border-b p-2', className)} {...props} data-oid="938b564af1">
         {children}
-    </div>
-);
+    </div>;
+
 
 export type WebPreviewNavigationButtonProps = ComponentProps<typeof Button> & {
-    tooltip?: string;
+  tooltip?: string;
 };
 
 export const WebPreviewNavigationButton = ({
-    onClick,
-    disabled,
-    tooltip,
-    children,
-    ...props
-}: WebPreviewNavigationButtonProps) => (
-    <TooltipProvider>
-        <Tooltip>
-            <TooltipTrigger asChild>
+  onClick,
+  disabled,
+  tooltip,
+  children,
+  ...props
+}: WebPreviewNavigationButtonProps) =>
+<TooltipProvider data-oid="2b758bd0ad">
+        <Tooltip data-oid="cdf85c16cb">
+            <TooltipTrigger asChild data-oid="65830aad5c">
                 <Button
-                    className="h-8 w-8 p-0 hover:text-foreground"
-                    disabled={disabled}
-                    onClick={onClick}
-                    size="sm"
-                    variant="ghost"
-                    {...props}
-                >
+        className="h-8 w-8 p-0 hover:text-foreground"
+        disabled={disabled}
+        onClick={onClick}
+        size="sm"
+        variant="ghost"
+        {...props} data-oid="b6acf5696a">
+        
                     {children}
                 </Button>
             </TooltipTrigger>
-            <TooltipContent>
-                <p>{tooltip}</p>
+            <TooltipContent data-oid="0d67f73d3a">
+                <p data-oid="ac46d0bb3c">{tooltip}</p>
             </TooltipContent>
         </Tooltip>
-    </TooltipProvider>
-);
+    </TooltipProvider>;
+
 
 export type WebPreviewUrlProps = ComponentProps<typeof Input>;
 
 export const WebPreviewUrl = ({ value, onChange, onKeyDown, ...props }: WebPreviewUrlProps) => {
-    const { url, setUrl } = useWebPreview();
+  const { url, setUrl } = useWebPreview();
 
-    const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-        if (event.key === 'Enter') {
-            const target = event.target as HTMLInputElement;
-            setUrl(target.value);
-        }
-        onKeyDown?.(event);
-    };
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      const target = event.target as HTMLInputElement;
+      setUrl(target.value);
+    }
+    onKeyDown?.(event);
+  };
 
-    return (
-        <Input
-            className="h-8 flex-1 text-sm"
-            onChange={onChange}
-            onKeyDown={handleKeyDown}
-            placeholder="Enter URL..."
-            value={value ?? url}
-            {...props}
-        />
-    );
+  return (
+    <Input
+      className="h-8 flex-1 text-sm"
+      onChange={onChange}
+      onKeyDown={handleKeyDown}
+      placeholder="Enter URL..."
+      value={value ?? url}
+      {...props} data-oid="bc89909a28" />);
+
+
 };
 
 export type WebPreviewBodyProps = ComponentProps<'iframe'> & {
-    loading?: ReactNode;
+  loading?: ReactNode;
 };
 
 export const WebPreviewBody = ({ className, loading, src, ...props }: WebPreviewBodyProps) => {
-    const { url } = useWebPreview();
+  const { url } = useWebPreview();
 
-    return (
-        <div className="flex-1">
+  return (
+    <div className="flex-1" data-oid="66a5e56313">
             <iframe
-                className={cn('size-full', className)}
-                sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-presentation"
-                src={(src ?? url) || undefined}
-                title="Preview"
-                {...props}
-            />
+        className={cn('size-full', className)}
+        sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-presentation"
+        src={(src ?? url) || undefined}
+        title="Preview"
+        {...props} data-oid="31091fe2ae" />
+      
             {loading}
-        </div>
-    );
+        </div>);
+
 };
 
 export type WebPreviewConsoleProps = ComponentProps<'div'> & {
-    logs?: Array<{
-        level: 'log' | 'warn' | 'error';
-        message: string;
-        timestamp: Date;
-    }>;
+  logs?: Array<{
+    level: 'log' | 'warn' | 'error';
+    message: string;
+    timestamp: Date;
+  }>;
 };
 
 export const WebPreviewConsole = ({
-    className,
-    logs = [],
-    children,
-    ...props
+  className,
+  logs = [],
+  children,
+  ...props
 }: WebPreviewConsoleProps) => {
-    const { consoleOpen, setConsoleOpen } = useWebPreview();
+  const { consoleOpen, setConsoleOpen } = useWebPreview();
 
-    return (
-        <Collapsible
-            className={cn('border-t bg-muted/50 font-mono text-sm', className)}
-            onOpenChange={setConsoleOpen}
-            open={consoleOpen}
-            {...props}
-        >
-            <CollapsibleTrigger asChild>
+  return (
+    <Collapsible
+      className={cn('border-t bg-muted/50 font-mono text-sm', className)}
+      onOpenChange={setConsoleOpen}
+      open={consoleOpen}
+      {...props} data-oid="36d73c378b">
+      
+            <CollapsibleTrigger asChild data-oid="826e7753e0">
                 <Button
-                    className="flex w-full items-center justify-between p-4 text-left font-medium hover:bg-muted/50"
-                    variant="ghost"
-                >
+          className="flex w-full items-center justify-between p-4 text-left font-medium hover:bg-muted/50"
+          variant="ghost" data-oid="4d5939266c">
+          
                     Console
                     <ChevronDownIcon
-                        className={cn(
-                            'h-4 w-4 transition-transform duration-200',
-                            consoleOpen && 'rotate-180',
-                        )}
-                    />
+            className={cn(
+              'h-4 w-4 transition-transform duration-200',
+              consoleOpen && 'rotate-180'
+            )} data-oid="6bd40e809c" />
+          
                 </Button>
             </CollapsibleTrigger>
             <CollapsibleContent
-                className={cn(
-                    'px-4 pb-4',
-                    'data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 outline-none data-[state=closed]:animate-out data-[state=open]:animate-in',
-                )}
-            >
-                <div className="max-h-48 space-y-1 overflow-y-auto">
-                    {logs.length === 0 ? (
-                        <p className="text-muted-foreground">No console output</p>
-                    ) : (
-                        logs.map((log, index) => (
-                            <div
-                                className={cn(
-                                    'text-xs',
-                                    log.level === 'error' && 'text-destructive',
-                                    log.level === 'warn' && 'text-yellow-600',
-                                    log.level === 'log' && 'text-foreground',
-                                )}
-                                key={`${log.timestamp.getTime()}-${index}`}
-                            >
-                                <span className="text-muted-foreground">
+        className={cn(
+          'px-4 pb-4',
+          'data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 outline-none data-[state=closed]:animate-out data-[state=open]:animate-in'
+        )} data-oid="68296d328b">
+        
+                <div className="max-h-48 space-y-1 overflow-y-auto" data-oid="edff6751f3">
+                    {logs.length === 0 ?
+          <p className="text-muted-foreground" data-oid="fbfce0952d">No console output</p> :
+
+          logs.map((log, index) =>
+          <div
+            className={cn(
+              'text-xs',
+              log.level === 'error' && 'text-destructive',
+              log.level === 'warn' && 'text-yellow-600',
+              log.level === 'log' && 'text-foreground'
+            )}
+            key={`${log.timestamp.getTime()}-${index}`} data-oid="80d829e9d6">
+            
+                                <span className="text-muted-foreground" data-oid="5bc3b2e3a0">
                                     {log.timestamp.toLocaleTimeString()}
                                 </span>{' '}
                                 {log.message}
                             </div>
-                        ))
-                    )}
+          )
+          }
                     {children}
                 </div>
             </CollapsibleContent>
-        </Collapsible>
-    );
+        </Collapsible>);
+
 };
