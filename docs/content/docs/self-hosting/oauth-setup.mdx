@@ -80,6 +80,7 @@ const signInWithGitHub = async () => {
 4. Click **Save**
 
 > Your app callback URL is not the Google redirect URI. Google should redirect to Supabase's `/auth/v1/callback`, and Supabase should then redirect back to your app at `/auth/callback`.
+> After a successful login, this app now sends users to `/projects` by default.
 
 ### 3. Add to Your App
 
