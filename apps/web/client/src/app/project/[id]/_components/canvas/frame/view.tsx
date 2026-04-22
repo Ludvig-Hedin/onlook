@@ -282,17 +282,21 @@ export const FrameComponent = observer(
                     isLoading: () => iframe.contentDocument?.readyState !== 'complete',
                 };
 
+                const frameView = Object.assign(iframe, {
+                    ...syncMethods,
+                    ...remoteMethods,
+                }) as IFrameView;
+
+                editorEngine.frames.registerView(frame, frameView);
+
                 if (!penpalChild) {
                     console.warn(
                         `${PENPAL_PARENT_CHANNEL} (${frame.id}) - Failed to setup penpal connection: iframeRemote is null`,
                     );
-                    return Object.assign(iframe, syncMethods, remoteMethods) as IFrameView;
+                    return frameView;
                 }
 
-                return Object.assign(iframe, {
-                    ...syncMethods,
-                    ...remoteMethods,
-                });
+                return frameView;
             }, [penpalChild, frame, iframeRef]);
 
             useEffect(() => {

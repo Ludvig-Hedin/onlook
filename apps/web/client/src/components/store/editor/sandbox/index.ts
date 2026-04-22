@@ -17,11 +17,17 @@ export enum PreloadScriptState {
     LOADING = 'loading',
     INJECTED = 'injected'
 }
+
+const PRELOAD_RETRY_DELAY_MS = 2000;
+const MAX_PRELOAD_RETRY_ATTEMPTS = 5;
+
 export class SandboxManager {
     readonly session: SessionManager;
     readonly gitManager: GitManager;
     private providerReactionDisposer?: () => void;
     private sync: CodeProviderSync | null = null;
+    private preloadRetryTimeout: ReturnType<typeof setTimeout> | null = null;
+    private preloadRetryCount = 0;
     preloadScriptState: PreloadScriptState = PreloadScriptState.NOT_INJECTED
     routerConfig: RouterConfig | null = null;
 
@@ -90,8 +96,7 @@ export class SandboxManager {
 
     private async ensurePreloadScriptExists(): Promise<void> {
         try {
-            if (this.preloadScriptState !== PreloadScriptState.NOT_INJECTED
-            ) {
+            if (this.preloadScriptState !== PreloadScriptState.NOT_INJECTED) {
                 return;
             }
 
@@ -108,12 +113,28 @@ export class SandboxManager {
 
             await copyPreloadScriptToPublic(this.session.provider, routerConfig);
             this.preloadScriptState = PreloadScriptState.INJECTED
+            this.preloadRetryCount = 0;
+            if (this.preloadRetryTimeout) {
+                clearTimeout(this.preloadRetryTimeout);
+                this.preloadRetryTimeout = null;
+            }
         } catch (error) {
             console.error('[SandboxManager] Failed to ensure preload script exists:', error);
-            // Mark as injected to prevent blocking frames indefinitely
-            // Frames will handle the missing preload script gracefully
-            this.preloadScriptState = PreloadScriptState.NOT_INJECTED
+            this.preloadScriptState = PreloadScriptState.NOT_INJECTED;
+            this.schedulePreloadRetry();
         }
+    }
+
+    private schedulePreloadRetry(): void {
+        if (this.preloadRetryTimeout || this.preloadRetryCount >= MAX_PRELOAD_RETRY_ATTEMPTS) {
+            return;
+        }
+
+        this.preloadRetryCount += 1;
+        this.preloadRetryTimeout = setTimeout(() => {
+            this.preloadRetryTimeout = null;
+            void this.ensurePreloadScriptExists();
+        }, PRELOAD_RETRY_DELAY_MS);
     }
 
     async getLayoutPath(): Promise<string | null> {
@@ -218,6 +239,11 @@ export class SandboxManager {
         this.providerReactionDisposer = undefined;
         this.sync?.release();
         this.sync = null;
+        if (this.preloadRetryTimeout) {
+            clearTimeout(this.preloadRetryTimeout);
+            this.preloadRetryTimeout = null;
+        }
+        this.preloadRetryCount = 0;
         this.preloadScriptState = PreloadScriptState.NOT_INJECTED
         this.session.clear();
     }

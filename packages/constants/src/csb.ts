@@ -16,8 +16,8 @@ export const SandboxTemplates: Record<Templates, SandboxTemplate> = {
     },
 };
 
-// New project creation should use the stable public blank template.
-export const DEFAULT_NEW_PROJECT_TEMPLATE = SandboxTemplates[Templates.BLANK];
+// New project creation should use the template that boots a healthy preview.
+export const DEFAULT_NEW_PROJECT_TEMPLATE = SandboxTemplates[Templates.EMPTY_NEXTJS];
 
 export const CSB_PREVIEW_TASK_NAME = 'dev';
 export const CSB_DOMAIN = 'csb.app';
