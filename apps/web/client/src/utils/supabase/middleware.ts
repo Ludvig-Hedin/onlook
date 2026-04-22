@@ -30,7 +30,19 @@ export async function updateSession(request: NextRequest) {
         },
     );
 
-    // refreshing the auth token
-    await supabase.auth.getUser();
+    // Refresh the auth token, but never let a stalled auth provider block the whole request.
+    try {
+        await Promise.race([
+            supabase.auth.getUser(),
+            new Promise((_, reject) =>
+                setTimeout(() => reject(new Error('Supabase auth refresh timed out')), 5000),
+            ),
+        ]);
+    } catch (error) {
+        console.error('[middleware] Supabase session refresh failed', {
+            pathname: request.nextUrl.pathname,
+            error: error instanceof Error ? error.message : String(error),
+        });
+    }
     return supabaseResponse;
 }
