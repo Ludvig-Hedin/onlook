@@ -268,6 +268,7 @@ declare const messages: {
                     "styles": {
                         "name": "Styles",
                         "emptyState": "Select an element to edit its style properties",
+                        "emptyStateHint": "Select a single canvas element to inspect layout, spacing, appearance, typography, and position.",
                         "groups": {
                             "position": "Position & Dimensions",
                             "layout": "Flexbox & Layout",
