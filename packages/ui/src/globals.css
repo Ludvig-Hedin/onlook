@@ -218,7 +218,7 @@
     --background-brand-secondary: 171 100% 77%; /* even lighter teal */
     --background-primary: 0 0% 100%; /* white */
     --background-secondary: 0 0% 95%; /* very light gray */
-    --background-positive: 147 100% 44%; /* green */
+    --background-positive: 203 100% 94%; /* blue[100] */
     --background-tertiary: 0 0% 90%; /* light gray */
     --background-toolbar-base: 0 0% 100%; /* white */
     --background-hover: 0 0% 95%; /* very light gray */
@@ -227,12 +227,12 @@
 
     --foreground: 0 0% 10%; /* black */
     --foreground-onlook: 0 0% 20%; /* dark gray */
-    --foreground-brand: 344 100% 66%; /* red */
+    --foreground-brand: 205 100% 53%; /* blue[400] */
     --foreground-primary: 0 0% 10%; /* black */
     --foreground-secondary: 0 0% 20%; /* dark gray */
     --foreground-tertiary: 0 0% 33%; /* medium gray */
     --foreground-quadranary: 0 0% 47%; /* gray */
-    --foreground-positive: 147 100% 18%; /* dark green */
+    --foreground-positive: 208 100% 36%; /* blue[600] */
     --foreground-hover: 0 0% 12%; /* very dark gray */
     --foreground-active: 0 0% 10%; /* black */
     --foreground-disabled: 0 0% 90%; /* light gray */
@@ -471,7 +471,7 @@
     --background-brand-secondary: 171 100% 27%; /* teal[500] */
     --background-primary: 0 0% 10%; /* gray[900] */
     --background-secondary: 0 0% 12%; /* gray[800] */
-    --background-positive: 0 0% 12%; /* green[800] */
+    --background-positive: 208 100% 16%; /* blue[900] */
     --background-tertiary: 0 0% 20%; /* gray[700] */
     --background-toolbar-base: 0 0% 0% 0.85; /* black[85] */
     --background-hover: 0 0% 12%; /* gray[800] */
@@ -480,12 +480,12 @@
 
     --foreground: 60 9.1% 97.8%; /* shadcn */
     --foreground-onlook: 0 0% 67%; /* gray[200] */
-    --foreground-brand: 344 100% 66%; /* red[DEFAULT] */
+    --foreground-brand: 205 100% 53%; /* blue[400] */
     --foreground-primary: 0 0% 100%; /* gray[50] */
     --foreground-secondary: 0 0% 67%; /* gray[200] */
     --foreground-tertiary: 0 0% 57%; /* gray[300] */
     --foreground-quadranary: 0 0% 38%; /* gray[500] */
-    --foreground-positive: 147 100% 44%; /* green[200] */
+    --foreground-positive: 203 100% 78%; /* blue[200] */
     --foreground-hover: 0 0% 78%; /* gray[100] */
     --foreground-active: 0 0% 100%; /* gray[50] */
     --foreground-disabled: 0 0% 10%; /* gray[900] */

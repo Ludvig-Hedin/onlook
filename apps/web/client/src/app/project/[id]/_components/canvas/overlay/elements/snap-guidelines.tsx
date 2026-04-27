@@ -1,7 +1,8 @@
 'use client';
 
-import { useEditorEngine } from '@/components/store/editor';
 import { observer } from 'mobx-react-lite';
+
+import { useEditorEngine } from '@/components/store/editor';
 
 const SNAP_VISUAL_CONFIG = {
     TOP_BAR_HEIGHT: 28,
@@ -21,7 +22,7 @@ export const SnapGuidelines = observer(() => {
 
     return (
         <div
-            className="absolute inset-0 pointer-events-none"
+            className="pointer-events-none absolute inset-0"
             style={{
                 transform: `translate(${canvasPosition.x}px, ${canvasPosition.y}px) scale(${scale})`,
                 transformOrigin: '0 0',
@@ -29,19 +30,21 @@ export const SnapGuidelines = observer(() => {
         >
             {snapLines.map((line) => {
                 if (line.orientation === 'horizontal') {
-                    const visualOffset = (SNAP_VISUAL_CONFIG.TOP_BAR_HEIGHT + SNAP_VISUAL_CONFIG.TOP_BAR_MARGIN) / scale;
-                    
+                    const visualOffset =
+                        (SNAP_VISUAL_CONFIG.TOP_BAR_HEIGHT + SNAP_VISUAL_CONFIG.TOP_BAR_MARGIN) /
+                        scale;
+
                     return (
                         <div
                             key={line.id}
-                            className="absolute bg-red-500"
+                            className="absolute bg-[#109BFF]"
                             style={{
                                 left: `${line.start}px`,
                                 top: `${line.position + visualOffset}px`,
                                 width: `${line.end - line.start}px`,
                                 height: `${Math.max(1, 1 / scale)}px`,
                                 opacity: 0.9,
-                                boxShadow: '0 0 4px rgba(239, 68, 68, 0.6)',
+                                boxShadow: '0 0 4px rgba(16, 155, 255, 0.6)',
                             }}
                         />
                     );
@@ -49,14 +52,14 @@ export const SnapGuidelines = observer(() => {
                     return (
                         <div
                             key={line.id}
-                            className="absolute bg-red-500"
+                            className="absolute bg-[#109BFF]"
                             style={{
                                 left: `${line.position}px`,
                                 top: `${line.start}px`,
                                 width: `${Math.max(1, 1 / scale)}px`,
                                 height: `${line.end - line.start}px`,
                                 opacity: 0.9,
-                                boxShadow: '0 0 4px rgba(239, 68, 68, 0.6)',
+                                boxShadow: '0 0 4px rgba(16, 155, 255, 0.6)',
                             }}
                         />
                     );

@@ -1,13 +1,22 @@
+import { useEffect, useState } from 'react';
+
 import { SystemTheme } from '@onlook/models/assets';
 import { Icons } from '@onlook/ui/icons';
+import { Select, SelectContent, SelectItem, SelectTrigger } from '@onlook/ui/select';
 import { toast } from '@onlook/ui/sonner';
-import { useEffect, useState } from 'react';
-import { HoverOnlyTooltip } from '../hover-tooltip';
-import { ToolbarButton } from '../toolbar-button';
+
 import { type FrameData } from '@/components/store/editor/frames';
+import { HoverOnlyTooltip } from '../hover-tooltip';
 
 export function ThemeGroup({ frameData }: { frameData: FrameData }) {
     const [theme, setTheme] = useState<SystemTheme>(SystemTheme.SYSTEM);
+    const [isOpen, setIsOpen] = useState(false);
+    const themeOptions = [
+        { value: SystemTheme.SYSTEM, label: 'System', icon: Icons.Laptop },
+        { value: SystemTheme.DARK, label: 'Dark', icon: Icons.Moon },
+        { value: SystemTheme.LIGHT, label: 'Light', icon: Icons.Sun },
+    ];
+
     useEffect(() => {
         const getTheme = async () => {
             if (!frameData?.view) {
@@ -17,7 +26,7 @@ export function ThemeGroup({ frameData }: { frameData: FrameData }) {
 
             const theme = await frameData.view.getTheme();
             setTheme(theme);
-        }
+        };
         void getTheme();
     }, [frameData]);
 
@@ -31,32 +40,44 @@ export function ThemeGroup({ frameData }: { frameData: FrameData }) {
         }
     }
 
+    const selectedOption = themeOptions.find((option) => option.value === theme) ?? {
+        value: SystemTheme.SYSTEM,
+        label: 'System',
+        icon: Icons.Laptop,
+    };
+    const SelectedIcon = selectedOption.icon;
+
     return (
-        <>
-            <HoverOnlyTooltip content="System Theme" side="bottom" sideOffset={10}>
-                    <ToolbarButton
-                        className={`w-9 ${theme === SystemTheme.SYSTEM ? 'bg-background-tertiary/50 hover:bg-background-tertiary/50 text-foreground-primary' : 'hover:bg-background-tertiary/50 text-foreground-onlook'}`}
-                        onClick={() => changeTheme(SystemTheme.SYSTEM)}
-                    >
-                        <Icons.Laptop className="h-4 w-4" />
-                    </ToolbarButton>
+        <Select
+            value={theme}
+            onValueChange={(value) => void changeTheme(value as SystemTheme)}
+            onOpenChange={setIsOpen}
+        >
+            <HoverOnlyTooltip content="Theme" side="bottom" sideOffset={10} disabled={isOpen}>
+                <SelectTrigger
+                    size="sm"
+                    className="group border-border/0 text-muted-foreground hover:border-border hover:bg-background-tertiary/20 min-w-[112px] rounded-lg border hover:text-white focus-visible:ring-0 focus-visible:ring-offset-0"
+                >
+                    <SelectedIcon className="group-hover:text-foreground-primary h-3.5 min-h-3.5 w-3.5 min-w-3.5" />
+                    <span className="text-smallPlus">{selectedOption.label}</span>
+                </SelectTrigger>
             </HoverOnlyTooltip>
-            <HoverOnlyTooltip content="Dark Theme" side="bottom" sideOffset={10}>
-                    <ToolbarButton
-                        className={`w-9 ${theme === SystemTheme.DARK ? 'bg-background-tertiary/50 hover:bg-background-tertiary/50 text-foreground-primary' : 'hover:bg-background-tertiary/50 text-foreground-onlook'}`}
-                        onClick={() => changeTheme(SystemTheme.DARK)}
-                    >
-                        <Icons.Moon className="h-4 w-4" />
-                    </ToolbarButton>
-            </HoverOnlyTooltip>
-            <HoverOnlyTooltip content="Light Theme" side="bottom" sideOffset={10}>
-                    <ToolbarButton
-                        className={`w-9 ${theme === SystemTheme.LIGHT ? 'bg-background-tertiary/50 hover:bg-background-tertiary/50 text-foreground-primary' : 'hover:bg-background-tertiary/50 text-foreground-onlook'}`}
-                        onClick={() => changeTheme(SystemTheme.LIGHT)}
-                    >
-                        <Icons.Sun className="h-4 w-4" />
-                    </ToolbarButton>
-            </HoverOnlyTooltip>
-        </>
+            <SelectContent className="bg-background-secondary rounded-md">
+                {themeOptions.map((option) => {
+                    const OptionIcon = option.icon;
+
+                    return (
+                        <SelectItem
+                            key={option.value}
+                            value={option.value}
+                            className="cursor-pointer text-xs"
+                        >
+                            <OptionIcon className="text-foreground-onlook h-3.5 w-3.5" />
+                            {option.label}
+                        </SelectItem>
+                    );
+                })}
+            </SelectContent>
+        </Select>
     );
-} 
+}

@@ -1,7 +1,8 @@
-import { EditorAttributes } from '@onlook/constants';
-import type { RectDimensions } from '@onlook/models';
-import { colors } from '@onlook/ui/tokens';
 import React from 'react';
+
+import type { RectDimensions } from '@onlook/models';
+import { EditorAttributes } from '@onlook/constants';
+import { colors } from '@onlook/ui/tokens';
 
 export interface RectProps extends RectDimensions {
     isComponent?: boolean;
@@ -46,7 +47,7 @@ export const BaseRect: React.FC<RectProps> = ({
                     width={width}
                     height={height}
                     fill="none"
-                    stroke={isComponent ? colors.purple[500] : colors.red[500]}
+                    stroke={isComponent ? colors.purple[500] : colors.blue[400]}
                     strokeWidth={strokeWidth}
                     strokeLinecap="round"
                     strokeLinejoin="round"

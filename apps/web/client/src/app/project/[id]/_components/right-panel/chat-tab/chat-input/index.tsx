@@ -414,8 +414,8 @@ export const ChatInput = observer(
                         ref={textareaRef}
                         placeholder={getPlaceholderText()}
                         className={cn(
-                            'text-small mt-1 max-h-32 resize-none overflow-auto rounded-none border-0 bg-transparent p-2 caret-[#FA003C] shadow-none focus-visible:ring-0 dark:bg-transparent',
-                            'text-foreground-primary placeholder:text-foreground-primary/50 cursor-text selection:bg-[#FA003C]/30 selection:text-[#FA003C]',
+                            'text-small mt-1 max-h-32 resize-none overflow-auto rounded-none border-0 bg-transparent p-2 caret-[#109BFF] shadow-none focus-visible:ring-0 dark:bg-transparent',
+                            'text-foreground-primary placeholder:text-foreground-primary/50 cursor-text selection:bg-[#109BFF]/30 selection:text-[#109BFF]',
                         )}
                         rows={3}
                         value={inputValue}
@@ -472,8 +472,8 @@ export const ChatInput = observer(
                                     inputEmpty
                                         ? 'text-primary'
                                         : chatMode === ChatType.ASK
-                                            ? 'text-background bg-blue-300 hover:bg-blue-600'
-                                            : 'bg-foreground-primary text-background hover:bg-foreground-primary/80',
+                                          ? 'text-background bg-blue-300 hover:bg-blue-600'
+                                          : 'bg-foreground-primary text-background hover:bg-foreground-primary/80',
                                 )}
                                 disabled={inputEmpty}
                                 onClick={() => void sendMessage()}

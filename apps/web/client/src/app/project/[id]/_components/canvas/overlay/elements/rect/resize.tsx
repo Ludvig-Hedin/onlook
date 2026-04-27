@@ -1,7 +1,9 @@
+import React from 'react';
+
+import { colors } from '@onlook/ui/tokens';
+
 import { useEditorEngine } from '@/components/store/editor';
 import { adaptValueToCanvas } from '@/components/store/editor/overlay/utils';
-import { colors } from '@onlook/ui/tokens';
-import React from 'react';
 
 enum ResizeHandlePosition {
     TOP = 'top',
@@ -299,7 +301,7 @@ export const ResizeHandles: React.FC<ResizeHandlesProps> = ({
     styles,
 }) => {
     const editorEngine = useEditorEngine();
-    const color = isComponent ? colors.purple[500] : colors.red[500];
+    const color = isComponent ? colors.purple[500] : colors.blue[400];
     const enableWidth = styles.width?.endsWith('px');
     const enableHeight = styles.height?.endsWith('px');
 

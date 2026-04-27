@@ -1,7 +1,9 @@
-import { adaptValueToCanvas } from '@/components/store/editor/overlay/utils';
+import { nanoid } from 'nanoid';
+
 import type { DomElementStyles, RectDimensions } from '@onlook/models';
 import { colors } from '@onlook/ui/tokens';
-import { nanoid } from 'nanoid';
+
+import { adaptValueToCanvas } from '@/components/store/editor/overlay/utils';
 import { BaseRect } from './base';
 import { ResizeHandles } from './resize';
 
@@ -115,7 +117,7 @@ export const ClickRect = ({
         const checkMarginAuto = (side: string) => {
             const marginSide = styles?.defined?.[`margin-${side}`];
             const margin = styles?.defined?.margin;
-            const isMarginNumber = marginSide && /^\d+/.test(marginSide)
+            const isMarginNumber = marginSide && /^\d+/.test(marginSide);
 
             if (isMarginNumber) {
                 return false;
@@ -227,13 +229,13 @@ export const ClickRect = ({
             <>
                 <defs>
                     <pattern id={patternId} patternUnits="userSpaceOnUse" width="20" height="20">
-                        <rect width="20" height="20" fill={colors.green[500]} fillOpacity="0.1" />
+                        <rect width="20" height="20" fill={colors.blue[400]} fillOpacity="0.12" />
                         <line
                             x1="0"
                             y1="20"
                             x2="20"
                             y2="0"
-                            stroke={colors.green[500]}
+                            stroke={colors.blue[400]}
                             strokeWidth="0.3"
                             strokeLinecap="square"
                         />
@@ -263,7 +265,7 @@ export const ClickRect = ({
                     <text
                         x={width / 2}
                         y={adjusted.top / 2}
-                        fill={colors.green[700]}
+                        fill={colors.blue[700]}
                         fontSize="10"
                         textAnchor="middle"
                         dominantBaseline="middle"
@@ -275,7 +277,7 @@ export const ClickRect = ({
                     <text
                         x={width / 2}
                         y={height - adjusted.bottom / 2}
-                        fill={colors.green[700]}
+                        fill={colors.blue[700]}
                         fontSize="10"
                         textAnchor="middle"
                         dominantBaseline="middle"
@@ -287,7 +289,7 @@ export const ClickRect = ({
                     <text
                         x={adjusted.left / 2}
                         y={height / 2}
-                        fill={colors.green[700]}
+                        fill={colors.blue[700]}
                         fontSize="10"
                         textAnchor="middle"
                         dominantBaseline="middle"
@@ -299,7 +301,7 @@ export const ClickRect = ({
                     <text
                         x={width - adjusted.right / 2}
                         y={height / 2}
-                        fill={colors.green[700]}
+                        fill={colors.blue[700]}
                         fontSize="10"
                         textAnchor="middle"
                         dominantBaseline="middle"

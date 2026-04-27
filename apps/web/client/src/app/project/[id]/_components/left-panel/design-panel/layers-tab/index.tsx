@@ -1,12 +1,18 @@
-import { useEditorEngine } from '@/components/store/editor';
-import type { LayerNode } from '@onlook/models/element';
-import { observer } from 'mobx-react-lite';
+import type { NodeApi, RowRendererProps, TreeApi } from 'react-arborist';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { type NodeApi, Tree, type TreeApi } from 'react-arborist';
+import { observer } from 'mobx-react-lite';
+import { Tree } from 'react-arborist';
 import useResizeObserver from 'use-resize-observer';
+
+import type { LayerNode } from '@onlook/models/element';
+
+import { useEditorEngine } from '@/components/store/editor';
 import { RightClickMenu } from '../../../right-click-menu';
 import { TreeNode } from './tree/tree-node';
 import { TreeRow } from './tree/tree-row';
+
+const getLayerTreeNodeId = (node: Pick<LayerNode, 'frameId' | 'domId'>) =>
+    `${node.frameId}:${node.domId}`;
 
 export const LayersTab = observer(() => {
     const treeRef = useRef<TreeApi<LayerNode>>(null);
@@ -26,7 +32,7 @@ export const LayersTab = observer(() => {
 
     function handleSelectChange() {
         if (editorEngine.elements.selected.length > 0 && editorEngine.elements.selected[0]) {
-            treeRef.current?.scrollTo(editorEngine.elements.selected[0].domId);
+            treeRef.current?.scrollTo(getLayerTreeNodeId(editorEngine.elements.selected[0]));
         }
     }
 
@@ -128,33 +134,44 @@ export const LayersTab = observer(() => {
         [editorEngine.ast.mappings],
     );
 
+    const layers = editorEngine.ast.mappings.filteredLayers;
+
     return (
         <div
+            id="layer-tab-id"
             ref={ref}
-            className="flex h-full w-full overflow-hidden text-xs text-active p-3"
+            className="text-active flex h-full w-full overflow-hidden p-3 text-xs"
             onMouseOver={() => setTreeHovered(true)}
             onMouseLeave={handleMouseLeaveTree}
         >
             <RightClickMenu>
-                <Tree
-                    idAccessor={(node) => node.domId}
-                    childrenAccessor={childrenAccessor}
-                    ref={treeRef}
-                    data={editorEngine.ast.mappings.filteredLayers}
-                    openByDefault={true}
-                    overscanCount={0}
-                    indent={8}
-                    padding={0}
-                    rowHeight={24}
-                    height={height ?? 300}
-                    width={width ?? 365}
-                    renderRow={(props: any) => <TreeRow {...props} />}
-                    onMove={handleDragEnd}
-                    disableDrop={disableDrop}
-                    className="overflow-auto"
-                >
-                    {(props) => <TreeNode {...props} treeHovered={treeHovered} />}
-                </Tree>
+                {layers.length === 0 ? (
+                    <div className="text-foreground-primary/50 flex h-full w-full items-center justify-center">
+                        No layers available yet
+                    </div>
+                ) : (
+                    <Tree
+                        idAccessor={getLayerTreeNodeId}
+                        childrenAccessor={childrenAccessor}
+                        ref={treeRef}
+                        data={layers}
+                        openByDefault={true}
+                        overscanCount={0}
+                        indent={8}
+                        padding={0}
+                        rowHeight={24}
+                        height={Math.max((height ?? 8) - 8, 100)}
+                        width={width ?? 365}
+                        renderRow={(props: RowRendererProps<LayerNode>) => (
+                            <TreeRow {...props} />
+                        )}
+                        onMove={handleDragEnd}
+                        disableDrop={disableDrop}
+                        className="overflow-auto"
+                    >
+                        {(props) => <TreeNode {...props} treeHovered={treeHovered} />}
+                    </Tree>
+                )}
             </RightClickMenu>
         </div>
     );
