@@ -300,8 +300,8 @@ export const Create = observer(({
                             <Textarea
                                 ref={textareaRef}
                                 className={cn(
-                                    'overflow-auto min-h-[60px] text-small border-0 shadow-none rounded-none caret-[#FA003C]',
-                                    'selection:bg-[#FA003C]/30 selection:text-[#FA003C] text-foreground-primary',
+                                    'overflow-auto min-h-[60px] text-small border-0 shadow-none rounded-none caret-[#109BFF]',
+                                    'selection:bg-[#109BFF]/30 selection:text-[#109BFF] text-foreground-primary',
                                     'cursor-text placeholder:text-foreground-primary/50',
                                     'transition-[height] duration-300 ease-in-out bg-transparent dark:bg-transparent focus-visible:ring-0 ',
                                 )}

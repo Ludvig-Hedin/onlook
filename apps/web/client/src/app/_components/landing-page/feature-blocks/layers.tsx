@@ -49,7 +49,7 @@ function MockLayersTab() {
                                 layer.isInstance && !isSelected && 'text-purple-500 dark:text-purple-300',
                                 layer.isInstance && !isSelected && isHovered && 'text-purple-800 dark:text-purple-200 bg-purple-400/30 dark:bg-purple-900/60',
                                 // Regular selection styling
-                                !isComponent && !layer.isInstance && isSelected && 'bg-[#FA003C] dark:bg-[#FA003C]/90 text-white dark:text-primary',
+                                !isComponent && !layer.isInstance && isSelected && 'bg-[#109BFF] dark:bg-[#109BFF]/90 text-white dark:text-primary',
                                 !isComponent && !layer.isInstance && isHovered && !isSelected && 'bg-background-onlook text-foreground-onlook',
                                 !isComponent && !layer.isInstance && !isSelected && !isHovered && 'text-foreground-onlook',
                                 // Rounded corners
@@ -102,7 +102,7 @@ export function LayersBlock() {
                             <Illustrations.LayersEndorphins className='w-56' />
                             <Illustrations.LayersInMotion className='w-48 top-12 absolute' />
                         </div>
-                        <div className='absolute bottom-3 w-fit h-fit flex flex-col items-center justify-start bg-[#872D2D] p-2 hover:bg-red-600 transition-colors duration-300 cursor-pointer'>
+                        <div className='absolute bottom-3 w-fit h-fit flex flex-col items-center justify-start bg-[#00538F] p-2 hover:bg-red-600 transition-colors duration-300 cursor-pointer'>
                             <Illustrations.LayersOrderNow className='w-18' />
                         </div>
                     </div>
@@ -120,4 +120,4 @@ export function LayersBlock() {
             </div>
         </div>
     );
-} 
+}

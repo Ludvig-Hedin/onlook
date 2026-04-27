@@ -9,6 +9,11 @@ export class Hotkey {
     static readonly PREVIEW = new Hotkey('p', 'Preview');
     static readonly INSERT_DIV = new Hotkey('r', 'Insert Div');
     static readonly RELOAD_APP = new Hotkey('mod+r', 'Reload App');
+    static readonly SIDEBAR_LAYERS = new Hotkey('alt+1', 'Layers');
+    static readonly SIDEBAR_BRAND = new Hotkey('alt+2', 'Brand');
+    static readonly SIDEBAR_PAGES = new Hotkey('alt+3', 'Pages');
+    static readonly SIDEBAR_IMAGES = new Hotkey('alt+4', 'Images');
+    static readonly SIDEBAR_BRANCHES = new Hotkey('alt+5', 'Branches');
 
     // Zoom
     static readonly ZOOM_FIT = new Hotkey('mod+0', 'Zoom Fit');
@@ -46,14 +51,15 @@ export class Hotkey {
     private constructor(
         public readonly command: string,
         public readonly description: string,
-    ) { }
+    ) {}
 
     toString() {
         return this.command;
     }
 
     get readableCommand() {
-        const isMac = typeof navigator !== 'undefined' && navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+        const isMac =
+            typeof navigator !== 'undefined' && navigator.platform.toUpperCase().includes('MAC');
         return this.command
             .replace('mod', isMac ? '⌘' : 'Ctrl')
             .split('+')

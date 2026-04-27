@@ -1,11 +1,14 @@
+import type { ReactNode } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useTranslations } from 'next-intl';
 
 import { LeftPanelTabValue } from '@onlook/models';
+import { HotkeyLabel } from '@onlook/ui/hotkey-label';
 import { Icons } from '@onlook/ui/icons';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@onlook/ui/tooltip';
 import { cn } from '@onlook/ui/utils';
 
+import { Hotkey } from '@/components/hotkey';
 import { useEditorEngine } from '@/components/store/editor';
 import { transKeys } from '@/i18n/keys';
 import { BranchesTab } from './branches-tab';
@@ -18,34 +21,34 @@ import { ZoomControls } from './zoom-controls';
 
 const tabs: {
     value: LeftPanelTabValue;
-    icon: React.ReactNode;
-    label: any;
+    icon: ReactNode;
+    hotkey: Hotkey;
     disabled?: boolean;
 }[] = [
     {
         value: LeftPanelTabValue.LAYERS,
         icon: <Icons.Layers className="h-5 w-5" />,
-        label: transKeys.editor.panels.layers.tabs.layers,
+        hotkey: Hotkey.SIDEBAR_LAYERS,
     },
     {
         value: LeftPanelTabValue.BRAND,
         icon: <Icons.Brand className="h-5 w-5" />,
-        label: transKeys.editor.panels.layers.tabs.brand,
+        hotkey: Hotkey.SIDEBAR_BRAND,
     },
     {
         value: LeftPanelTabValue.PAGES,
         icon: <Icons.File className="h-5 w-5" />,
-        label: transKeys.editor.panels.layers.tabs.pages,
+        hotkey: Hotkey.SIDEBAR_PAGES,
     },
     {
         value: LeftPanelTabValue.IMAGES,
         icon: <Icons.Image className="h-5 w-5" />,
-        label: transKeys.editor.panels.layers.tabs.images,
+        hotkey: Hotkey.SIDEBAR_IMAGES,
     },
     {
         value: LeftPanelTabValue.BRANCHES,
         icon: <Icons.Branch className="h-5 w-5" />,
-        label: transKeys.editor.panels.layers.tabs.branches,
+        hotkey: Hotkey.SIDEBAR_BRANCHES,
     },
 ];
 
@@ -99,12 +102,29 @@ export const DesignPanel = observer(() => {
         }
     };
 
+    const getTabLabel = (tab: LeftPanelTabValue) => {
+        switch (tab) {
+            case LeftPanelTabValue.LAYERS:
+                return t(transKeys.editor.panels.layers.tabs.layers);
+            case LeftPanelTabValue.BRAND:
+                return t(transKeys.editor.panels.layers.tabs.brand);
+            case LeftPanelTabValue.PAGES:
+                return t(transKeys.editor.panels.layers.tabs.pages);
+            case LeftPanelTabValue.IMAGES:
+                return t(transKeys.editor.panels.layers.tabs.images);
+            case LeftPanelTabValue.BRANCHES:
+                return t(transKeys.editor.panels.layers.tabs.branches);
+            default:
+                return '';
+        }
+    };
+
     return (
         <div className="flex h-full overflow-auto" onMouseLeave={handleMouseLeave}>
             {/* Left sidebar with tabs */}
             <div className="bg-background-onlook/60 flex w-14 flex-col items-center gap-1.5 px-1.5 py-1.5 backdrop-blur-xl">
                 {tabs.map((tab) => {
-                    const label = t(tab.label);
+                    const label = getTabLabel(tab.value);
 
                     return (
                         <Tooltip key={tab.value}>
@@ -129,7 +149,13 @@ export const DesignPanel = observer(() => {
                                 </button>
                             </TooltipTrigger>
                             <TooltipContent side="right" hideArrow>
-                                {label}
+                                <HotkeyLabel
+                                    hotkey={{
+                                        command: tab.hotkey.command,
+                                        description: label,
+                                        readableCommand: tab.hotkey.readableCommand,
+                                    }}
+                                />
                             </TooltipContent>
                         </Tooltip>
                     );

@@ -350,7 +350,7 @@ export function OnlookInterfaceMockup() {
                                                     layer.isInstance && !isSelected && 'text-purple-500 dark:text-purple-300',
                                                     layer.isInstance && !isSelected && isHovered && 'text-purple-800 dark:text-purple-200 bg-purple-400/30 dark:bg-purple-900/60',
                                                     // Regular selection styling
-                                                    !isComponent && !layer.isInstance && isSelected && 'bg-[#FA003C] dark:bg-[#FA003C]/90 text-white dark:text-primary',
+                                                    !isComponent && !layer.isInstance && isSelected && 'bg-[#109BFF] dark:bg-[#109BFF]/90 text-white dark:text-primary',
                                                     !isComponent && !layer.isInstance && isHovered && !isSelected && 'bg-background-onlook text-foreground-onlook',
                                                     !isComponent && !layer.isInstance && !isSelected && !isHovered && 'text-foreground-onlook',
                                                     // Rounded corners
@@ -452,4 +452,4 @@ export function OnlookInterfaceMockup() {
             </div>
         </div>
     );
-} 
+}

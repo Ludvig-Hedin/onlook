@@ -214,8 +214,8 @@
 
     --background: 0 0% 100%; /* white */
     --background-onlook: 0 0% 90%; /* light gray */
-    --background-brand: 171 100% 67%; /* lighter teal */
-    --background-brand-secondary: 171 100% 77%; /* even lighter teal */
+    --background-brand: 206 100% 66%; /* blue[300] */
+    --background-brand-secondary: 206 100% 78%; /* blue[200] */
     --background-primary: 0 0% 100%; /* white */
     --background-secondary: 0 0% 95%; /* very light gray */
     --background-positive: 203 100% 94%; /* blue[100] */
@@ -243,7 +243,7 @@
     --secondary: 0 0% 95%; /* very light gray */
     --secondary-foreground: 0 0% 10%; /* black */
 
-    --destructive: 344 100% 66%; /* red */
+    --destructive: 205 100% 53%; /* blue[400] */
     --destructive-foreground: 0 0% 100%; /* white */
 
     --card: 0 0% 100%; /* white */
@@ -273,17 +273,17 @@
     --radius: 0.5rem; /* shadcn */
 
     /* Color Tokens */
-    --color-amber-default: oklch(0.72 0.11 178);
-    --color-amber-100: oklch(0.95 0.05 178);
-    --color-amber-200: oklch(0.85 0.08 178);
-    --color-amber-300: oklch(0.8 0.09 178);
-    --color-amber-400: oklch(0.72 0.11 178);
-    --color-amber-500: oklch(0.65 0.12 178);
-    --color-amber-600: oklch(0.55 0.13 178);
-    --color-amber-700: oklch(0.45 0.14 178);
-    --color-amber-800: oklch(0.35 0.15 178);
-    --color-amber-900: oklch(0.25 0.16 178);
-    --color-amber-950: oklch(0.15 0.17 178);
+    --color-amber-default: 206 100% 78%; /* #90D1FF */
+    --color-amber-100: 206 100% 94%; /* #E3F3FF */
+    --color-amber-200: 206 100% 78%; /* #90D1FF */
+    --color-amber-300: 206 100% 66%; /* #53B8FF */
+    --color-amber-400: 206 100% 53%; /* #109BFF */
+    --color-amber-500: 206 100% 44%; /* #0081DE */
+    --color-amber-600: 206 100% 35%; /* #006AB5 */
+    --color-amber-700: 206 100% 28%; /* #00538F */
+    --color-amber-800: 206 100% 20%; /* #003E69 */
+    --color-amber-900: 206 100% 14%; /* #002A48 */
+    --color-amber-950: 206 100% 9%; /* #001B2E */
 
     --color-black-default: oklch(0 0 0);
     --color-black-30: oklch(0 0 0 / 0.3);
@@ -302,17 +302,17 @@
     --color-purple-900: oklch(0.25 0.45 300);
     --color-purple-950: oklch(0.15 0.5 300);
 
-    --color-red-default: 344 100% 68%; /* #FF5B82 */
-    --color-red-100: 344 100% 96%; /* #FFECF1 */
-    --color-red-200: 344 100% 85%; /* #FFB3C6 */
-    --color-red-300: 344 100% 77%; /* #FF8BA7 */
-    --color-red-400: 344 100% 68%; /* #FF5B82 */
-    --color-red-500: 344 100% 49%; /* #FA003C */
-    --color-red-600: 344 100% 40%; /* #CE0032 */
-    --color-red-700: 344 100% 32%; /* #A40028 */
-    --color-red-800: 344 100% 24%; /* #7C001E */
-    --color-red-900: 344 100% 17%; /* #560015 */
-    --color-red-950: 344 100% 12%; /* #3E000F */
+    --color-red-default: 206 100% 78%; /* #90D1FF */
+    --color-red-100: 206 100% 94%; /* #E3F3FF */
+    --color-red-200: 206 100% 78%; /* #90D1FF */
+    --color-red-300: 206 100% 66%; /* #53B8FF */
+    --color-red-400: 206 100% 53%; /* #109BFF */
+    --color-red-500: 206 100% 44%; /* #0081DE */
+    --color-red-600: 206 100% 35%; /* #006AB5 */
+    --color-red-700: 206 100% 28%; /* #00538F */
+    --color-red-800: 206 100% 20%; /* #003E69 */
+    --color-red-900: 206 100% 14%; /* #002A48 */
+    --color-red-950: 206 100% 9%; /* #001B2E */
 
     --color-blue-default: 206 100% 78%; /* #90D1FF */
     --color-blue-100: 206 100% 94%; /* #E3F3FF */
@@ -338,17 +338,17 @@
     --color-gray-800: 0 0% 12%; /* #1f1f1f */
     --color-gray-900: 0 0% 10%; /* #1a1a1a */
 
-    --color-green-default: 147 100% 17%; /* #00591e */
-    --color-green-100: 147 100% 93%; /* #d8ffe5 */
-    --color-green-200: 147 100% 44%; /* #00e14b */
-    --color-green-300: 147 100% 38%; /* #00c441 */
-    --color-green-400: 147 100% 33%; /* #00a838 */
-    --color-green-500: 147 100% 27%; /* #008c2f */
-    --color-green-600: 147 100% 22%; /* #007226 */
-    --color-green-700: 147 100% 17%; /* #00591e */
-    --color-green-800: 147 100% 13%; /* #004116 */
-    --color-green-900: 147 100% 8%; /* #002a0e */
-    --color-green-950: 147 100% 7%; /* #00240c */
+    --color-green-default: 206 100% 78%; /* #90D1FF */
+    --color-green-100: 206 100% 94%; /* #E3F3FF */
+    --color-green-200: 206 100% 78%; /* #90D1FF */
+    --color-green-300: 206 100% 66%; /* #53B8FF */
+    --color-green-400: 206 100% 53%; /* #109BFF */
+    --color-green-500: 206 100% 44%; /* #0081DE */
+    --color-green-600: 206 100% 35%; /* #006AB5 */
+    --color-green-700: 206 100% 28%; /* #00538F */
+    --color-green-800: 206 100% 20%; /* #003E69 */
+    --color-green-900: 206 100% 14%; /* #002A48 */
+    --color-green-950: 206 100% 9%; /* #001B2E */
 
     --color-teal-default: 171 100% 44%; /* #00deba */
     --color-teal-100: 171 100% 90%; /* #cbfff6 */
@@ -362,17 +362,17 @@
     --color-teal-900: 171 100% 8%; /* #002a23 */
     --color-teal-950: 171 100% 6%; /* #00211c */
 
-    --color-yellow-default: 47 100% 20%; /* #644e00 */
-    --color-yellow-100: 48 100% 87%; /* #fff0bc */
-    --color-yellow-200: 46 100% 48%; /* #f6c100 */
-    --color-yellow-300: 46 100% 42%; /* #d7a800 */
-    --color-yellow-400: 47 100% 36%; /* #b99000 */
-    --color-yellow-500: 47 100% 30%; /* #9b7900 */
-    --color-yellow-600: 47 100% 25%; /* #7f6300 */
-    --color-yellow-700: 47 100% 20%; /* #644e00 */
-    --color-yellow-800: 47 100% 14%; /* #493900 */
-    --color-yellow-900: 47 100% 9%; /* #312600 */
-    --color-yellow-950: 47 100% 6%; /* #211a00 */
+    --color-yellow-default: 206 100% 78%; /* #90D1FF */
+    --color-yellow-100: 206 100% 94%; /* #E3F3FF */
+    --color-yellow-200: 206 100% 78%; /* #90D1FF */
+    --color-yellow-300: 206 100% 66%; /* #53B8FF */
+    --color-yellow-400: 206 100% 53%; /* #109BFF */
+    --color-yellow-500: 206 100% 44%; /* #0081DE */
+    --color-yellow-600: 206 100% 35%; /* #006AB5 */
+    --color-yellow-700: 206 100% 28%; /* #00538F */
+    --color-yellow-800: 206 100% 20%; /* #003E69 */
+    --color-yellow-900: 206 100% 14%; /* #002A48 */
+    --color-yellow-950: 206 100% 9%; /* #001B2E */
 
     /* Font Size Tokens */
     --font-size-title1: 2.25rem;
@@ -467,8 +467,8 @@
 
     --background: 20 14.3% 4.1%; /* shadcn */
     --background-onlook: 0 0% 10%; /* gray[900] */
-    --background-brand: 171 100% 17%; /* teal[700] */
-    --background-brand-secondary: 171 100% 27%; /* teal[500] */
+    --background-brand: 206 100% 28%; /* blue[700] */
+    --background-brand-secondary: 206 100% 44%; /* blue[500] */
     --background-primary: 0 0% 10%; /* gray[900] */
     --background-secondary: 0 0% 12%; /* gray[800] */
     --background-positive: 208 100% 16%; /* blue[900] */
@@ -496,8 +496,8 @@
     --secondary: 12 6.5% 15.1%; /* shadcn */
     --secondary-foreground: 60 9.1% 97.8%; /* shadcn */
 
-    --destructive: 345.35 100% 16.86%; /* red[900] */
-    --destructive-foreground: 344.21 100% 96.27%; /* red[100] */
+    --destructive: 206 100% 35%; /* blue[600] */
+    --destructive-foreground: 206 100% 94%; /* blue[100] */
 
     --card: 20 14.3% 4.1%; /* shadcn */
     --card-foreground: 60 9.1% 97.8%; /* shadcn */

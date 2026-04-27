@@ -1,12 +1,24 @@
 import { Hotkey } from '@/components/hotkey';
 import { useEditorEngine } from '@/components/store/editor';
 import { DefaultSettings } from '@onlook/constants';
-import { EditorMode, InsertMode } from '@onlook/models';
+import { EditorMode, InsertMode, LeftPanelTabValue } from '@onlook/models';
 import type { ReactNode } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 
 export const HotkeysArea = ({ children }: { children: ReactNode }) => {
     const editorEngine = useEditorEngine();
+
+    const toggleLeftPanelTab = (tab: LeftPanelTabValue) => {
+        editorEngine.state.editorMode = EditorMode.DESIGN;
+
+        if (editorEngine.state.leftPanelTab === tab && editorEngine.state.leftPanelLocked) {
+            editorEngine.state.leftPanelLocked = false;
+            return;
+        }
+
+        editorEngine.state.leftPanelTab = tab;
+        editorEngine.state.leftPanelLocked = true;
+    };
 
     // Zoom
     useHotkeys(
@@ -38,6 +50,25 @@ export const HotkeysArea = ({ children }: { children: ReactNode }) => {
     });
     useHotkeys(Hotkey.PAN.command, () => (editorEngine.state.editorMode = EditorMode.PAN));
     useHotkeys(Hotkey.PREVIEW.command, () => (editorEngine.state.editorMode = EditorMode.PREVIEW));
+    useHotkeys(Hotkey.SIDEBAR_LAYERS.command, () => toggleLeftPanelTab(LeftPanelTabValue.LAYERS), {
+        preventDefault: true,
+    });
+    useHotkeys(Hotkey.SIDEBAR_BRAND.command, () => toggleLeftPanelTab(LeftPanelTabValue.BRAND), {
+        preventDefault: true,
+    });
+    useHotkeys(Hotkey.SIDEBAR_PAGES.command, () => toggleLeftPanelTab(LeftPanelTabValue.PAGES), {
+        preventDefault: true,
+    });
+    useHotkeys(Hotkey.SIDEBAR_IMAGES.command, () => toggleLeftPanelTab(LeftPanelTabValue.IMAGES), {
+        preventDefault: true,
+    });
+    useHotkeys(
+        Hotkey.SIDEBAR_BRANCHES.command,
+        () => toggleLeftPanelTab(LeftPanelTabValue.BRANCHES),
+        {
+            preventDefault: true,
+        },
+    );
 
     // Quick mode switching with CMD+1/2/3 (overrides browser defaults)
     useHotkeys('mod+1', () => (editorEngine.state.editorMode = EditorMode.DESIGN), { preventDefault: true });
