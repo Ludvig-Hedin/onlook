@@ -1,11 +1,12 @@
 import { useEditorEngine } from '@/components/store/editor';
 import { PreloadScriptState } from '@/components/store/editor/sandbox';
-import { type Frame } from '@onlook/models';
+import { EditorMode, type Frame } from '@onlook/models';
 import { Icons } from '@onlook/ui/icons';
 import { colors } from '@onlook/ui/tokens';
 import { observer } from 'mobx-react-lite';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { RightClickMenu } from '../../right-click-menu';
+import { isCodeSandboxPreviewUrl } from './codesandbox-preview';
 import { GestureScreen } from './gesture';
 import { ResizeHandles } from './resize-handles';
 import { TopBar } from './top-bar';
@@ -45,9 +46,11 @@ export const FrameView = observer(({ frame, isInDragSelection = false }: { frame
     const [isResizing, setIsResizing] = useState(false);
     const [messageIndex, setMessageIndex] = useState(0);
     const MESSAGE_INTERVAL = 12000;
+    const autoPreviewRestoreModeRef = useRef<EditorMode | null>(null);
 
     const {
         reloadKey,
+        isPenpalConnected,
         immediateReload,
         handleConnectionFailed,
         handleConnectionSuccess,
@@ -60,6 +63,29 @@ export const FrameView = observer(({ frame, isInDragSelection = false }: { frame
     const branchData = editorEngine.branches.getBranchDataById(frame.branchId);
     const preloadScriptReady = branchData?.sandbox?.preloadScriptState === PreloadScriptState.INJECTED;
     const isFrameReady = preloadScriptReady && !(isConnecting && !hasTimedOut);
+    const isCodeSandboxFrame = useMemo(() => isCodeSandboxPreviewUrl(frame.url), [frame.url]);
+    // CodeSandbox can insert a trust prompt before the app boots, which leaves Penpal disconnected.
+    const shouldTemporarilyUnlockPreview = isCodeSandboxFrame && !isPenpalConnected;
+
+    useEffect(() => {
+        if (!shouldTemporarilyUnlockPreview) {
+            const previousMode = autoPreviewRestoreModeRef.current;
+            autoPreviewRestoreModeRef.current = null;
+
+            if (previousMode && editorEngine.state.editorMode === EditorMode.PREVIEW) {
+                editorEngine.state.editorMode = previousMode;
+            }
+            return;
+        }
+
+        if (
+            autoPreviewRestoreModeRef.current === null &&
+            editorEngine.state.editorMode !== EditorMode.PREVIEW
+        ) {
+            autoPreviewRestoreModeRef.current = editorEngine.state.editorMode;
+            editorEngine.state.editorMode = EditorMode.PREVIEW;
+        }
+    }, [editorEngine.state.editorMode, shouldTemporarilyUnlockPreview]);
 
     useEffect(() => {
         if (isFrameReady) {
@@ -106,7 +132,7 @@ export const FrameView = observer(({ frame, isInDragSelection = false }: { frame
                 />
                 <GestureScreen frame={frame} isResizing={isResizing} />
 
-                {!isFrameReady && (
+                {!isFrameReady && !shouldTemporarilyUnlockPreview && (
                     <div
                         className="absolute inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50 rounded-md"
                         style={{
