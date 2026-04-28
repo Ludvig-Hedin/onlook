@@ -30,7 +30,7 @@ export const createRootAgentStream = ({
         system: systemPrompt,
         tools: toolSet,
         headers: modelConfig.headers,
-        stopWhen: stepCountIs(20),
+        stopWhen: stepCountIs(8),
         experimental_repairToolCall: repairToolCall,
         experimental_transform: smoothStream(),
         experimental_telemetry: {

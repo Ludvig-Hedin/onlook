@@ -6,7 +6,7 @@ import { Icons } from '@onlook/ui/icons';
 import { cn, getTruncatedFileName } from '@onlook/ui/utils';
 import { AnimatePresence, motion } from 'motion/react';
 import { observer } from 'mobx-react-lite';
-import { memo, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 
 interface CollapsibleCodeBlockProps {
     path: string;
@@ -26,6 +26,12 @@ const CollapsibleCodeBlockComponent = ({
     const editorEngine = useEditorEngine();
     const [isOpen, setIsOpen] = useState(false);
     const [copied, setCopied] = useState(false);
+
+    useEffect(() => {
+        if (isStream) {
+            setIsOpen(true);
+        }
+    }, [isStream]);
 
     const copyToClipboard = () => {
         navigator.clipboard.writeText(content);
@@ -93,8 +99,8 @@ const CollapsibleCodeBlockComponent = ({
                                 transition={{ duration: 0.2, ease: 'easeInOut' }}
                                 style={{ overflow: 'hidden' }}
                             >
-                                {/* Only render this content when open to avoid rendering the expensive code block. */}
-                                {isOpen && (
+                                {/* Render streaming code immediately so users can follow file writes live. */}
+                                {(isOpen || isStream) && (
                                     <div className="border-t">
                                         <CodeBlock code={content} language="jsx" isStreaming={isStream} className="text-xs overflow-x-auto" />
                                         <div className="flex justify-end gap-1.5 p-1 border-t">

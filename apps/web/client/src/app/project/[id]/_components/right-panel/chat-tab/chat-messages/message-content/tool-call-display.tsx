@@ -22,16 +22,6 @@ const ToolCallDisplayComponent = ({
 }) => {
     const toolName = toolPart.type.split('-')[1];
 
-    if (isStream || (toolPart.state !== 'output-available' && toolPart.state !== 'input-available')) {
-        return (
-            <ToolCallSimple
-                toolPart={toolPart}
-                key={toolPart.toolCallId}
-                loading={true}
-            />
-        );
-    }
-
     if (toolName === TerminalCommandTool.toolName) {
         const args = toolPart.input as z.infer<typeof TerminalCommandTool.parameters> | null;
         const result = toolPart.output as { output?: string; error?: string } | null;
@@ -214,6 +204,16 @@ const ToolCallDisplayComponent = ({
                 isStream={isStream}
                 defaultStdOut={(result?.success ? '✅ Typecheck passed!' : result?.error) ?? null}
                 defaultStdErr={error ?? null}
+            />
+        );
+    }
+
+    if (isStream || (toolPart.state !== 'output-available' && toolPart.state !== 'input-available')) {
+        return (
+            <ToolCallSimple
+                toolPart={toolPart}
+                key={toolPart.toolCallId}
+                loading={true}
             />
         );
     }
