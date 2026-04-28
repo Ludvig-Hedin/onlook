@@ -7,6 +7,7 @@ import { observer } from 'mobx-react-lite';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { RightClickMenu } from '../../right-click-menu';
 import { isCodeSandboxPreviewUrl } from './codesandbox-preview';
+import { isFrameBridgeReady, shouldUnlockCodeSandboxPreview } from './frame-connection';
 import { GestureScreen } from './gesture';
 import { ResizeHandles } from './resize-handles';
 import { TopBar } from './top-bar';
@@ -62,10 +63,18 @@ export const FrameView = observer(({ frame, isInDragSelection = false }: { frame
     const isSelected = editorEngine.frames.isSelected(frame.id);
     const branchData = editorEngine.branches.getBranchDataById(frame.branchId);
     const preloadScriptReady = branchData?.sandbox?.preloadScriptState === PreloadScriptState.INJECTED;
-    const isFrameReady = preloadScriptReady && !(isConnecting && !hasTimedOut);
     const isCodeSandboxFrame = useMemo(() => isCodeSandboxPreviewUrl(frame.url), [frame.url]);
+    const isFrameReady = isFrameBridgeReady({
+        preloadScriptReady,
+        isConnecting,
+        hasTimedOut,
+        isPenpalConnected,
+    });
     // CodeSandbox can insert a trust prompt before the app boots, which leaves Penpal disconnected.
-    const shouldTemporarilyUnlockPreview = isCodeSandboxFrame && !isPenpalConnected;
+    const shouldTemporarilyUnlockPreview = shouldUnlockCodeSandboxPreview({
+        isCodeSandboxFrame,
+        isPenpalConnected,
+    });
 
     useEffect(() => {
         if (!shouldTemporarilyUnlockPreview) {
@@ -73,7 +82,7 @@ export const FrameView = observer(({ frame, isInDragSelection = false }: { frame
             autoPreviewRestoreModeRef.current = null;
 
             if (previousMode && editorEngine.state.editorMode === EditorMode.PREVIEW) {
-                editorEngine.state.editorMode = previousMode;
+                editorEngine.state.setEditorMode(previousMode);
             }
             return;
         }
@@ -83,7 +92,7 @@ export const FrameView = observer(({ frame, isInDragSelection = false }: { frame
             editorEngine.state.editorMode !== EditorMode.PREVIEW
         ) {
             autoPreviewRestoreModeRef.current = editorEngine.state.editorMode;
-            editorEngine.state.editorMode = EditorMode.PREVIEW;
+            editorEngine.state.setEditorMode(EditorMode.PREVIEW);
         }
     }, [editorEngine.state.editorMode, shouldTemporarilyUnlockPreview]);
 

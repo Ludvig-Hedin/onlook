@@ -14,14 +14,20 @@ export function useFrameReload() {
     const [reloadKey, setReloadKey] = useState(0);
     const [isPenpalConnected, setIsPenpalConnected] = useState(false);
 
+    const clearScheduledReload = () => {
+        if (reloadTimeoutRef.current) {
+            clearTimeout(reloadTimeoutRef.current);
+            reloadTimeoutRef.current = null;
+        }
+    };
+
     const immediateReload = () => {
+        clearScheduledReload();
         setReloadKey(prev => prev + 1);
     };
 
     const scheduleReload = () => {
-        if (reloadTimeoutRef.current) {
-            clearTimeout(reloadTimeoutRef.current);
-        }
+        clearScheduledReload();
 
         reloadCountRef.current += 1;
         const reloadDelay = RELOAD_BASE_DELAY_MS + (RELOAD_INCREMENT_MS * (reloadCountRef.current - 1));
@@ -38,6 +44,8 @@ export function useFrameReload() {
     }, 1000, { leading: true });
 
     const handleConnectionSuccess = () => {
+        handleConnectionFailed.cancel();
+        clearScheduledReload();
         setIsPenpalConnected(true);
     };
 
@@ -63,9 +71,8 @@ export function useFrameReload() {
     // Cleanup on unmount
     useEffect(() => {
         return () => {
-            if (reloadTimeoutRef.current) {
-                clearTimeout(reloadTimeoutRef.current);
-            }
+            handleConnectionFailed.cancel();
+            clearScheduledReload();
         };
     }, []);
 

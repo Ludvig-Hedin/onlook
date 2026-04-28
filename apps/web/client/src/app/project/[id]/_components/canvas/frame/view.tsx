@@ -18,6 +18,7 @@ import { cn } from '@onlook/ui/utils';
 import { useEditorEngine } from '@/components/store/editor';
 
 export type IFrameView = HTMLIFrameElement & {
+    isPenpalReady: () => boolean;
     setZoomLevel: (level: number) => void;
     supportsOpenDevTools: () => boolean;
     reload: () => void;
@@ -49,6 +50,15 @@ const createSafeFallbackMethods = (): PromisifiedPendpalChildMethods => {
             };
         },
     });
+};
+
+const canReadIframeDocument = (iframe: HTMLIFrameElement): boolean => {
+    try {
+        void iframe.contentDocument;
+        return true;
+    } catch {
+        return false;
+    }
 };
 
 interface FrameViewProps extends IframeHTMLAttributes<HTMLIFrameElement> {
@@ -88,6 +98,25 @@ export const FrameComponent = observer(
                 try {
                     if (!iframeRef.current?.contentWindow) {
                         console.error(`${PENPAL_PARENT_CHANNEL} (${frame.id}) - No iframe found`);
+                        onConnectionFailed();
+                        return;
+                    }
+
+                    if (!frame.url) {
+                        console.error(`${PENPAL_PARENT_CHANNEL} (${frame.id}) - No frame URL provided`);
+                        onConnectionFailed();
+                        return;
+                    }
+
+                    const iframeDoc = canReadIframeDocument(iframeRef.current)
+                        ? iframeRef.current.contentDocument
+                        : null;
+                    if (
+                        iframeDoc &&
+                        iframeDoc.readyState === 'complete' &&
+                        iframeDoc.body?.innerText?.includes('404')
+                    ) {
+                        console.error(`${PENPAL_PARENT_CHANNEL} (${frame.id}) - Frame URL returned 404`);
                         onConnectionFailed();
                         return;
                     }
@@ -134,8 +163,9 @@ export const FrameComponent = observer(
                     connectionRef.current = connection;
 
                     // Create a timeout promise that rejects after specified timeout
+                    let timeoutId: ReturnType<typeof setTimeout> | null = null;
                     const timeoutPromise = new Promise<never>((_, reject) => {
-                        setTimeout(() => {
+                        timeoutId = setTimeout(() => {
                             reject(
                                 new Error(`Penpal connection timeout after ${penpalTimeoutMs}ms`),
                             );
@@ -145,6 +175,9 @@ export const FrameComponent = observer(
                     // Race the connection promise against the timeout
                     Promise.race([connection.promise, timeoutPromise])
                         .then((child) => {
+                            if (timeoutId) {
+                                clearTimeout(timeoutId);
+                            }
                             isConnecting.current = false;
                             if (!child) {
                                 console.error(
@@ -160,16 +193,25 @@ export const FrameComponent = observer(
 
                             const remote = child as unknown as PenpalChildMethods;
                             setPenpalChild(remote);
-                            remote.setFrameId(frame.id);
-                            remote.setBranchId(frame.branchId);
-                            remote.handleBodyReady();
-                            remote.processDom();
+                            void Promise.allSettled([
+                                remote.setFrameId(frame.id),
+                                remote.setBranchId(frame.branchId),
+                                remote.handleBodyReady(),
+                                remote.processDom(),
+                            ]);
 
                             // Notify parent of successful connection
                             onConnectionSuccess();
                         })
                         .catch((error) => {
+                            if (timeoutId) {
+                                clearTimeout(timeoutId);
+                            }
                             isConnecting.current = false;
+                            connection.destroy();
+                            if (connectionRef.current === connection) {
+                                connectionRef.current = null;
+                            }
                             console.error(
                                 `${PENPAL_PARENT_CHANNEL} (${frame.id}) - Failed to setup penpal connection:`,
                                 error,
@@ -256,6 +298,7 @@ export const FrameComponent = observer(
                     // Return safe fallback with no-op methods and safe defaults
                     const fallbackElement = document.createElement('iframe');
                     const safeFallback: IFrameView = Object.assign(fallbackElement, {
+                        isPenpalReady: () => false,
                         // Custom sync methods with safe no-op implementations
                         supportsOpenDevTools: () => false,
                         setZoomLevel: () => { },
@@ -267,19 +310,27 @@ export const FrameComponent = observer(
                     return safeFallback;
                 }
 
-                // Register the iframe with the editor engine
-                editorEngine.frames.registerView(frame, iframe as IFrameView);
-
                 const syncMethods = {
-                    supportsOpenDevTools: () =>
-                        !!iframe.contentWindow && 'openDevTools' in iframe.contentWindow,
+                    isPenpalReady: () => penpalChild !== null,
+                    supportsOpenDevTools: () => {
+                        try {
+                            return !!iframe.contentWindow && 'openDevTools' in iframe.contentWindow;
+                        } catch {
+                            return false;
+                        }
+                    },
                     setZoomLevel: (level: number) => {
                         zoomLevel.current = level;
                         iframe.style.transform = `scale(${level})`;
                         iframe.style.transformOrigin = 'top left';
                     },
                     reload: () => reloadIframe(),
-                    isLoading: () => iframe.contentDocument?.readyState !== 'complete',
+                    isLoading: () => {
+                        if (!canReadIframeDocument(iframe)) {
+                            return false;
+                        }
+                        return iframe.contentDocument?.readyState !== 'complete';
+                    },
                 };
 
                 const frameView = Object.assign(iframe, {
@@ -288,13 +339,6 @@ export const FrameComponent = observer(
                 }) as IFrameView;
 
                 editorEngine.frames.registerView(frame, frameView);
-
-                if (!penpalChild) {
-                    console.warn(
-                        `${PENPAL_PARENT_CHANNEL} (${frame.id}) - Failed to setup penpal connection: iframeRemote is null`,
-                    );
-                    return frameView;
-                }
 
                 return frameView;
             }, [penpalChild, frame, iframeRef]);
@@ -308,7 +352,7 @@ export const FrameComponent = observer(
                     setPenpalChild(null);
                     isConnecting.current = false;
                 };
-            }, []);
+            }, [frame.id]);
 
             return (
                 <WebPreview>

@@ -33,23 +33,41 @@ export const GestureScreen = observer(({ frame, isResizing }: { frame: Frame, is
             try {
                 const frameData = getFrameData();
                 if (!frameData?.view) {
-                    throw new Error('Frame view not found');
+                    return;
+                }
+                if (!frameData.view.isPenpalReady()) {
+                    if (action === MouseAction.MOVE) {
+                        editorEngine.elements.clearHoveredElement();
+                        editorEngine.overlay.removeMeasurement();
+                    }
+                    return;
                 }
                 const pos = getRelativeMousePosition(e);
                 const shouldGetStyle = [MouseAction.MOUSE_DOWN, MouseAction.DOUBLE_CLICK].includes(
                     action,
                 );
+                if (typeof frameData.view.getElementAtLoc !== 'function') {
+                    return;
+                }
                 const el: DomElement = await frameData.view.getElementAtLoc(
                     pos.x,
                     pos.y,
                     shouldGetStyle,
                 );
                 if (!el) {
-                    throw new Error('No element found');
+                    if (action === MouseAction.MOVE) {
+                        editorEngine.elements.clearHoveredElement();
+                        editorEngine.overlay.removeMeasurement();
+                    }
+                    return;
                 }
 
                 switch (action) {
                     case MouseAction.MOVE:
+                        if (editorEngine.move.state?.dragTarget.frameId === frame.id) {
+                            await editorEngine.move.drag(e, getRelativeMousePosition);
+                            return;
+                        }
                         editorEngine.elements.mouseover(el);
                         if (e.altKey) {
                             if (editorEngine.state.insertMode !== InsertMode.INSERT_IMAGE) {
@@ -68,13 +86,34 @@ export const GestureScreen = observer(({ frame, isResizing }: { frame: Frame, is
                         if (e.button == 2) {
                             break;
                         }
-                        if (editorEngine.text.isEditing) {
+                        const wasTextEditing = editorEngine.text.isEditing;
+                        if (wasTextEditing) {
                             await editorEngine.text.end();
                         }
+
+                        const isAlreadySingleSelected =
+                            editorEngine.elements.selected.length === 1 &&
+                            editorEngine.elements.selected[0]?.domId === el.domId;
+
                         if (e.shiftKey) {
+                            editorEngine.move.cancelDragPreparation();
                             editorEngine.elements.shiftClick(el);
                         } else {
-                            editorEngine.elements.click([el]);
+                            if (!isAlreadySingleSelected) {
+                                editorEngine.move.cancelDragPreparation();
+                                editorEngine.elements.click([el]);
+                            }
+
+                            if (
+                                isAlreadySingleSelected &&
+                                !wasTextEditing &&
+                                editorEngine.state.editorMode === EditorMode.DESIGN &&
+                                !isResizing &&
+                                !editorEngine.state.isDragSelecting &&
+                                !editorEngine.insert.isDrawing
+                            ) {
+                                editorEngine.move.startDragPreparation(el, pos, frameData);
+                            }
                         }
                         break;
                     case MouseAction.DOUBLE_CLICK:
@@ -87,7 +126,9 @@ export const GestureScreen = observer(({ frame, isResizing }: { frame: Frame, is
                         break;
                 }
             } catch (error) {
-                console.error('Error handling mouse event:', error);
+                if (action !== MouseAction.MOVE) {
+                    console.error('Error handling mouse event:', error);
+                }
                 return;
             }
         },
@@ -98,6 +139,10 @@ export const GestureScreen = observer(({ frame, isResizing }: { frame: Frame, is
         throttle(async (e: React.MouseEvent<HTMLDivElement>) => {
             // Skip hover events during drag selection
             if (editorEngine.state.isDragSelecting) {
+                return;
+            }
+            if (editorEngine.move.state?.dragTarget.frameId === frame.id) {
+                await editorEngine.move.drag(e, getRelativeMousePosition);
                 return;
             }
             if (
@@ -122,11 +167,23 @@ export const GestureScreen = observer(({ frame, isResizing }: { frame: Frame, is
         };
     }, [throttledMouseMove]);
 
+    useEffect(() => {
+        const handleGlobalMouseUp = () => {
+            void editorEngine.move.end();
+        };
+
+        window.addEventListener('mouseup', handleGlobalMouseUp);
+        return () => window.removeEventListener('mouseup', handleGlobalMouseUp);
+    }, [editorEngine.move]);
+
     const handleClick = useCallback(
-        (e: React.MouseEvent<HTMLDivElement>) => {
+        (_e: React.MouseEvent<HTMLDivElement>) => {
+            if (editorEngine.move.consumeSuppressedClick()) {
+                return;
+            }
             editorEngine.frames.select([frame]);
         },
-        [editorEngine.frames],
+        [editorEngine.frames, editorEngine.move, frame],
     );
 
     async function handleDoubleClick(e: React.MouseEvent<HTMLDivElement>) {
@@ -149,6 +206,8 @@ export const GestureScreen = observer(({ frame, isResizing }: { frame: Frame, is
     }
 
     async function handleMouseUp(e: React.MouseEvent<HTMLDivElement>) {
+        await editorEngine.move.end();
+
         const frameData = getFrameData();
         if (!frameData) {
             return;
@@ -191,8 +250,8 @@ export const GestureScreen = observer(({ frame, isResizing }: { frame: Frame, is
                 await editorEngine.insert.insertDroppedElement(frameData, dropPosition, properties);
             }
 
-            editorEngine.state.editorMode = EditorMode.DESIGN;
-            editorEngine.state.insertMode = null;
+            editorEngine.state.setEditorMode(EditorMode.DESIGN);
+            editorEngine.state.setInsertMode(null);
         } catch (error) {
             console.error('drop operation failed:', error);
             toast.error('Failed to drop element', {
@@ -213,6 +272,9 @@ export const GestureScreen = observer(({ frame, isResizing }: { frame: Frame, is
     }, [editorEngine.state.editorMode, isResizing]);
 
     const handleMouseOut = () => {
+        if (editorEngine.move.isPreparing) {
+            editorEngine.move.cancelDragPreparation();
+        }
         editorEngine.elements.clearHoveredElement();
         editorEngine.overlay.state.removeHoverRect();
     };
