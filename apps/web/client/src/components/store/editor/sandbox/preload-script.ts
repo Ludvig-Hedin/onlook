@@ -1,9 +1,38 @@
 import type { Provider } from '@onlook/code-provider';
-import { NEXT_JS_FILE_EXTENSIONS, ONLOOK_DEV_PRELOAD_SCRIPT_PATH, ONLOOK_DEV_PRELOAD_SCRIPT_SRC } from '@onlook/constants';
+import {
+    DEPRECATED_PRELOAD_SCRIPT_SRCS,
+    NEXT_JS_FILE_EXTENSIONS,
+    ONLOOK_DEV_PRELOAD_SCRIPT_PATH,
+    ONLOOK_PRELOAD_SCRIPT_SRC,
+} from '@onlook/constants';
 import { RouterType, type RouterConfig } from '@onlook/models';
 import { getAstFromContent, getContentFromAst, injectPreloadScript } from '@onlook/parser';
 import { isRootLayoutFile, normalizePath } from '@onlook/utility';
 import path from 'path';
+
+export async function getPreloadScriptContent(): Promise<string> {
+    const candidateSources = Array.from(
+        new Set([ONLOOK_PRELOAD_SCRIPT_SRC, ...DEPRECATED_PRELOAD_SCRIPT_SRCS]),
+    );
+    const failures: string[] = [];
+
+    for (const source of candidateSources) {
+        try {
+            const response = await fetch(source);
+            if (!response.ok) {
+                failures.push(`${source}: ${response.status} ${response.statusText}`);
+                continue;
+            }
+            return await response.text();
+        } catch (error) {
+            failures.push(
+                `${source}: ${error instanceof Error ? error.message : 'Unknown fetch error'}`,
+            );
+        }
+    }
+
+    throw new Error(`Failed to load preload script. Attempts: ${failures.join(' | ')}`);
+}
 
 export async function copyPreloadScriptToPublic(provider: Provider, routerConfig: RouterConfig): Promise<void> {
     try {
@@ -13,11 +42,11 @@ export async function copyPreloadScriptToPublic(provider: Provider, routerConfig
             // Directory might already exist, ignore error
         }
 
-        const scriptResponse = await fetch(ONLOOK_DEV_PRELOAD_SCRIPT_SRC);
+        const scriptContent = await getPreloadScriptContent();
         await provider.writeFile({
             args: {
                 path: ONLOOK_DEV_PRELOAD_SCRIPT_PATH,
-                content: await scriptResponse.text(),
+                content: scriptContent,
                 overwrite: true
             }
         });
@@ -25,6 +54,7 @@ export async function copyPreloadScriptToPublic(provider: Provider, routerConfig
         await injectPreloadScriptIntoLayout(provider, routerConfig);
     } catch (error) {
         console.error('[PreloadScript] Failed to copy preload script:', error);
+        throw error;
     }
 }
 
