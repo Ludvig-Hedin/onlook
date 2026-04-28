@@ -72,7 +72,7 @@ const ColorPanel = observer(() => {
     };
 
     const handleClose = () => {
-        editorEngine.state.brandTab = null;
+        editorEngine.state.setBrandTab(null);
     };
 
     return (

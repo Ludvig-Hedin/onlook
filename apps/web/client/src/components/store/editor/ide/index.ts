@@ -54,7 +54,7 @@ export class IdeManager {
             this._codeNavigationOverride = target;
 
             // Switch to code tab
-            this.editorEngine.state.editorMode = EditorMode.CODE;
+            this.editorEngine.state.setEditorMode(EditorMode.CODE);
         } catch (error) {
             console.error('[IdeManager] Error opening code block:', error);
         }

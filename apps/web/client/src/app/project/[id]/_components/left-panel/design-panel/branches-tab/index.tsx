@@ -33,8 +33,8 @@ export const BranchesTab = observer(() => {
     };
 
     const handleManageBranch = (branchId: string) => {
-        editorEngine.state.manageBranchId = branchId;
-        editorEngine.state.branchTab = BranchTabValue.MANAGE;
+        editorEngine.state.setManageBranchId(branchId);
+        editorEngine.state.setBranchTab(BranchTabValue.MANAGE);
     };
 
     if (editorEngine.state.branchTab === BranchTabValue.MANAGE && editorEngine.state.manageBranchId) {

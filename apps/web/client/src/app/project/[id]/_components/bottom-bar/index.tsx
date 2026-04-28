@@ -87,7 +87,7 @@ export const BottomBar = observer(() => {
                             value={editorEngine.state.editorMode}
                             onValueChange={(value) => {
                                 if (value) {
-                                    editorEngine.state.editorMode = value as EditorMode;
+                                    editorEngine.state.setEditorMode(value as EditorMode);
                                 }
                             }}
                             className="gap-0.5"

@@ -1,12 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { useTranslations } from 'next-intl';
 
 import { Button } from '@onlook/ui/button';
 import { Icons } from '@onlook/ui/icons/index';
 import { ResizablePanel } from '@onlook/ui/resizable';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@onlook/ui/tabs';
 import { cn } from '@onlook/ui/utils';
 
 import { useEditorEngine } from '@/components/store/editor';
@@ -15,6 +16,10 @@ import { ChatTab } from './chat-tab';
 import { ChatControls } from './chat-tab/controls';
 import { ChatHistory } from './chat-tab/history';
 import { ChatPanelDropdown } from './chat-tab/panel-dropdown';
+import { DropdownManagerProvider } from '../editor-bar/hooks/use-dropdown-manager';
+import { StyleTab } from './style-tab';
+
+type RightPanelTab = 'style' | 'chat';
 
 export const RightPanel = observer(() => {
     const editorEngine = useEditorEngine();
@@ -22,7 +27,15 @@ export const RightPanel = observer(() => {
     const [isChatHistoryOpen, setIsChatHistoryOpen] = useState(false);
     const [isCollapsed, setIsCollapsed] = useState(false);
     const [panelWidth, setPanelWidth] = useState(352);
+    const [activeTab, setActiveTab] = useState<RightPanelTab>('chat');
     const currentConversation = editorEngine.chat.conversation.current;
+    const hasElementSelection = editorEngine.elements.selected.length > 0;
+
+    useEffect(() => {
+        if (hasElementSelection) {
+            setActiveTab('style');
+        }
+    }, [hasElementSelection]);
 
     return (
         <div
@@ -53,45 +66,74 @@ export const RightPanel = observer(() => {
                     onWidthChange={setPanelWidth}
                     className="overflow-hidden"
                 >
-                    <div className="flex h-full flex-col">
-                        <div className="border-border flex h-10 w-full flex-row border-b p-1">
-                            <ChatPanelDropdown
-                                isChatHistoryOpen={isChatHistoryOpen}
-                                setIsChatHistoryOpen={setIsChatHistoryOpen}
-                            >
-                                <div className="group text-foreground-secondary hover:text-foreground-primary flex cursor-pointer items-center gap-1.5 bg-transparent p-1 px-2 text-sm">
-                                    <Icons.Sparkles className="mr-0.5 mb-0.5 h-4 w-4" />
-                                    {t(transKeys.editor.panels.edit.tabs.chat.name)}
-                                    <Icons.ChevronDown className="text-muted-foreground group-hover:text-foreground-primary ml-0.5 h-3 w-3" />
+                    <DropdownManagerProvider>
+                        <Tabs
+                            value={activeTab}
+                            onValueChange={(value) => setActiveTab(value as RightPanelTab)}
+                            className="flex h-full flex-col gap-0"
+                        >
+                            <div className="border-border flex h-10 w-full flex-row items-center border-b p-1">
+                                <TabsList className="h-8 rounded-lg bg-background-secondary">
+                                    <TabsTrigger value="style" className="gap-1.5">
+                                        <Icons.Layout className="h-4 w-4" />
+                                        {t(transKeys.editor.panels.edit.tabs.styles.name)}
+                                    </TabsTrigger>
+                                    <TabsTrigger value="chat" className="gap-1.5">
+                                        <Icons.Sparkles className="h-4 w-4" />
+                                        {t(transKeys.editor.panels.edit.tabs.chat.name)}
+                                    </TabsTrigger>
+                                </TabsList>
+                                <div className="ml-auto flex items-center gap-1">
+                                    {activeTab === 'chat' && (
+                                        <>
+                                            <ChatPanelDropdown
+                                                isChatHistoryOpen={isChatHistoryOpen}
+                                                setIsChatHistoryOpen={setIsChatHistoryOpen}
+                                            >
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    aria-label="Chat settings"
+                                                    className="text-foreground-secondary hover:bg-background-secondary hover:text-foreground-primary h-8 w-8"
+                                                >
+                                                    <Icons.ChevronDown className="h-4 w-4" />
+                                                </Button>
+                                            </ChatPanelDropdown>
+                                            <ChatControls />
+                                        </>
+                                    )}
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        aria-label="Close right panel"
+                                        className="text-foreground-secondary hover:bg-background-secondary hover:text-foreground-primary h-8 w-8"
+                                        onClick={() => setIsCollapsed(true)}
+                                    >
+                                        <Icons.ChevronRight className="h-4 w-4" />
+                                    </Button>
                                 </div>
-                            </ChatPanelDropdown>
-                            <div className="ml-auto flex items-center gap-1">
-                                <ChatControls />
-                                <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    aria-label="Close AI chat panel"
-                                    className="text-foreground-secondary hover:bg-background-secondary hover:text-foreground-primary h-8 w-8"
-                                    onClick={() => setIsCollapsed(true)}
-                                >
-                                    <Icons.ChevronRight className="h-4 w-4" />
-                                </Button>
                             </div>
-                        </div>
-                        <ChatHistory
-                            isOpen={isChatHistoryOpen}
-                            onOpenChange={setIsChatHistoryOpen}
-                        />
+                            <ChatHistory
+                                isOpen={isChatHistoryOpen}
+                                onOpenChange={setIsChatHistoryOpen}
+                            />
 
-                        <div className="flex-1 overflow-y-auto">
-                            {currentConversation && (
-                                <ChatTab
-                                    conversationId={currentConversation.id}
-                                    projectId={editorEngine.projectId}
-                                />
-                            )}
-                        </div>
-                    </div>
+                            <TabsContent value="style" className="min-h-0 flex-1 overflow-hidden">
+                                <StyleTab />
+                            </TabsContent>
+
+                            <TabsContent value="chat" className="min-h-0 flex-1 overflow-hidden">
+                                <div className="flex h-full flex-col overflow-y-auto">
+                                    {currentConversation && (
+                                        <ChatTab
+                                            conversationId={currentConversation.id}
+                                            projectId={editorEngine.projectId}
+                                        />
+                                    )}
+                                </div>
+                            </TabsContent>
+                        </Tabs>
+                    </DropdownManagerProvider>
                 </ResizablePanel>
             )}
         </div>

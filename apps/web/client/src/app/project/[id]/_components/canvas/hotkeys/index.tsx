@@ -9,15 +9,15 @@ export const HotkeysArea = ({ children }: { children: ReactNode }) => {
     const editorEngine = useEditorEngine();
 
     const toggleLeftPanelTab = (tab: LeftPanelTabValue) => {
-        editorEngine.state.editorMode = EditorMode.DESIGN;
+        editorEngine.state.setEditorMode(EditorMode.DESIGN);
 
         if (editorEngine.state.leftPanelTab === tab && editorEngine.state.leftPanelLocked) {
-            editorEngine.state.leftPanelLocked = false;
+            editorEngine.state.setLeftPanelLocked(false);
             return;
         }
 
-        editorEngine.state.leftPanelTab = tab;
-        editorEngine.state.leftPanelLocked = true;
+        editorEngine.state.setLeftPanelTab(tab);
+        editorEngine.state.setLeftPanelLocked(true);
     };
 
     // Zoom
@@ -40,16 +40,16 @@ export const HotkeysArea = ({ children }: { children: ReactNode }) => {
     });
 
     // Modes
-    useHotkeys(Hotkey.SELECT.command, () => (editorEngine.state.editorMode = EditorMode.DESIGN));
-    useHotkeys(Hotkey.CODE.command, () => (editorEngine.state.editorMode = EditorMode.CODE));
+    useHotkeys(Hotkey.SELECT.command, () => editorEngine.state.setEditorMode(EditorMode.DESIGN));
+    useHotkeys(Hotkey.CODE.command, () => editorEngine.state.setEditorMode(EditorMode.CODE));
     useHotkeys(Hotkey.ESCAPE.command, () => {
-        editorEngine.state.editorMode = EditorMode.DESIGN;
+        editorEngine.state.setEditorMode(EditorMode.DESIGN);
         if (!editorEngine.text.isEditing) {
             editorEngine.clearUI();
         }
     });
-    useHotkeys(Hotkey.PAN.command, () => (editorEngine.state.editorMode = EditorMode.PAN));
-    useHotkeys(Hotkey.PREVIEW.command, () => (editorEngine.state.editorMode = EditorMode.PREVIEW));
+    useHotkeys(Hotkey.PAN.command, () => editorEngine.state.setEditorMode(EditorMode.PAN));
+    useHotkeys(Hotkey.PREVIEW.command, () => editorEngine.state.setEditorMode(EditorMode.PREVIEW));
     useHotkeys(Hotkey.SIDEBAR_LAYERS.command, () => toggleLeftPanelTab(LeftPanelTabValue.LAYERS), {
         preventDefault: true,
     });
@@ -71,19 +71,19 @@ export const HotkeysArea = ({ children }: { children: ReactNode }) => {
     );
 
     // Quick mode switching with CMD+1/2/3 (overrides browser defaults)
-    useHotkeys('mod+1', () => (editorEngine.state.editorMode = EditorMode.DESIGN), { preventDefault: true });
-    useHotkeys('mod+2', () => (editorEngine.state.editorMode = EditorMode.CODE), { preventDefault: true });
-    useHotkeys('mod+3', () => (editorEngine.state.editorMode = EditorMode.PREVIEW), { preventDefault: true });
+    useHotkeys('mod+1', () => editorEngine.state.setEditorMode(EditorMode.DESIGN), { preventDefault: true });
+    useHotkeys('mod+2', () => editorEngine.state.setEditorMode(EditorMode.CODE), { preventDefault: true });
+    useHotkeys('mod+3', () => editorEngine.state.setEditorMode(EditorMode.PREVIEW), { preventDefault: true });
     useHotkeys(
         Hotkey.INSERT_DIV.command,
-        () => (editorEngine.state.insertMode = InsertMode.INSERT_DIV),
+        () => editorEngine.state.setInsertMode(InsertMode.INSERT_DIV),
     );
     useHotkeys(
         Hotkey.INSERT_TEXT.command,
-        () => (editorEngine.state.insertMode = InsertMode.INSERT_TEXT),
+        () => editorEngine.state.setInsertMode(InsertMode.INSERT_TEXT),
     );
-    useHotkeys('space', () => (editorEngine.state.editorMode = EditorMode.PAN), { keydown: true });
-    useHotkeys('space', () => (editorEngine.state.editorMode = EditorMode.DESIGN), { keyup: true });
+    useHotkeys('space', () => editorEngine.state.setEditorMode(EditorMode.PAN), { keydown: true });
+    useHotkeys('space', () => editorEngine.state.setEditorMode(EditorMode.DESIGN), { keyup: true });
     useHotkeys('alt', () => editorEngine.overlay.showMeasurement(), { keydown: true });
     useHotkeys('alt', () => editorEngine.overlay.removeMeasurement(), { keyup: true });
 
@@ -126,13 +126,13 @@ export const HotkeysArea = ({ children }: { children: ReactNode }) => {
         Hotkey.ADD_AI_CHAT.command,
         () => {
             if (editorEngine.state.editorMode === EditorMode.PREVIEW) {
-                editorEngine.state.editorMode = EditorMode.DESIGN;
+                editorEngine.state.setEditorMode(EditorMode.DESIGN);
             }
             editorEngine.chat.focusChatInput();
         }
     );
     useHotkeys(Hotkey.NEW_AI_CHAT.command, () => {
-        editorEngine.state.editorMode = EditorMode.DESIGN;
+        editorEngine.state.setEditorMode(EditorMode.DESIGN);
         editorEngine.chat.conversation.startNewConversation();
     });
     useHotkeys(
@@ -140,9 +140,9 @@ export const HotkeysArea = ({ children }: { children: ReactNode }) => {
         () => {
             // Toggle between design and preview mode
             if (editorEngine.state.editorMode === EditorMode.PREVIEW) {
-                editorEngine.state.editorMode = EditorMode.DESIGN;
+                editorEngine.state.setEditorMode(EditorMode.DESIGN);
             } else {
-                editorEngine.state.editorMode = EditorMode.PREVIEW;
+                editorEngine.state.setEditorMode(EditorMode.PREVIEW);
             }
         },
         { preventDefault: true },
@@ -153,7 +153,7 @@ export const HotkeysArea = ({ children }: { children: ReactNode }) => {
     useHotkeys(Hotkey.MOVE_LAYER_DOWN.command, () => editorEngine.move.moveSelected('down'));
     useHotkeys(
         Hotkey.SHOW_HOTKEYS.command,
-        () => (editorEngine.state.hotkeysOpen = !editorEngine.state.hotkeysOpen),
+        () => editorEngine.state.setHotkeysOpen(!editorEngine.state.hotkeysOpen),
     );
 
     return (

@@ -29,7 +29,7 @@ export const WindowsTab = observer(() => {
     }
 
     const closeWindowsTab = () => {
-        editorEngine.state.leftPanelTab = null;
+        editorEngine.state.setLeftPanelTab(null);
     };
 
     return (

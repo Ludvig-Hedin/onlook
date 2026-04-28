@@ -62,7 +62,7 @@ export const DesignPanel = observer(() => {
         if (isLocked) {
             return;
         }
-        editorEngine.state.leftPanelTab = tab;
+        editorEngine.state.setLeftPanelTab(tab);
     };
 
     const isMouseInContentPanel = (e: React.MouseEvent<HTMLDivElement>): boolean => {
@@ -82,23 +82,23 @@ export const DesignPanel = observer(() => {
         if (!isLocked) {
             // This is to handle things like dropdown where the mouse is still in the content panel
             if (!isMouseInContentPanel(e)) {
-                editorEngine.state.leftPanelTab = null;
+                editorEngine.state.setLeftPanelTab(null);
             } else {
                 // TODO: Since mouse leave won't trigger anymore, we need to listen and check
                 //  if the mouse actually left the content panel and then close the content panel
             }
         } else {
             // If we're locked, return to the locked tab when mouse leaves
-            editorEngine.state.leftPanelTab = selectedTab;
+            editorEngine.state.setLeftPanelTab(selectedTab);
         }
     };
 
     const handleClick = (tab: LeftPanelTabValue) => {
         if (selectedTab === tab && isLocked) {
-            editorEngine.state.leftPanelLocked = false;
+            editorEngine.state.setLeftPanelLocked(false);
         } else {
-            editorEngine.state.leftPanelTab = tab;
-            editorEngine.state.leftPanelLocked = true;
+            editorEngine.state.setLeftPanelTab(tab);
+            editorEngine.state.setLeftPanelLocked(true);
         }
     };
 

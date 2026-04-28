@@ -55,7 +55,7 @@ export const useImageDragDrop = (onUpload?: (files: FileList) => Promise<void>) 
                 }),
             );
 
-            editorEngine.state.insertMode = InsertMode.INSERT_IMAGE;
+            editorEngine.state.setInsertMode(InsertMode.INSERT_IMAGE);
             for (const frame of editorEngine.frames.getAll()) {
                 if (!frame.view) {
                     console.error('No frame view found');
@@ -69,12 +69,12 @@ export const useImageDragDrop = (onUpload?: (files: FileList) => Promise<void>) 
     );
 
     const onImageMouseDown = useCallback(() => {
-        editorEngine.state.insertMode = InsertMode.INSERT_IMAGE;
+        editorEngine.state.setInsertMode(InsertMode.INSERT_IMAGE);
     }, [editorEngine.state]);
 
     const onImageMouseUp = useCallback(() => {
-        editorEngine.state.editorMode = EditorMode.DESIGN;
-        editorEngine.state.insertMode = null;
+        editorEngine.state.setEditorMode(EditorMode.DESIGN);
+        editorEngine.state.setInsertMode(null);
     }, [editorEngine.state]);
 
     const onImageDragEnd = useCallback(() => {
@@ -85,7 +85,7 @@ export const useImageDragDrop = (onUpload?: (files: FileList) => Promise<void>) 
             }
             frame.view.style.pointerEvents = 'auto';
         }
-        editorEngine.state.editorMode = EditorMode.DESIGN;
+        editorEngine.state.setEditorMode(EditorMode.DESIGN);
     }, []);
 
     const handleDrop = useCallback((e: React.DragEvent<HTMLDivElement>) => {

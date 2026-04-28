@@ -31,16 +31,16 @@ export const FontFamilySelector = observer(() => {
 
     const handleClose = () => {
         onOpenChange(false);
-        editorEngine.state.brandTab = null;
+        editorEngine.state.setBrandTab(null);
         if (editorEngine.state.leftPanelTab === LeftPanelTabValue.BRAND) {
-            editorEngine.state.leftPanelTab = null;
+            editorEngine.state.setLeftPanelTab(null);
         }
     };
 
     return (
         <DropdownMenu open={isOpen} modal={false} onOpenChange={(v) => {
             onOpenChange(v);
-            if (!v) editorEngine.state.brandTab = null;
+            if (!v) editorEngine.state.setBrandTab(null);
         }}>
             <HoverOnlyTooltip
                 content="Font Family"
@@ -92,8 +92,8 @@ export const FontFamilySelector = observer(() => {
                         aria-label="Manage Brand fonts"
                         tabIndex={0}
                         onClick={() => {
-                            editorEngine.state.brandTab = BrandTabValue.FONTS;
-                            editorEngine.state.leftPanelTab = LeftPanelTabValue.BRAND;
+                            editorEngine.state.setBrandTab(BrandTabValue.FONTS);
+                            editorEngine.state.setLeftPanelTab(LeftPanelTabValue.BRAND);
                             onOpenChange(false);
                         }}
                     >

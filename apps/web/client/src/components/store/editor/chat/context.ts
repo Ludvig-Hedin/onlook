@@ -283,28 +283,38 @@ export class ChatContext {
         try {
             const agentRuleFileNames = ['agents.md', 'claude.md', 'AGENTS.md', 'CLAUDE.md'];
             const sandbox = this.editorEngine.activeSandbox;
+            if (!sandbox) {
+                console.warn('No active sandbox found for agent rule context');
+                return [];
+            }
             const agentRuleContexts: AgentRuleMessageContext[] = (await Promise.all(
                 agentRuleFileNames.map(async (fileName) => {
-                    const filePath = `./${fileName}`;
-                    if (!sandbox.fileExists(filePath)) {
+                    try {
+                        const filePath = `./${fileName}`;
+                        const exists = await Promise.resolve(sandbox.fileExists(filePath)).catch(() => false);
+                        if (!exists) {
+                            return null;
+                        }
+                        const fileContent = await sandbox.readFile(filePath).catch(() => null);
+                        if (fileContent === null || fileContent instanceof Uint8Array) {
+                            return null;
+                        }
+                        if (fileContent.trim().length === 0) {
+                            return null;
+                        }
+                        return {
+                            type: MessageContextType.AGENT_RULE,
+                            content: fileContent,
+                            displayName: fileName,
+                            path: filePath,
+                        } satisfies AgentRuleMessageContext;
+                    } catch (error) {
+                        console.warn(`Error reading agent rule file ${fileName}:`, error);
                         return null;
                     }
-                    const fileContent = await this.editorEngine.activeSandbox.readFile(filePath);
-                    if (fileContent === null || fileContent instanceof Uint8Array) {
-                        return null;
-                    }
-                    if (fileContent.trim().length === 0) {
-                        return null;
-                    }
-                    return {
-                        type: MessageContextType.AGENT_RULE,
-                        content: fileContent,
-                        displayName: fileName,
-                        path: filePath,
-                    } satisfies AgentRuleMessageContext;
                 })
             )).filter((context) => context !== null);
-            return agentRuleContexts
+            return agentRuleContexts;
         } catch (error) {
             console.error('Error getting agent rule context', error);
             return [];

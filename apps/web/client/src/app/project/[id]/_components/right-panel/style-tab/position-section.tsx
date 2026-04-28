@@ -1,0 +1,155 @@
+'use client';
+
+import { useEditorEngine } from '@/components/store/editor';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@onlook/ui/select';
+import { Input } from '@onlook/ui/input';
+import { cn } from '@onlook/ui/utils';
+import { stringToParsedValue } from '@onlook/utility';
+import { observer } from 'mobx-react-lite';
+import { useEffect, useMemo, useState } from 'react';
+
+const POSITION_OPTIONS = ['static', 'relative', 'absolute', 'fixed', 'sticky'] as const;
+const POSITION_FIELDS = [
+    { key: 'top', label: 'Top' },
+    { key: 'right', label: 'Right' },
+    { key: 'bottom', label: 'Bottom' },
+    { key: 'left', label: 'Left' },
+    { key: 'zIndex', label: 'Z' },
+] as const;
+
+type PositionFieldKey = (typeof POSITION_FIELDS)[number]['key'];
+
+type PositionState = Record<PositionFieldKey, string>;
+
+const DEFAULT_POSITION_STATE: PositionState = {
+    top: '',
+    right: '',
+    bottom: '',
+    left: '',
+    zIndex: '',
+};
+
+const DRAGGABLE_POSITION_TYPES = new Set(['absolute', 'fixed']);
+
+const normalizePositionValue = (key: PositionFieldKey, value: string) => {
+    const trimmed = value.trim();
+    if (trimmed === '') {
+        return '';
+    }
+    if (key === 'zIndex') {
+        return trimmed;
+    }
+    if (/^[-+]?[0-9]*\.?[0-9]+$/.test(trimmed)) {
+        return `${trimmed}px`;
+    }
+    return trimmed;
+};
+
+export const PositionSection = observer(() => {
+    const editorEngine = useEditorEngine();
+    const selectedStyle = editorEngine.style.selectedStyle;
+    const definedStyles = selectedStyle?.styles.defined;
+    const computedStyles = selectedStyle?.styles.computed;
+
+    const positionValue =
+        definedStyles?.position?.toString() ?? computedStyles?.position?.toString() ?? 'static';
+
+    const [positionState, setPositionState] = useState<PositionState>(DEFAULT_POSITION_STATE);
+
+    useEffect(() => {
+        const nextState = { ...DEFAULT_POSITION_STATE };
+
+        for (const { key } of POSITION_FIELDS) {
+            const rawValue =
+                definedStyles?.[key]?.toString() ?? computedStyles?.[key]?.toString() ?? '';
+
+            if (key === 'zIndex') {
+                nextState[key] = rawValue === 'auto' ? '' : rawValue;
+                continue;
+            }
+
+            if (rawValue === '' || rawValue === 'auto') {
+                nextState[key] = '';
+                continue;
+            }
+
+            const { num, unit } = stringToParsedValue(rawValue);
+            nextState[key] = Number.isFinite(num) ? `${num}${unit}` : rawValue;
+        }
+
+        setPositionState(nextState);
+    }, [computedStyles, definedStyles]);
+
+    const canEditOffsets = useMemo(
+        () => DRAGGABLE_POSITION_TYPES.has(positionValue),
+        [positionValue],
+    );
+
+    const handlePositionTypeChange = (value: string) => {
+        editorEngine.style.update('position', value);
+    };
+
+    const handleFieldDraftChange = (key: PositionFieldKey, value: string) => {
+        setPositionState((current) => ({ ...current, [key]: value }));
+    };
+
+    const handleFieldCommit = (key: PositionFieldKey) => {
+        editorEngine.style.update(key, normalizePositionValue(key, positionState[key]));
+    };
+
+    return (
+        <div className="space-y-3">
+            <div className="space-y-2">
+                <div className="flex items-center justify-between gap-3">
+                    <span className="text-xs uppercase tracking-[0.2em] text-foreground-tertiary">
+                        Type
+                    </span>
+                    <Select value={positionValue} onValueChange={handlePositionTypeChange}>
+                        <SelectTrigger className="h-8 w-[148px] border-border/60 bg-background-secondary text-sm">
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {POSITION_OPTIONS.map((option) => (
+                                <SelectItem key={option} value={option} className="capitalize">
+                                    {option}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2">
+                {POSITION_FIELDS.map(({ key, label }) => (
+                    <label key={key} className="space-y-1.5">
+                        <span className="text-[11px] uppercase tracking-[0.18em] text-foreground-tertiary">
+                            {label}
+                        </span>
+                        <Input
+                            value={positionState[key]}
+                            onChange={(event) => handleFieldDraftChange(key, event.target.value)}
+                            onBlur={() => handleFieldCommit(key)}
+                            onKeyDown={(event) => {
+                                if (event.key === 'Enter') {
+                                    handleFieldCommit(key);
+                                }
+                            }}
+                            disabled={key !== 'zIndex' && !canEditOffsets}
+                            placeholder={key === 'zIndex' ? 'auto' : '0px'}
+                            className={cn(
+                                'h-8 border-border/60 bg-background-secondary text-sm',
+                                key !== 'zIndex' && !canEditOffsets && 'opacity-60',
+                            )}
+                        />
+                    </label>
+                ))}
+            </div>
+
+            {!canEditOffsets && (
+                <p className="text-xs text-foreground-tertiary">
+                    Offset fields activate for `absolute` and `fixed` positioned elements.
+                </p>
+            )}
+        </div>
+    );
+});

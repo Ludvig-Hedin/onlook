@@ -265,6 +265,7 @@
                     "styles": {
                         "name": "样式",
                         "emptyState": "选择一个元素以编辑其样式属性",
+                        "emptyStateHint": "选择单个画布元素，以检查布局、间距、外观、排版和定位。",
                         "groups": {
                             "position": "位置 & 尺寸",
                             "layout": "弹性布局",

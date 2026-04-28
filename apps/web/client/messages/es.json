@@ -265,6 +265,7 @@
                     "styles": {
                         "name": "Estilos",
                         "emptyState": "Seleccione un elemento para editar sus propiedades de estilo",
+                        "emptyStateHint": "Seleccione un solo elemento del lienzo para inspeccionar diseño, espaciado, apariencia, tipografía y posición.",
                         "groups": {
                             "position": "Posición y Dimensiones",
                             "layout": "Flexbox y Diseño",

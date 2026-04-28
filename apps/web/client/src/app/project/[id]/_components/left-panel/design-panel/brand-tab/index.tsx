@@ -78,7 +78,7 @@ export const BrandTab = observer(() => {
 
                     <div
                         className="grid grid-cols-12 gap-0 rounded-lg overflow-hidden h-[40px] max-h-[40px] bg-background-onlook border-[0.5px] border-white/50 hover:border-[0.5px] hover:border-white cursor-pointer hover:border-transparent transition-all duration-200"
-                        onClick={() => (editorEngine.state.brandTab = BrandTabValue.COLORS)}
+                        onClick={() => editorEngine.state.setBrandTab(BrandTabValue.COLORS)}
                     >
                         {brandColors.length > 0 ? (
                             brandColors.map((color, index) => (
@@ -98,7 +98,7 @@ export const BrandTab = observer(() => {
                 <Button
                     variant="ghost"
                     className="w-full h-10 text-sm text-muted-foreground hover:text-foreground bg-background-secondary hover:bg-background-secondary/70 rounded-lg border border-white/5"
-                    onClick={() => (editorEngine.state.brandTab = BrandTabValue.COLORS)}
+                    onClick={() => editorEngine.state.setBrandTab(BrandTabValue.COLORS)}
                 >
                     Manage brand colors
                 </Button>
@@ -115,7 +115,7 @@ export const BrandTab = observer(() => {
                 <Button
                     variant="ghost"
                     className="w-full h-10 text-sm text-muted-foreground hover:text-foreground bg-background-secondary hover:bg-background-secondary/70 rounded-lg border border-white/5"
-                    onClick={() => (editorEngine.state.brandTab = BrandTabValue.FONTS)}
+                    onClick={() => editorEngine.state.setBrandTab(BrandTabValue.FONTS)}
                 >
                     Manage site fonts
                 </Button>

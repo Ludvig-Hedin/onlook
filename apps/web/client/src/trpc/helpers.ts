@@ -21,5 +21,11 @@ export const links = [
             headers.set('x-trpc-source', 'vanilla-client');
             return headers;
         },
+        fetch: (url, options) => {
+            return fetch(url, {
+                ...options,
+                credentials: 'include',
+            });
+        },
     }),
 ];

@@ -7,7 +7,7 @@ import {
     type LeftPanelTabValue
 } from '@onlook/models';
 import { debounce } from 'lodash';
-import { makeAutoObservable } from 'mobx';
+import { makeAutoObservable, runInAction } from 'mobx';
 
 export class StateManager {
     private _canvasScrolling = false;
@@ -30,13 +30,61 @@ export class StateManager {
         makeAutoObservable(this);
     }
 
+    setEditorMode(mode: EditorMode) {
+        this.editorMode = mode;
+    }
+
+    setInsertMode(mode: InsertMode | null) {
+        this.insertMode = mode;
+    }
+
+    setLeftPanelTab(tab: LeftPanelTabValue | null) {
+        this.leftPanelTab = tab;
+    }
+
+    setLeftPanelLocked(locked: boolean) {
+        this.leftPanelLocked = locked;
+    }
+
+    setHotkeysOpen(open: boolean) {
+        this.hotkeysOpen = open;
+    }
+
+    setPublishOpen(open: boolean) {
+        this.publishOpen = open;
+    }
+
+    setCanvasPanning(panning: boolean) {
+        this.canvasPanning = panning;
+    }
+
+    setIsDragSelecting(selecting: boolean) {
+        this.isDragSelecting = selecting;
+    }
+
+    setBrandTab(tab: BrandTabValue | null) {
+        this.brandTab = tab;
+    }
+
+    setBranchTab(tab: BranchTabValue | null) {
+        this.branchTab = tab;
+    }
+
+    setManageBranchId(id: string | null) {
+        this.manageBranchId = id;
+    }
+
+    setChatMode(mode: ChatType) {
+        this.chatMode = mode;
+    }
+
     set canvasScrolling(value: boolean) {
         this._canvasScrolling = value;
         this.resetCanvasScrolling();
     }
 
     get shouldHideOverlay() {
-        return this._canvasScrolling || this.canvasPanning
+        return this._canvasScrolling || this.canvasPanning;
     }
 
     private resetCanvasScrolling() {
@@ -44,14 +92,18 @@ export class StateManager {
     }
 
     private resetCanvasScrollingDebounced = debounce(() => {
-        this.canvasScrolling = false;
+        runInAction(() => {
+            this._canvasScrolling = false;
+        });
     }, 150);
 
     clear() {
-        this.hotkeysOpen = false;
-        this.publishOpen = false;
-        this.branchTab = null;
-        this.manageBranchId = null;
+        runInAction(() => {
+            this.hotkeysOpen = false;
+            this.publishOpen = false;
+            this.branchTab = null;
+            this.manageBranchId = null;
+        });
         this.resetCanvasScrollingDebounced.cancel();
     }
 }

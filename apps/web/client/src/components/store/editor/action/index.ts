@@ -277,7 +277,7 @@ export class ActionManager {
         frameData: FrameData,
         newMap: Map<string, LayerNode> | null,
     ) {
-        this.editorEngine.state.editorMode = EditorMode.DESIGN;
+        this.editorEngine.state.setEditorMode(EditorMode.DESIGN);
         this.editorEngine.elements.click([domEl]);
 
         if (newMap) {

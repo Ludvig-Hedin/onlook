@@ -21,6 +21,7 @@ export class MoveManager {
     state: MoveManagerState | null = null;
     MIN_DRAG_DISTANCE = 10;
     MIN_DRAG_PREPARATION_TIME = 150;
+    shouldSuppressNextClick = false;
 
     constructor(private editorEngine: EditorEngine) {
         makeAutoObservable(this);
@@ -90,16 +91,15 @@ export class MoveManager {
             return;
         }
 
-        const positionType = el.styles?.computed?.position;
-        if (positionType === 'absolute') {
-            console.warn('Absolute mode dragging is disabled');
+        if (!frameData.view) {
+            console.error('No frame view found');
             this.clear();
             return;
         }
 
-        if (!frameData.view) {
-            console.error('No frame view found');
-            this.clear();
+        const positionType = el.styles?.computed?.position;
+        if (positionType === 'absolute' || positionType === 'fixed') {
+            this.state.originalIndex = 0;
             return;
         }
 
@@ -128,6 +128,13 @@ export class MoveManager {
             return;
         }
 
+        if (this.state.originalIndex === null) {
+            await this.prepareDrag(this.state.dragTarget, frameData);
+            if (!this.state || this.state.originalIndex === null) {
+                return;
+            }
+        }
+
         const { x, y } = getRelativeMousePositionToWebview(e);
         const dx = x - this.state.dragOrigin.x;
         const dy = y - this.state.dragOrigin.y;
@@ -138,13 +145,14 @@ export class MoveManager {
                 return;
             }
             this.setDragState(DragState.IN_PROGRESS);
+            this.shouldSuppressNextClick = true;
         }
 
         try {
             this.editorEngine.overlay.clearUI();
             const positionType = this.state.dragTarget.styles?.computed?.position;
 
-            if (positionType === 'absolute') {
+            if (positionType === 'absolute' || positionType === 'fixed') {
                 await frameData.view.dragAbsolute(
                     this.state.dragTarget.domId,
                     x,
@@ -159,9 +167,8 @@ export class MoveManager {
         }
     }
 
-    async end(_e: React.MouseEvent<HTMLDivElement>) {
+    async end() {
         if (!this.state) {
-            console.warn('No drag state to end');
             return;
         }
 
@@ -186,7 +193,7 @@ export class MoveManager {
 
             // Handle absolute positioning
             const position = savedState.dragTarget.styles?.computed?.position;
-            if (position === ('absolute' as const)) {
+            if (position === 'absolute' || position === 'fixed') {
                 const res = await frameData.view.endDragAbsolute(targetDomId);
 
                 if (res) {
@@ -333,5 +340,11 @@ export class MoveManager {
             this.dragPreparationTimer = null;
         }
         this.state = null;
+    }
+
+    consumeSuppressedClick() {
+        const shouldSuppress = this.shouldSuppressNextClick;
+        this.shouldSuppressNextClick = false;
+        return shouldSuppress;
     }
 }

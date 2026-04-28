@@ -51,7 +51,7 @@ export const ModeToggle = observer(() => {
                 value={mode}
                 onValueChange={(value) => {
                     if (value) {
-                        editorEngine.state.editorMode = value as EditorMode;
+                        editorEngine.state.setEditorMode(value as EditorMode);
                     }
                 }}
             >

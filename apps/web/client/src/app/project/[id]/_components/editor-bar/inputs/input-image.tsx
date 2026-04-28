@@ -45,8 +45,8 @@ export const InputImage = observer(() => {
     });
 
     const handleSelectFromLibrary = useCallback(() => {
-        editorEngine.state.leftPanelTab = LeftPanelTabValue.IMAGES;
-        editorEngine.state.leftPanelLocked = true;
+        editorEngine.state.setLeftPanelTab(LeftPanelTabValue.IMAGES);
+        editorEngine.state.setLeftPanelLocked(true);
     }, []);
 
     const handleUploadFromComputer = useCallback(() => {

@@ -21,7 +21,7 @@ const FontPanel = observer(() => {
     const fontManager = editorEngine.font;
 
     const handleClose = () => {
-        editorEngine.state.brandTab = null;
+        editorEngine.state.setBrandTab(null);
     };
 
     const handleUploadFont = () => {

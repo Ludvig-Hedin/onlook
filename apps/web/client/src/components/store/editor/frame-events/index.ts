@@ -2,7 +2,7 @@
 
 import type { Frame, LayerNode } from '@onlook/models';
 import { debounce } from 'lodash';
-import { makeAutoObservable, reaction } from 'mobx';
+import { makeAutoObservable, reaction, runInAction } from 'mobx';
 import type { EditorEngine } from '../engine';
 
 export class FrameEventManager {
@@ -59,28 +59,34 @@ export class FrameEventManager {
         );
     }
 
-    private undebouncedViewportCheck = () => {
+    private undebouncedViewportCheck() {
         if (typeof window === 'undefined') {
-            this.isCanvasOutOfView = false;
+            runInAction(() => {
+                this.isCanvasOutOfView = false;
+            });
             return;
         }
 
         const frames = this.editorEngine.frames.getAll();
         if (frames.length === 0) {
-            this.isCanvasOutOfView = false;
+            runInAction(() => {
+                this.isCanvasOutOfView = false;
+            });
             return;
         }
 
         const isAnyFrameInView = frames.some((frame) => this.isFrameInViewport(frame.frame));
-        this.isCanvasOutOfView = !isAnyFrameInView;
-    };
+        runInAction(() => {
+            this.isCanvasOutOfView = !isAnyFrameInView;
+        });
+    }
 
     handleViewportCheck = debounce(this.undebouncedViewportCheck, 500, {
         leading: true,
         trailing: true,
     });
 
-    recenterCanvas = () => {
+    recenterCanvas() {
         const frames = this.editorEngine.frames.getAll();
         const firstFrame = frames[0]?.frame;
 
@@ -94,14 +100,18 @@ export class FrameEventManager {
             const viewportCenterX = window.innerWidth / 2 - defaultPosition.x;
             const viewportCenterY = window.innerHeight / 2 - defaultPosition.y;
 
-            this.editorEngine.canvas.position = {
-                x: viewportCenterX - frameCenterX * canvasScale,
-                y: viewportCenterY - frameCenterY * canvasScale,
-            };
+            runInAction(() => {
+                this.editorEngine.canvas.position = {
+                    x: viewportCenterX - frameCenterX * canvasScale,
+                    y: viewportCenterY - frameCenterY * canvasScale,
+                };
+            });
         } else {
-            this.editorEngine.canvas.position = this.editorEngine.canvas.getDefaultPanPosition();
+            runInAction(() => {
+                this.editorEngine.canvas.position = this.editorEngine.canvas.getDefaultPanPosition();
+            });
         }
-    };
+    }
 
     async handleWindowResized(): Promise<void> {
         try {

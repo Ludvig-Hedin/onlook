@@ -127,8 +127,8 @@ export const PageSelector = observer(({ frame, className, tooltipSide = "top", s
     };
 
     const handleManagePages = () => {
-        editorEngine.state.leftPanelTab = LeftPanelTabValue.PAGES
-        editorEngine.state.leftPanelLocked = true;
+        editorEngine.state.setLeftPanelTab(LeftPanelTabValue.PAGES);
+        editorEngine.state.setLeftPanelLocked(true);
     };
 
     return (

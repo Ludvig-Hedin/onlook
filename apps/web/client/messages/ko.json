@@ -265,6 +265,7 @@
                     "styles": {
                         "name": "스타일",
                         "emptyState": "스타일 속성을 편집할 요소를 선택하세요",
+                        "emptyStateHint": "레이아웃, 간격, 모양, 타이포그래피, 위치를 검사하려면 캔버스에서 단일 요소를 선택하세요.",
                         "groups": {
                             "position": "위치 및 크기",
                             "layout": "Flexbox & 레이아웃",

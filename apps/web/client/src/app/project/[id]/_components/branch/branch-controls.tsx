@@ -57,10 +57,10 @@ export function BranchControls({
 
     const handleManageBranches = () => {
         // Open the branches tab in the left panel
-        editorEngine.state.leftPanelTab = LeftPanelTabValue.BRANCHES;
-        editorEngine.state.leftPanelLocked = true;
-        editorEngine.state.branchTab = BranchTabValue.MANAGE;
-        editorEngine.state.manageBranchId = branch.id;
+        editorEngine.state.setLeftPanelTab(LeftPanelTabValue.BRANCHES);
+        editorEngine.state.setLeftPanelLocked(true);
+        editorEngine.state.setBranchTab(BranchTabValue.MANAGE);
+        editorEngine.state.setManageBranchId(branch.id);
         onManageBranches?.();
         onClose?.();
     };

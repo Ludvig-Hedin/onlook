@@ -1,0 +1,725 @@
+'use client';
+
+import { useEditorEngine } from '@/components/store/editor';
+import { transKeys } from '@/i18n/keys';
+import { BrandTabValue, LeftPanelTabValue } from '@onlook/models';
+import { Button } from '@onlook/ui/button';
+import { Input } from '@onlook/ui/input';
+import { ScrollArea } from '@onlook/ui/scroll-area';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@onlook/ui/select';
+import { Slider } from '@onlook/ui/slider';
+import { cn } from '@onlook/ui/utils';
+import {
+    getAutolayoutStyles,
+    LayoutMode,
+    LayoutProperty,
+    parseModeAndValue,
+} from '@onlook/utility';
+import { observer } from 'mobx-react-lite';
+import { useTranslations } from 'next-intl';
+import { useEffect, useMemo, useState } from 'react';
+import { useTextControl, type TextAlign } from '../../editor-bar/hooks/use-text-control';
+import { InputColor } from '../../editor-bar/inputs/input-color';
+import { PositionSection } from './position-section';
+
+const TEXT_TAGS = new Set([
+    'h1',
+    'h2',
+    'h3',
+    'h4',
+    'h5',
+    'h6',
+    'p',
+    'span',
+    'a',
+    'strong',
+    'b',
+    'em',
+    'i',
+    'mark',
+    'code',
+    'small',
+    'blockquote',
+    'pre',
+    'time',
+    'sub',
+    'sup',
+    'del',
+    'ins',
+    'u',
+    'abbr',
+    'cite',
+    'q',
+]);
+
+const DISPLAY_OPTIONS = ['block', 'flex', 'grid', 'none'];
+const FLEX_DIRECTION_OPTIONS = ['row', 'column', 'row-reverse', 'column-reverse'];
+const ALIGN_OPTIONS = ['flex-start', 'center', 'flex-end', 'space-between', 'space-around', 'space-evenly', 'stretch'];
+const ALIGN_ITEMS_OPTIONS = ['flex-start', 'center', 'flex-end', 'stretch', 'baseline'];
+const OVERFLOW_OPTIONS = ['visible', 'hidden', 'scroll', 'auto'];
+const BORDER_STYLE_OPTIONS = ['none', 'solid', 'dashed', 'dotted', 'double'];
+const TEXT_TRANSFORM_OPTIONS = ['none', 'uppercase', 'capitalize', 'lowercase'];
+const TEXT_DECORATION_OPTIONS = ['none', 'underline', 'line-through', 'overline'];
+const TEXT_ALIGN_OPTIONS: TextAlign[] = ['left', 'center', 'right', 'justify'];
+
+const DIMENSION_FIELD_GROUPS = [
+    { key: 'width', label: 'W' },
+    { key: 'height', label: 'H' },
+    { key: 'minWidth', label: 'Min W' },
+    { key: 'maxWidth', label: 'Max W' },
+    { key: 'minHeight', label: 'Min H' },
+    { key: 'maxHeight', label: 'Max H' },
+] as const;
+
+const EDGE_FIELDS = [
+    { key: 'Top', label: 'Top' },
+    { key: 'Right', label: 'Right' },
+    { key: 'Bottom', label: 'Bottom' },
+    { key: 'Left', label: 'Left' },
+] as const;
+
+const Section = ({
+    title,
+    description,
+    children,
+}: {
+    title: string;
+    description?: string;
+    children: React.ReactNode;
+}) => (
+    <section className="rounded-2xl border border-border/50 bg-background/40 p-3">
+        <div className="mb-3">
+            <h3 className="text-sm font-medium text-foreground">{title}</h3>
+            {description && (
+                <p className="mt-1 text-xs text-foreground-tertiary">{description}</p>
+            )}
+        </div>
+        <div className="space-y-3">{children}</div>
+    </section>
+);
+
+const FieldLabel = ({ children }: { children: React.ReactNode }) => (
+    <span className="text-[11px] uppercase tracking-[0.18em] text-foreground-tertiary">
+        {children}
+    </span>
+);
+
+const FieldRow = ({
+    label,
+    children,
+    align = 'center',
+}: {
+    label: string;
+    children: React.ReactNode;
+    align?: 'center' | 'start';
+}) => (
+    <div
+        className={cn(
+            'flex gap-3',
+            align === 'center' ? 'items-center justify-between' : 'items-start justify-between',
+        )}
+    >
+        <FieldLabel>{label}</FieldLabel>
+        <div className="min-w-0 flex-1">{children}</div>
+    </div>
+);
+
+const normalizeLengthValue = (value: string, allowAuto = true) => {
+    const trimmed = value.trim();
+    if (trimmed === '') {
+        return '';
+    }
+    if (allowAuto && trimmed === 'auto') {
+        return trimmed;
+    }
+    if (/^[-+]?[0-9]*\.?[0-9]+$/.test(trimmed)) {
+        return `${trimmed}px`;
+    }
+    return trimmed;
+};
+
+const getDisplayedValue = (value: string) => {
+    if (!value || value === '--') {
+        return '';
+    }
+    return value;
+};
+
+const DraftInput = ({
+    value,
+    onCommit,
+    placeholder,
+    suffix,
+    disabled = false,
+}: {
+    value: string;
+    onCommit: (value: string) => void;
+    placeholder?: string;
+    suffix?: string;
+    disabled?: boolean;
+}) => {
+    const [draft, setDraft] = useState(value);
+
+    useEffect(() => {
+        setDraft(value);
+    }, [value]);
+
+    const commit = () => onCommit(draft);
+
+    return (
+        <div
+            className={cn(
+                'flex h-8 items-center rounded-md border border-border/60 bg-background-secondary px-2',
+                disabled && 'opacity-60',
+            )}
+        >
+            <Input
+                value={draft}
+                onChange={(event) => setDraft(event.target.value)}
+                onBlur={commit}
+                onKeyDown={(event) => {
+                    if (event.key === 'Enter') {
+                        commit();
+                    }
+                }}
+                disabled={disabled}
+                placeholder={placeholder}
+                className="h-full border-0 bg-transparent px-0 text-sm focus-visible:ring-0 focus-visible:ring-offset-0"
+            />
+            {suffix && <span className="ml-2 text-xs text-foreground-tertiary">{suffix}</span>}
+        </div>
+    );
+};
+
+const SelectField = ({
+    value,
+    options,
+    onValueChange,
+    placeholder,
+}: {
+    value: string;
+    options: string[];
+    onValueChange: (value: string) => void;
+    placeholder?: string;
+}) => (
+    <Select value={value} onValueChange={onValueChange}>
+        <SelectTrigger className="h-8 w-full border-border/60 bg-background-secondary text-sm">
+            <SelectValue placeholder={placeholder} />
+        </SelectTrigger>
+        <SelectContent>
+            {options.map((option) => (
+                <SelectItem key={option} value={option}>
+                    {option}
+                </SelectItem>
+            ))}
+        </SelectContent>
+    </Select>
+);
+
+const AlignButtons = ({
+    value,
+    onChange,
+}: {
+    value: string;
+    onChange: (value: TextAlign) => void;
+}) => (
+    <div className="grid grid-cols-4 gap-1 rounded-lg border border-border/60 bg-background-secondary p-1">
+        {TEXT_ALIGN_OPTIONS.map((option) => (
+            <button
+                key={option}
+                type="button"
+                onClick={() => onChange(option)}
+                className={cn(
+                    'rounded-md px-2 py-1.5 text-xs capitalize transition-colors',
+                    value === option
+                        ? 'bg-foreground text-background'
+                        : 'text-foreground-secondary hover:bg-background-tertiary',
+                )}
+            >
+                {option}
+            </button>
+        ))}
+    </div>
+);
+
+const parseOpacityPercent = (value: string) => {
+    if (!value) {
+        return 100;
+    }
+    const parsed = Number.parseFloat(value);
+    if (Number.isNaN(parsed)) {
+        return 100;
+    }
+    return parsed <= 1 ? Math.round(parsed * 100) : Math.round(parsed);
+};
+
+export const StyleTab = observer(() => {
+    const editorEngine = useEditorEngine();
+    const t = useTranslations();
+    const selectedElement = editorEngine.elements.selected[0];
+    const selectedStyle = editorEngine.style.selectedStyle;
+    const definedStyles = selectedStyle?.styles.defined;
+    const computedStyles = selectedStyle?.styles.computed;
+    const { textState, handleFontFamilyChange, handleFontSizeChange, handleFontWeightChange, handleTextAlignChange, handleTextColorChange, handleLetterSpacingChange, handleCapitalizationChange, handleTextDecorationChange, handleLineHeightChange } =
+        useTextControl();
+
+    useEffect(() => {
+        if (!editorEngine.activeSandbox.session.provider) {
+            return;
+        }
+        editorEngine.font.init();
+    }, [editorEngine.activeSandbox.session.provider, editorEngine.font]);
+
+    const readStyle = useMemo(
+        () =>
+            (key: string, fallback = '') =>
+                definedStyles?.[key]?.toString() ?? computedStyles?.[key]?.toString() ?? fallback,
+        [computedStyles, definedStyles],
+    );
+
+    if (!selectedElement || !selectedStyle) {
+        return (
+            <div className="flex h-full items-center justify-center px-6 text-center">
+                <div className="space-y-2">
+                    <p className="text-sm font-medium text-foreground">
+                        {t(transKeys.editor.panels.edit.tabs.styles.emptyState)}
+                    </p>
+                    <p className="text-xs text-foreground-tertiary">
+                        {t(transKeys.editor.panels.edit.tabs.styles.emptyStateHint)}
+                    </p>
+                </div>
+            </div>
+        );
+    }
+
+    const isTextElement = TEXT_TAGS.has(selectedElement.tagName.toLowerCase());
+    const displayValue = readStyle('display', 'block');
+    const widthValue = readStyle('width');
+    const heightValue = readStyle('height');
+    const widthMode = parseModeAndValue(widthValue || `${selectedStyle.rect.width}px`).mode;
+    const heightMode = parseModeAndValue(heightValue || `${selectedStyle.rect.height}px`).mode;
+    const opacityPercent = parseOpacityPercent(readStyle('opacity', '1'));
+    const borderWidthValue = readStyle('borderWidth');
+    const borderRadiusValue = readStyle('borderRadius');
+    const gapValue = readStyle('gap');
+    const overflowXValue = readStyle('overflowX', readStyle('overflow', 'visible'));
+    const overflowYValue = readStyle('overflowY', readStyle('overflow', 'visible'));
+    const fontWeightValue = textState.fontWeight || '400';
+    const matchedFont = editorEngine.font.fonts.find(
+        (font) => font.id.toLowerCase() === textState.fontFamily.toLowerCase(),
+    );
+
+    const commitDimensionMode = (dimension: 'width' | 'height', mode: LayoutMode) => {
+        const nextValue = getAutolayoutStyles(
+            dimension === 'width' ? LayoutProperty.width : LayoutProperty.height,
+            mode,
+            readStyle(dimension),
+            selectedStyle.rect,
+            selectedStyle.parentRect,
+        );
+        editorEngine.style.update(dimension, nextValue);
+    };
+
+    const commitLengthStyle = (key: string, value: string, allowAuto = true) => {
+        editorEngine.style.update(key, normalizeLengthValue(value, allowAuto));
+    };
+
+    const commitRawStyle = (key: string, value: string) => {
+        editorEngine.style.update(key, value.trim());
+    };
+
+    return (
+        <ScrollArea className="h-full">
+            <div className="flex flex-col gap-3 p-3">
+                <section className="rounded-2xl border border-border/50 bg-background/60 p-3">
+                    <div className="text-[11px] uppercase tracking-[0.22em] text-foreground-tertiary">
+                        Selected element
+                    </div>
+                    <div className="mt-2 flex items-center gap-2">
+                        <span className="rounded-md border border-border/60 bg-background-secondary px-2 py-1 text-xs uppercase tracking-[0.16em] text-foreground-secondary">
+                            {selectedElement.tagName}
+                        </span>
+                        <span className="truncate text-sm text-foreground-secondary">
+                            {selectedElement.domId}
+                        </span>
+                    </div>
+                </section>
+
+                <Section
+                    title="Layout"
+                    description="Display, flex/grid flow, overflow, and element sizing."
+                >
+                    <FieldRow label="Display">
+                        <SelectField
+                            value={displayValue}
+                            options={DISPLAY_OPTIONS}
+                            onValueChange={(value) => editorEngine.style.update('display', value)}
+                        />
+                    </FieldRow>
+
+                    {displayValue === 'flex' && (
+                        <>
+                            <FieldRow label="Direction">
+                                <SelectField
+                                    value={readStyle('flexDirection', 'row')}
+                                    options={FLEX_DIRECTION_OPTIONS}
+                                    onValueChange={(value) =>
+                                        editorEngine.style.update('flexDirection', value)
+                                    }
+                                />
+                            </FieldRow>
+                            <FieldRow label="Justify">
+                                <SelectField
+                                    value={readStyle('justifyContent', 'flex-start')}
+                                    options={ALIGN_OPTIONS}
+                                    onValueChange={(value) =>
+                                        editorEngine.style.update('justifyContent', value)
+                                    }
+                                />
+                            </FieldRow>
+                            <FieldRow label="Align">
+                                <SelectField
+                                    value={readStyle('alignItems', 'stretch')}
+                                    options={ALIGN_ITEMS_OPTIONS}
+                                    onValueChange={(value) =>
+                                        editorEngine.style.update('alignItems', value)
+                                    }
+                                />
+                            </FieldRow>
+                        </>
+                    )}
+
+                    {displayValue === 'grid' && (
+                        <>
+                            <FieldRow label="Columns">
+                                <DraftInput
+                                    value={getDisplayedValue(readStyle('gridTemplateColumns'))}
+                                    placeholder="repeat(3, 1fr)"
+                                    onCommit={(value) => commitRawStyle('gridTemplateColumns', value)}
+                                />
+                            </FieldRow>
+                            <FieldRow label="Rows">
+                                <DraftInput
+                                    value={getDisplayedValue(readStyle('gridTemplateRows'))}
+                                    placeholder="auto auto"
+                                    onCommit={(value) => commitRawStyle('gridTemplateRows', value)}
+                                />
+                            </FieldRow>
+                        </>
+                    )}
+
+                    {(displayValue === 'flex' || displayValue === 'grid') && (
+                        <FieldRow label="Gap">
+                            <DraftInput
+                                value={getDisplayedValue(gapValue)}
+                                placeholder="16px"
+                                onCommit={(value) => commitLengthStyle('gap', value)}
+                            />
+                        </FieldRow>
+                    )}
+
+                    <div className="grid grid-cols-2 gap-2">
+                        <div className="space-y-1.5">
+                            <FieldLabel>Width</FieldLabel>
+                            <SelectField
+                                value={widthMode}
+                                options={Object.values(LayoutMode)}
+                                onValueChange={(value) =>
+                                    commitDimensionMode('width', value as LayoutMode)
+                                }
+                            />
+                            <DraftInput
+                                value={getDisplayedValue(widthValue)}
+                                placeholder="320px"
+                                onCommit={(value) => commitLengthStyle('width', value)}
+                            />
+                        </div>
+                        <div className="space-y-1.5">
+                            <FieldLabel>Height</FieldLabel>
+                            <SelectField
+                                value={heightMode}
+                                options={Object.values(LayoutMode)}
+                                onValueChange={(value) =>
+                                    commitDimensionMode('height', value as LayoutMode)
+                                }
+                            />
+                            <DraftInput
+                                value={getDisplayedValue(heightValue)}
+                                placeholder="240px"
+                                onCommit={(value) => commitLengthStyle('height', value)}
+                            />
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2">
+                        {DIMENSION_FIELD_GROUPS.filter(({ key }) => key.startsWith('min') || key.startsWith('max')).map(
+                            ({ key, label }) => (
+                                <div key={key} className="space-y-1.5">
+                                    <FieldLabel>{label}</FieldLabel>
+                                    <DraftInput
+                                        value={getDisplayedValue(readStyle(key))}
+                                        placeholder="none"
+                                        onCommit={(value) => commitLengthStyle(key, value)}
+                                    />
+                                </div>
+                            ),
+                        )}
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2">
+                        <div className="space-y-1.5">
+                            <FieldLabel>Overflow X</FieldLabel>
+                            <SelectField
+                                value={overflowXValue}
+                                options={OVERFLOW_OPTIONS}
+                                onValueChange={(value) => editorEngine.style.update('overflowX', value)}
+                            />
+                        </div>
+                        <div className="space-y-1.5">
+                            <FieldLabel>Overflow Y</FieldLabel>
+                            <SelectField
+                                value={overflowYValue}
+                                options={OVERFLOW_OPTIONS}
+                                onValueChange={(value) => editorEngine.style.update('overflowY', value)}
+                            />
+                        </div>
+                    </div>
+                </Section>
+
+                <Section
+                    title="Spacing"
+                    description="Control padding and margin with overall and per-side values."
+                >
+                    {(['padding', 'margin'] as const).map((group) => (
+                        <div key={group} className="space-y-2 rounded-xl border border-border/40 bg-background/30 p-2.5">
+                            <div className="text-xs font-medium capitalize text-foreground-secondary">
+                                {group}
+                            </div>
+                            <div className="grid grid-cols-2 gap-2">
+                                <div className="space-y-1.5">
+                                    <FieldLabel>All</FieldLabel>
+                                    <DraftInput
+                                        value={getDisplayedValue(readStyle(group))}
+                                        placeholder="0px"
+                                        onCommit={(value) => commitLengthStyle(group, value, group === 'margin')}
+                                    />
+                                </div>
+                                <div className="grid grid-cols-2 gap-2">
+                                    {EDGE_FIELDS.map(({ key, label }) => {
+                                        const property = `${group}${key}`;
+                                        return (
+                                            <div key={property} className="space-y-1.5">
+                                                <FieldLabel>{label}</FieldLabel>
+                                                <DraftInput
+                                                    value={getDisplayedValue(readStyle(property))}
+                                                    placeholder="0px"
+                                                    onCommit={(value) =>
+                                                        commitLengthStyle(property, value, group === 'margin')
+                                                    }
+                                                />
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </Section>
+
+                <Section
+                    title="Appearance"
+                    description="Visual styling for fills, borders, corners, and transparency."
+                >
+                    <FieldRow label="Background" align="start">
+                        <InputColor
+                            color={readStyle('backgroundColor', '#000000')}
+                            elementStyleKey="backgroundColor"
+                        />
+                    </FieldRow>
+
+                    {isTextElement && (
+                        <FieldRow label="Text color" align="start">
+                            <InputColor
+                                color={textState.textColor}
+                                elementStyleKey="color"
+                                onColorChange={handleTextColorChange}
+                            />
+                        </FieldRow>
+                    )}
+
+                    <FieldRow label="Border color" align="start">
+                        <InputColor
+                            color={readStyle('borderColor', '#000000')}
+                            elementStyleKey="borderColor"
+                        />
+                    </FieldRow>
+
+                    <div className="grid grid-cols-3 gap-2">
+                        <div className="space-y-1.5">
+                            <FieldLabel>Width</FieldLabel>
+                            <DraftInput
+                                value={getDisplayedValue(borderWidthValue)}
+                                placeholder="0px"
+                                onCommit={(value) => commitLengthStyle('borderWidth', value)}
+                            />
+                        </div>
+                        <div className="space-y-1.5">
+                            <FieldLabel>Style</FieldLabel>
+                            <SelectField
+                                value={readStyle('borderStyle', 'solid')}
+                                options={BORDER_STYLE_OPTIONS}
+                                onValueChange={(value) => editorEngine.style.update('borderStyle', value)}
+                            />
+                        </div>
+                        <div className="space-y-1.5">
+                            <FieldLabel>Radius</FieldLabel>
+                            <DraftInput
+                                value={getDisplayedValue(borderRadiusValue)}
+                                placeholder="0px"
+                                onCommit={(value) => commitLengthStyle('borderRadius', value)}
+                            />
+                        </div>
+                    </div>
+
+                    <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                            <FieldLabel>Opacity</FieldLabel>
+                            <span className="text-xs text-foreground-secondary">{opacityPercent}%</span>
+                        </div>
+                        <Slider
+                            value={[opacityPercent]}
+                            max={100}
+                            step={1}
+                            onValueChange={([value]) => {
+                                if (typeof value !== 'number') {
+                                    return;
+                                }
+                                editorEngine.style.update('opacity', `${value / 100}`);
+                            }}
+                        />
+                    </div>
+                </Section>
+
+                <Section
+                    title="Position"
+                    description="Positioning mode, offsets, and stacking order."
+                >
+                    <PositionSection />
+                </Section>
+
+                {isTextElement && (
+                    <Section
+                        title="Typography"
+                        description="Fonts, alignment, and detailed text settings."
+                    >
+                        <FieldRow label="Font">
+                            <div className="space-y-2">
+                                <Select
+                                    value={matchedFont?.id}
+                                    onValueChange={(value) => {
+                                        const font = editorEngine.font.fonts.find((item) => item.id === value);
+                                        if (font) {
+                                            handleFontFamilyChange(font);
+                                        }
+                                    }}
+                                >
+                                    <SelectTrigger className="h-8 w-full border-border/60 bg-background-secondary text-sm">
+                                        <SelectValue placeholder={textState.fontFamily || 'Choose font'} />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {editorEngine.font.fonts.map((font) => (
+                                            <SelectItem key={font.id} value={font.id}>
+                                                {font.family}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                <Button
+                                    variant="secondary"
+                                    size="sm"
+                                    className="w-full"
+                                    onClick={() => {
+                                        editorEngine.state.setBrandTab(BrandTabValue.FONTS);
+                                        editorEngine.state.setLeftPanelTab(LeftPanelTabValue.BRAND);
+                                    }}
+                                >
+                                    Manage fonts
+                                </Button>
+                            </div>
+                        </FieldRow>
+
+                        <div className="grid grid-cols-2 gap-2">
+                            <div className="space-y-1.5">
+                                <FieldLabel>Size</FieldLabel>
+                                <DraftInput
+                                    value={String(textState.fontSize)}
+                                    placeholder="16"
+                                    suffix="px"
+                                    onCommit={(value) => {
+                                        const parsed = Number.parseFloat(value);
+                                        if (!Number.isNaN(parsed)) {
+                                            handleFontSizeChange(parsed);
+                                        }
+                                    }}
+                                />
+                            </div>
+                            <div className="space-y-1.5">
+                                <FieldLabel>Weight</FieldLabel>
+                                <DraftInput
+                                    value={fontWeightValue}
+                                    placeholder="400"
+                                    onCommit={(value) => handleFontWeightChange(value || '400')}
+                                />
+                            </div>
+                        </div>
+
+                        <FieldRow label="Align" align="start">
+                            <AlignButtons
+                                value={textState.textAlign}
+                                onChange={handleTextAlignChange}
+                            />
+                        </FieldRow>
+
+                        <div className="grid grid-cols-2 gap-2">
+                            <div className="space-y-1.5">
+                                <FieldLabel>Line height</FieldLabel>
+                                <DraftInput
+                                    value={textState.lineHeight}
+                                    placeholder="1.5"
+                                    onCommit={handleLineHeightChange}
+                                />
+                            </div>
+                            <div className="space-y-1.5">
+                                <FieldLabel>Letter spacing</FieldLabel>
+                                <DraftInput
+                                    value={textState.letterSpacing}
+                                    placeholder="0px"
+                                    onCommit={(value) => handleLetterSpacingChange(value || '0')}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-2">
+                            <div className="space-y-1.5">
+                                <FieldLabel>Transform</FieldLabel>
+                                <SelectField
+                                    value={textState.capitalization}
+                                    options={TEXT_TRANSFORM_OPTIONS}
+                                    onValueChange={handleCapitalizationChange}
+                                />
+                            </div>
+                            <div className="space-y-1.5">
+                                <FieldLabel>Decoration</FieldLabel>
+                                <SelectField
+                                    value={textState.textDecorationLine}
+                                    options={TEXT_DECORATION_OPTIONS}
+                                    onValueChange={handleTextDecorationChange}
+                                />
+                            </div>
+                        </div>
+                    </Section>
+                )}
+            </div>
+        </ScrollArea>
+    );
+});

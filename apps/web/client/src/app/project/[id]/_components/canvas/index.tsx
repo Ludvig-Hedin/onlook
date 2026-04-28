@@ -45,7 +45,7 @@ export const Canvas = observer(() => {
 
         // Switch to chat mode when clicking on empty canvas space during code editing
         if (editorEngine.state.editorMode === EditorMode.CODE) {
-            editorEngine.state.editorMode = EditorMode.DESIGN;
+            editorEngine.state.setEditorMode(EditorMode.DESIGN);
             return
         }
         if (editorEngine.state.editorMode === EditorMode.DESIGN) {
@@ -59,7 +59,7 @@ export const Canvas = observer(() => {
             setFramesInSelection(new Set());
 
             // Set a flag in the editor engine to suppress hover effects
-            editorEngine.state.isDragSelecting = true;
+            editorEngine.state.setIsDragSelecting(true);
 
             // Clear existing selections if not shift-clicking
             if (!event.shiftKey) {
@@ -194,8 +194,8 @@ export const Canvas = observer(() => {
 
     const middleMouseButtonDown = useCallback((e: MouseEvent) => {
         if (e.button === 1) {
-            editorEngine.state.editorMode = EditorMode.PAN;
-            editorEngine.state.canvasPanning = true;
+            editorEngine.state.setEditorMode(EditorMode.PAN);
+            editorEngine.state.setCanvasPanning(true);
             e.preventDefault();
             e.stopPropagation();
         }
@@ -203,8 +203,8 @@ export const Canvas = observer(() => {
 
     const middleMouseButtonUp = useCallback((e: MouseEvent) => {
         if (e.button === 1) {
-            editorEngine.state.editorMode = EditorMode.DESIGN;
-            editorEngine.state.canvasPanning = false;
+            editorEngine.state.setEditorMode(EditorMode.DESIGN);
+            editorEngine.state.setCanvasPanning(false);
             e.preventDefault();
             e.stopPropagation();
         }
@@ -261,7 +261,7 @@ export const Canvas = observer(() => {
                     // Always clean up drag selection state, even if selection fails
                     setIsDragSelecting(false);
                     setFramesInSelection(new Set());
-                    editorEngine.state.isDragSelecting = false;
+                    editorEngine.state.setIsDragSelecting(false);
                 }
             };
 
@@ -285,7 +285,7 @@ export const Canvas = observer(() => {
                     if (e.buttons === 0 && isDragSelecting) {
                         setIsDragSelecting(false);
                         setFramesInSelection(new Set());
-                        editorEngine.state.isDragSelecting = false;
+                        editorEngine.state.setIsDragSelecting(false);
                     }
                 }}
             >

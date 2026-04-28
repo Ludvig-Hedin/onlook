@@ -13,7 +13,7 @@ export const PanOverlay = observer(({ clampPosition }: PanOverlayProps) => {
     const startPan = (event: React.MouseEvent<HTMLDivElement>) => {
         event.preventDefault();
         event.stopPropagation();
-        editorEngine.state.canvasPanning = true;
+            editorEngine.state.setCanvasPanning(true);
     };
 
     const pan = (event: React.MouseEvent<HTMLDivElement>) => {
@@ -30,7 +30,7 @@ export const PanOverlay = observer(({ clampPosition }: PanOverlayProps) => {
     };
 
     const endPan = () => {
-        editorEngine.state.canvasPanning = false;
+            editorEngine.state.setCanvasPanning(false);
     };
 
     return (

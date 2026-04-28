@@ -24,8 +24,19 @@ export function ThemeGroup({ frameData }: { frameData: FrameData }) {
                 return;
             }
 
-            const theme = await frameData.view.getTheme();
-            setTheme(theme);
+            if (typeof frameData.view.getTheme !== 'function') {
+                console.warn('Frame view getTheme method not available yet');
+                return;
+            }
+
+            try {
+                const theme = await frameData.view.getTheme();
+                if (theme) {
+                    setTheme(theme);
+                }
+            } catch (error) {
+                console.error('Error getting theme:', error);
+            }
         };
         void getTheme();
     }, [frameData]);
