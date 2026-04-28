@@ -18,16 +18,8 @@ import { AssistantMessage } from './assistant-message';
 import { ErrorMessage } from './error-message';
 import { UserMessage } from './user-message';
 
-const getLatestReasoning = (messages: ChatMessage[]) => {
-    const assistantMessage = [...messages].reverse().find((message) => message.role === 'assistant');
-    if (!assistantMessage) return null;
-
-    const reasoningParts = assistantMessage.parts.filter((part) => part.type === 'reasoning');
-    const latestReasoning = reasoningParts[reasoningParts.length - 1];
-    if (!latestReasoning || latestReasoning.type !== 'reasoning') return null;
-
-    return latestReasoning.text || null;
-};
+const getLatestAssistantMessageId = (messages: ChatMessage[]) =>
+    [...messages].reverse().find((message) => message.role === 'assistant')?.id ?? null;
 
 interface ChatMessagesProps {
     messages: ChatMessage[];
@@ -44,14 +36,20 @@ export const ChatMessages = observer(({
 }: ChatMessagesProps) => {
     const editorEngine = useEditorEngine();
     const t = useTranslations();
-    const reasoning = getLatestReasoning(messages);
+    const latestAssistantMessageId = getLatestAssistantMessageId(messages);
 
     const renderMessage = useCallback(
         (message: ChatMessage) => {
             let messageNode;
             switch (message.role) {
                 case 'assistant':
-                    messageNode = <AssistantMessage key={message.id} message={message} isStreaming={isStreaming} />;
+                    messageNode = (
+                        <AssistantMessage
+                            key={message.id}
+                            message={message}
+                            isStreaming={isStreaming && message.id === latestAssistantMessageId}
+                        />
+                    );
                     break;
                 case 'user':
                     messageNode = (
@@ -70,7 +68,7 @@ export const ChatMessages = observer(({
             }
             return <div key={message.id} className="my-2">{messageNode}</div>;
         },
-        [onEditMessage, isStreaming],
+        [latestAssistantMessageId, onEditMessage, isStreaming],
     );
 
     if (!messages || messages.length === 0) {
@@ -91,17 +89,6 @@ export const ChatMessages = observer(({
             <ConversationContent className="p-0 m-0">
                 {messages.map((message) => renderMessage(message))}
                 {error && <ErrorMessage error={error} />}
-                {isStreaming && <div className="flex w-full h-full flex-row items-start gap-2 px-4 my-2 text-small content-start text-foreground-secondary">
-                    <Icons.LoadingSpinner className="mt-0.5 animate-spin" />
-                    <div className="flex flex-col gap-1">
-                        <p className="text-xs font-medium text-foreground-secondary">Thinking</p>
-                        {reasoning && (
-                            <p className="max-w-[28rem] text-xs leading-5 text-foreground-tertiary">
-                                {reasoning}
-                            </p>
-                        )}
-                    </div>
-                </div>}
             </ConversationContent>
             <ConversationScrollButton />
         </Conversation>
