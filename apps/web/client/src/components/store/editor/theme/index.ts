@@ -1190,6 +1190,7 @@ export class ThemeManager {
                                     oid,
                                     branchId: activeBranchId,
                                     attributes: { className: newClasses.join(' ') },
+                                    tagName: null,
                                     overrideClasses: true,
                                     textContent: null,
                                     structureChanges: [],

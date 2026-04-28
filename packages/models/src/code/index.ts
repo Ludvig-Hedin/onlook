@@ -4,6 +4,7 @@ export interface CodeDiffRequest {
     oid: string;
     branchId: string;
     attributes: Record<string, any>;
+    tagName: string | null;
     textContent: string | null;
     overrideClasses: boolean | null;
     structureChanges: CodeAction[];

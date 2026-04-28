@@ -36,6 +36,18 @@ export function replaceNodeClasses(node: T.JSXElement, className: string): void 
     }
 }
 
+export function renameNodeTag(node: T.JSXElement, tagName: string): void {
+    if (!t.isJSXIdentifier(node.openingElement.name)) {
+        return;
+    }
+
+    node.openingElement.name.name = tagName;
+
+    if (node.closingElement && t.isJSXIdentifier(node.closingElement.name)) {
+        node.closingElement.name.name = tagName;
+    }
+}
+
 function insertAttribute(element: T.JSXOpeningElement, attribute: string, className: string): void {
     const newClassNameAttr = t.jsxAttribute(t.jsxIdentifier(attribute), t.stringLiteral(className));
     element.attributes.push(newClassNameAttr);

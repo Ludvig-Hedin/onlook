@@ -312,8 +312,8 @@ export const ClickRect = ({
             </>
         );
     };
-    const isAbsolutelyPositioned = styles?.computed?.position === 'absolute';
-    const shouldShowHandles = shouldShowResizeHandles && isAbsolutelyPositioned;
+    const isBodyTag = styles?.computed?.display === 'contents' && width === 0 && height === 0;
+    const shouldShowHandles = shouldShowResizeHandles && !isBodyTag;
 
     return (
         <BaseRect

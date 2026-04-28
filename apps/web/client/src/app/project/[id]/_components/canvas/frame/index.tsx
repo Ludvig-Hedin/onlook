@@ -23,7 +23,7 @@ const LOADING_MESSAGES = [
     'If you have a large project, it may take a while...',
     'Tip: Click the "Branch" icon to create a new version of your project on the canvas',
     'Preparing the visual editor...',
-    'Tip: Double-click on an element to open it up in the code editor',
+    'Tip: Double-click text to edit it directly on the canvas',
     'Hang in there... seems like a large project...',
     'Thanks for your patience... standby...',
     'Loading your components and assets...',

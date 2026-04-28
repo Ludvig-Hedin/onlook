@@ -12,6 +12,7 @@ export async function getOrCreateCodeDiffRequest(
             branchId,
             structureChanges: [],
             attributes: {},
+            tagName: null,
             textContent: null,
             overrideClasses: null,
         };

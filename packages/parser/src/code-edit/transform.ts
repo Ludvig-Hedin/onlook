@@ -11,7 +11,7 @@ import { insertImageToNode, removeImageFromNode } from './image';
 import { insertElementToNode } from './insert';
 import { moveElementInNode } from './move';
 import { removeElementFromNode } from './remove';
-import { addClassToNode, replaceNodeClasses, updateNodeProp } from './style';
+import { addClassToNode, renameNodeTag, replaceNodeClasses, updateNodeProp } from './style';
 import { updateNodeTextContent } from './text';
 
 export function transformAst(ast: T.File, oidToCodeDiff: Map<string, CodeDiffRequest>): void {
@@ -24,7 +24,11 @@ export function transformAst(ast: T.File, oidToCodeDiff: Map<string, CodeDiffReq
             }
             const codeDiffRequest = oidToCodeDiff.get(currentOid);
             if (codeDiffRequest) {
-                const { attributes, textContent, structureChanges } = codeDiffRequest;
+                const { attributes, tagName, textContent, structureChanges } = codeDiffRequest;
+
+                if (tagName) {
+                    renameNodeTag(path.node, tagName);
+                }
 
                 if (attributes) {
                     Object.entries(attributes).forEach(([key, value]) => {

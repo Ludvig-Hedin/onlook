@@ -117,7 +117,9 @@ export const GestureScreen = observer(({ frame, isResizing }: { frame: Frame, is
                         }
                         break;
                     case MouseAction.DOUBLE_CLICK:
-                        if (el.oid) {
+                        if (el.oid && (await frameData.view.isChildTextEditable(el.oid)) === true) {
+                            await editorEngine.text.start(el, frameData.view);
+                        } else if (el.oid) {
                             editorEngine.ide.openCodeBlock(el.oid);
                         } else {
                             toast.error('Cannot find element in code panel');

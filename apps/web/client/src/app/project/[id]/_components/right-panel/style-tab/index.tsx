@@ -3,11 +3,14 @@
 import { useEditorEngine } from '@/components/store/editor';
 import { transKeys } from '@/i18n/keys';
 import { BrandTabValue, LeftPanelTabValue } from '@onlook/models';
+import type { ActionElement } from '@onlook/models/actions';
 import { Button } from '@onlook/ui/button';
 import { Input } from '@onlook/ui/input';
 import { ScrollArea } from '@onlook/ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@onlook/ui/select';
 import { Slider } from '@onlook/ui/slider';
+import { toast } from '@onlook/ui/sonner';
+import { Textarea } from '@onlook/ui/textarea';
 import { cn } from '@onlook/ui/utils';
 import {
     getAutolayoutStyles,
@@ -87,7 +90,7 @@ const Section = ({
     description?: string;
     children: React.ReactNode;
 }) => (
-    <section className="rounded-2xl border border-border/50 bg-background/40 p-3">
+    <section className="border-b border-border/50 pb-4 last:border-b-0 last:pb-0">
         <div className="mb-3">
             <h3 className="text-sm font-medium text-foreground">{title}</h3>
             {description && (
@@ -191,6 +194,39 @@ const DraftInput = ({
     );
 };
 
+const DraftTextarea = ({
+    value,
+    onCommit,
+    placeholder,
+}: {
+    value: string;
+    onCommit: (value: string) => void;
+    placeholder?: string;
+}) => {
+    const [draft, setDraft] = useState(value);
+
+    useEffect(() => {
+        setDraft(value);
+    }, [value]);
+
+    const commit = () => onCommit(draft);
+
+    return (
+        <Textarea
+            value={draft}
+            onChange={(event) => setDraft(event.target.value)}
+            onBlur={commit}
+            onKeyDown={(event) => {
+                if ((event.metaKey || event.ctrlKey) && event.key === 'Enter') {
+                    commit();
+                }
+            }}
+            placeholder={placeholder}
+            className="min-h-16 resize-none border-border/60 bg-background-secondary px-2.5 py-2 text-sm shadow-none focus-visible:ring-0 focus-visible:ring-offset-0"
+        />
+    );
+};
+
 const SelectField = ({
     value,
     options,
@@ -258,6 +294,7 @@ export const StyleTab = observer(() => {
     const t = useTranslations();
     const selectedElement = editorEngine.elements.selected[0];
     const selectedStyle = editorEngine.style.selectedStyle;
+    const [actionElement, setActionElement] = useState<ActionElement | null>(null);
     const definedStyles = selectedStyle?.styles.defined;
     const computedStyles = selectedStyle?.styles.computed;
     const { textState, handleFontFamilyChange, handleFontSizeChange, handleFontWeightChange, handleTextAlignChange, handleTextColorChange, handleLetterSpacingChange, handleCapitalizationChange, handleTextDecorationChange, handleLineHeightChange } =
@@ -269,6 +306,37 @@ export const StyleTab = observer(() => {
         }
         editorEngine.font.init();
     }, [editorEngine.activeSandbox.session.provider, editorEngine.font]);
+
+    useEffect(() => {
+        let cancelled = false;
+
+        const loadActionElement = async () => {
+            if (!selectedElement) {
+                setActionElement(null);
+                return;
+            }
+
+            const frameData = editorEngine.frames.get(selectedElement.frameId);
+            if (!frameData?.view) {
+                setActionElement(null);
+                return;
+            }
+
+            const nextActionElement = (await frameData.view.getActionElement(
+                selectedElement.domId,
+            )) as ActionElement | null;
+
+            if (!cancelled) {
+                setActionElement(nextActionElement);
+            }
+        };
+
+        void loadActionElement();
+
+        return () => {
+            cancelled = true;
+        };
+    }, [editorEngine.frames, selectedElement]);
 
     const readStyle = useMemo(
         () =>
@@ -328,20 +396,77 @@ export const StyleTab = observer(() => {
         editorEngine.style.update(key, value.trim());
     };
 
+    const commitClassNames = async (value: string) => {
+        if (!selectedElement.oid) {
+            toast.error('This element cannot be edited from the styles panel yet.');
+            return;
+        }
+
+        const className = value.trim();
+        await editorEngine.code.updateElementMetadata({
+            oid: selectedElement.oid,
+            branchId: selectedElement.branchId,
+            attributes: { className },
+            overrideClasses: true,
+        });
+        setActionElement((current) =>
+            current
+                ? {
+                    ...current,
+                    attributes: {
+                        ...current.attributes,
+                        className,
+                    },
+                }
+                : current,
+        );
+    };
+
+    const commitTagName = async (value: string) => {
+        if (!selectedElement.oid) {
+            toast.error('This element cannot be retagged from the styles panel yet.');
+            return;
+        }
+
+        const tagName = value.trim().toLowerCase();
+        if (!/^[a-z][a-z0-9-]*$/.test(tagName)) {
+            toast.error('Use a valid lowercase HTML tag name.');
+            return;
+        }
+
+        await editorEngine.code.updateElementMetadata({
+            oid: selectedElement.oid,
+            branchId: selectedElement.branchId,
+            tagName,
+        });
+        setActionElement((current) => (current ? { ...current, tagName } : current));
+    };
+
+    const classNameValue =
+        actionElement?.attributes.className ?? actionElement?.attributes.class ?? '';
+
     return (
         <ScrollArea className="h-full">
-            <div className="flex flex-col gap-3 p-3">
-                <section className="rounded-2xl border border-border/50 bg-background/60 p-3">
-                    <div className="text-[11px] uppercase tracking-[0.22em] text-foreground-tertiary">
-                        Selected element
+            <div className="flex flex-col gap-4 p-3">
+                <section className="border-b border-border/50 pb-4">
+                    <div className="space-y-1.5">
+                        <FieldLabel>Classes</FieldLabel>
+                        <DraftTextarea
+                            value={classNameValue}
+                            placeholder="flex items-center gap-2"
+                            onCommit={(value) => void commitClassNames(value)}
+                        />
                     </div>
-                    <div className="mt-2 flex items-center gap-2">
-                        <span className="rounded-md border border-border/60 bg-background-secondary px-2 py-1 text-xs uppercase tracking-[0.16em] text-foreground-secondary">
-                            {selectedElement.tagName}
-                        </span>
-                        <span className="truncate text-sm text-foreground-secondary">
-                            {selectedElement.domId}
-                        </span>
+                    <div className="mt-3 space-y-1.5">
+                        <FieldLabel>Tag</FieldLabel>
+                        <DraftInput
+                            value={actionElement?.tagName ?? selectedElement.tagName}
+                            placeholder="div"
+                            onCommit={(value) => void commitTagName(value)}
+                        />
+                    </div>
+                    <div className="mt-3 truncate text-xs text-foreground-tertiary">
+                        {selectedElement.domId}
                     </div>
                 </section>
 
@@ -491,7 +616,7 @@ export const StyleTab = observer(() => {
                     description="Control padding and margin with overall and per-side values."
                 >
                     {(['padding', 'margin'] as const).map((group) => (
-                        <div key={group} className="space-y-2 rounded-xl border border-border/40 bg-background/30 p-2.5">
+                        <div key={group} className="space-y-2">
                             <div className="text-xs font-medium capitalize text-foreground-secondary">
                                 {group}
                             </div>

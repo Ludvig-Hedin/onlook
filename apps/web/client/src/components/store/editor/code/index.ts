@@ -17,6 +17,7 @@ import {
     getWriteCodeRequests,
     processGroupedRequests,
 } from './requests';
+import { getOrCreateCodeDiffRequest } from './helpers';
 
 export class CodeManager {
     constructor(private editorEngine: EditorEngine) {
@@ -123,4 +124,32 @@ export class CodeManager {
     }
 
     clear() { }
+
+    async updateElementMetadata({
+        oid,
+        branchId,
+        attributes,
+        tagName = null,
+        overrideClasses = null,
+    }: {
+        oid: string;
+        branchId: string;
+        attributes?: Record<string, string>;
+        tagName?: string | null;
+        overrideClasses?: boolean | null;
+    }) {
+        const requests = new Map<string, CodeDiffRequest>();
+        const request = await getOrCreateCodeDiffRequest(oid, branchId, requests);
+
+        if (attributes) {
+            request.attributes = {
+                ...request.attributes,
+                ...attributes,
+            };
+        }
+        request.tagName = tagName;
+        request.overrideClasses = overrideClasses;
+
+        await this.writeRequest(Array.from(requests.values()));
+    }
 }
