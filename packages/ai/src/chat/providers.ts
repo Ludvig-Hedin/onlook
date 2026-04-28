@@ -23,7 +23,7 @@ export function initModel({
             providerOptions = {
                 openrouter: { transforms: ['middle-out'] },
             };
-            const isAnthropic = requestedModel === OPENROUTER_MODELS.CLAUDE_4_5_SONNET || requestedModel === OPENROUTER_MODELS.CLAUDE_3_5_HAIKU;
+            const isAnthropic = requestedModel === OPENROUTER_MODELS.CLAUDE_4_5_SONNET || requestedModel === OPENROUTER_MODELS.CLAUDE_3_5_HAIKU || requestedModel === OPENROUTER_MODELS.CLAUDE_OPUS_4_7;
             providerOptions = isAnthropic
                 ? { ...providerOptions, anthropic: { cacheControl: { type: 'ephemeral' } } }
                 : providerOptions;

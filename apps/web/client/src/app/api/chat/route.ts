@@ -2,7 +2,7 @@ import { api } from '@/trpc/server';
 import { trackEvent } from '@/utils/analytics/server';
 import { createRootAgentStream } from '@onlook/ai';
 import { toDbMessage } from '@onlook/db';
-import { ChatType, type ChatMessage, type ChatMetadata } from '@onlook/models';
+import { CHAT_MODEL_OPTIONS, ChatType, type ChatMessage, type ChatMetadata, type ChatModel } from '@onlook/models';
 import { type NextRequest } from 'next/server';
 import { v4 as uuidv4 } from 'uuid';
 import { checkMessageLimit, decrementUsage, errorHandler, getSupabaseUser, incrementUsage } from './helpers';
@@ -58,6 +58,7 @@ export const streamResponse = async (req: NextRequest, userId: string) => {
         chatType: ChatType,
         conversationId: string,
         projectId: string,
+        model?: ChatModel,
     };
     // Updating the usage record and rate limit is done here to avoid
     // abuse in the case where a single user sends many concurrent requests.
@@ -81,6 +82,7 @@ export const streamResponse = async (req: NextRequest, userId: string) => {
             userId,
             traceId,
             messages,
+            model: body.model ?? CHAT_MODEL_OPTIONS[0]!.model,
         });
         return stream.toUIMessageStreamResponse<ChatMessage>(
             {

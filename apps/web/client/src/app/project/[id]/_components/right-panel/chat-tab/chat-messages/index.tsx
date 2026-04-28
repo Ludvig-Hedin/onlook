@@ -18,6 +18,17 @@ import { AssistantMessage } from './assistant-message';
 import { ErrorMessage } from './error-message';
 import { UserMessage } from './user-message';
 
+const getLatestReasoning = (messages: ChatMessage[]) => {
+    const assistantMessage = [...messages].reverse().find((message) => message.role === 'assistant');
+    if (!assistantMessage) return null;
+
+    const reasoningParts = assistantMessage.parts.filter((part) => part.type === 'reasoning');
+    const latestReasoning = reasoningParts[reasoningParts.length - 1];
+    if (!latestReasoning || latestReasoning.type !== 'reasoning') return null;
+
+    return latestReasoning.text || null;
+};
+
 interface ChatMessagesProps {
     messages: ChatMessage[];
     onEditMessage: EditMessage;
@@ -33,6 +44,7 @@ export const ChatMessages = observer(({
 }: ChatMessagesProps) => {
     const editorEngine = useEditorEngine();
     const t = useTranslations();
+    const reasoning = getLatestReasoning(messages);
 
     const renderMessage = useCallback(
         (message: ChatMessage) => {
@@ -79,13 +91,19 @@ export const ChatMessages = observer(({
             <ConversationContent className="p-0 m-0">
                 {messages.map((message) => renderMessage(message))}
                 {error && <ErrorMessage error={error} />}
-                {isStreaming && <div className="flex w-full h-full flex-row items-center gap-2 px-4 my-2 text-small content-start text-foreground-secondary">
-                    <Icons.LoadingSpinner className="animate-spin" />
-                    <p>Thinking ...</p>
+                {isStreaming && <div className="flex w-full h-full flex-row items-start gap-2 px-4 my-2 text-small content-start text-foreground-secondary">
+                    <Icons.LoadingSpinner className="mt-0.5 animate-spin" />
+                    <div className="flex flex-col gap-1">
+                        <p className="text-xs font-medium text-foreground-secondary">Thinking</p>
+                        {reasoning && (
+                            <p className="max-w-[28rem] text-xs leading-5 text-foreground-tertiary">
+                                {reasoning}
+                            </p>
+                        )}
+                    </div>
                 </div>}
             </ConversationContent>
             <ConversationScrollButton />
         </Conversation>
     );
 });
-

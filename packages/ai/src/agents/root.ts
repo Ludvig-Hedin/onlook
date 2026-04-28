@@ -1,5 +1,5 @@
 import type { ToolCall } from '@ai-sdk/provider-utils';
-import { ChatType, LLMProvider, OPENROUTER_MODELS, type ChatMessage, type ModelConfig } from '@onlook/models';
+import { ChatType, LLMProvider, OPENROUTER_MODELS, type ChatMessage, type ChatModel, type ModelConfig } from '@onlook/models';
 import { NoSuchToolError, generateObject, smoothStream, stepCountIs, streamText, type ToolSet } from 'ai';
 import { convertToStreamMessages, getAskModeSystemPrompt, getCreatePageSystemPrompt, getSystemPrompt, getToolSetFromType, initModel } from '../index';
 
@@ -10,6 +10,7 @@ export const createRootAgentStream = ({
     userId,
     traceId,
     messages,
+    model,
 }: {
     chatType: ChatType;
     conversationId: string;
@@ -17,8 +18,9 @@ export const createRootAgentStream = ({
     userId: string;
     traceId: string;
     messages: ChatMessage[];
+    model: ChatModel;
 }) => {
-    const modelConfig = getModelFromType(chatType);
+    const modelConfig = getModelFromType(chatType, model);
     const systemPrompt = getSystemPromptFromType(chatType);
     const toolSet = getToolSetFromType(chatType);
     return streamText({
@@ -58,21 +60,15 @@ const getSystemPromptFromType = (chatType: ChatType): string => {
     }
 }
 
-const getModelFromType = (chatType: ChatType): ModelConfig => {
+const getModelFromType = (chatType: ChatType, selectedModel: ChatModel): ModelConfig => {
     switch (chatType) {
         case ChatType.CREATE:
         case ChatType.FIX:
-            return initModel({
-                provider: LLMProvider.OPENROUTER,
-                model: OPENROUTER_MODELS.OPEN_AI_GPT_5,
-            });
+            return initModel({ provider: LLMProvider.OPENROUTER, model: selectedModel });
         case ChatType.ASK:
         case ChatType.EDIT:
         default:
-            return initModel({
-                provider: LLMProvider.OPENROUTER,
-                model: OPENROUTER_MODELS.CLAUDE_4_5_SONNET,
-            });
+            return initModel({ provider: LLMProvider.OPENROUTER, model: selectedModel });
     }
 }
 

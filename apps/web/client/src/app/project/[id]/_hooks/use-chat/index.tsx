@@ -4,7 +4,7 @@ import { useEditorEngine } from '@/components/store/editor';
 import { handleToolCall } from '@/components/tools';
 import { api } from '@/trpc/client';
 import { useChat as useAiChat } from '@ai-sdk/react';
-import { ChatType, type ChatMessage, type GitMessageCheckpoint, type MessageContext, type QueuedMessage } from '@onlook/models';
+import { ChatType, type ChatMessage, type ChatModel, type GitMessageCheckpoint, type MessageContext, type QueuedMessage } from '@onlook/models';
 import { jsonClone } from '@onlook/utility';
 import { DefaultChatTransport, lastAssistantMessageIsCompleteWithToolCalls, type FinishReason } from 'ai';
 import { usePostHog } from 'posthog-js/react';
@@ -31,9 +31,10 @@ interface UseChatProps {
     conversationId: string;
     projectId: string;
     initialMessages: ChatMessage[];
+    model: ChatModel;
 }
 
-export function useChat({ conversationId, projectId, initialMessages }: UseChatProps) {
+export function useChat({ conversationId, projectId, initialMessages, model }: UseChatProps) {
     const editorEngine = useEditorEngine();
     const posthog = usePostHog();
 
@@ -52,6 +53,7 @@ export function useChat({ conversationId, projectId, initialMessages }: UseChatP
                 body: {
                     conversationId,
                     projectId,
+                    model,
                 },
             }),
             onToolCall: async (toolCall) => {
@@ -89,6 +91,7 @@ export function useChat({ conversationId, projectId, initialMessages }: UseChatP
                     chatType: type,
                     conversationId,
                     context: messageContext,
+                    model,
                 },
             });
             void editorEngine.chat.conversation.generateTitle(content);
@@ -100,6 +103,7 @@ export function useChat({ conversationId, projectId, initialMessages }: UseChatP
             setMessages,
             regenerate,
             conversationId,
+            model,
         ],
     );
 
@@ -163,6 +167,7 @@ export function useChat({ conversationId, projectId, initialMessages }: UseChatP
                 body: {
                     chatType,
                     conversationId,
+                    model,
                 },
             });
 

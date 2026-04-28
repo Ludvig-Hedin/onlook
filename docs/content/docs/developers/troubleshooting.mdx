@@ -28,6 +28,12 @@ If chat requests fail with `Missing Authentication header`, verify that `OPENROU
 
 In this repo, AI chat is executed server-side, so changing `.env.local` without restarting leaves the running process with stale environment variables.
 
+### Chat Model Selector
+
+The chat composer now includes a model selector powered by OpenRouter. The default model is OpenAI GPT-5.5, and the selector currently exposes the latest supported model from each provider family we route through OpenRouter.
+
+While a chat is streaming, the assistant’s reasoning is shown inline in muted smaller text under the spinner so you can follow progress without expanding the message.
+
 ### Authentication Issues
 
 If you encounter issues with reloading pages and being unauthenticated then check your node version, install a more recent version, re-install dependencies and restart the project.

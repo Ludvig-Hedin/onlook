@@ -1,4 +1,5 @@
-import { type ChatMessage } from '@onlook/models';
+import { useState } from 'react';
+import { CHAT_MODEL_OPTIONS, type ChatMessage, type ChatModel } from '@onlook/models';
 import { useChat } from '../../../../_hooks/use-chat';
 import { ChatInput } from '../chat-input';
 import { ChatMessages } from '../chat-messages';
@@ -15,10 +16,12 @@ export const ChatTabContent = ({
     projectId,
     initialMessages,
 }: ChatTabContentProps) => {
+    const [model, setModel] = useState<ChatModel>(CHAT_MODEL_OPTIONS[0]!.model);
     const { isStreaming, sendMessage, editMessage, messages, error, stop, queuedMessages, removeFromQueue } = useChat({
         conversationId,
         projectId,
         initialMessages,
+        model,
     });
 
     return (
@@ -37,6 +40,8 @@ export const ChatTabContent = ({
                 onSendMessage={sendMessage}
                 queuedMessages={queuedMessages}
                 removeFromQueue={removeFromQueue}
+                model={model}
+                onModelChange={setModel}
             />
         </div>
     );

@@ -27,7 +27,9 @@ import { type SuggestionsRef } from '../suggestions';
 import { ActionButtons } from './action-buttons';
 import { ChatContextWindow } from './chat-context';
 import { ChatModeToggle } from './chat-mode-toggle';
+import { ModelSelector } from './model-selector';
 import { QueueItems } from './queue-items';
+import { type ChatModel } from '@onlook/models';
 
 interface ChatInputProps {
     messages: ChatMessage[];
@@ -36,6 +38,8 @@ interface ChatInputProps {
     onSendMessage: SendMessage;
     queuedMessages: QueuedMessage[];
     removeFromQueue: (id: string) => void;
+    model: ChatModel;
+    onModelChange: (model: ChatModel) => void;
 }
 
 const imageDragDataSchema = z.object({
@@ -53,6 +57,8 @@ export const ChatInput = observer(
         onSendMessage,
         queuedMessages,
         removeFromQueue,
+        model,
+        onModelChange,
     }: ChatInputProps) => {
         const editorEngine = useEditorEngine();
         const t = useTranslations();
@@ -435,6 +441,7 @@ export const ChatInput = observer(
                             chatMode={chatMode}
                             onChatModeChange={handleChatModeChange}
                         />
+                        <ModelSelector value={model} onChange={onModelChange} />
                         {lastUsageMessage?.metadata?.usage && (
                             <ChatContextWindow usage={lastUsageMessage?.metadata?.usage} />
                         )}
