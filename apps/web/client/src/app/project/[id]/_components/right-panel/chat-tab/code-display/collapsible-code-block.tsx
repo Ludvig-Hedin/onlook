@@ -6,7 +6,7 @@ import { Icons } from '@onlook/ui/icons';
 import { cn, getTruncatedFileName } from '@onlook/ui/utils';
 import { AnimatePresence, motion } from 'motion/react';
 import { observer } from 'mobx-react-lite';
-import { memo, useEffect, useState } from 'react';
+import { memo, useEffect, useMemo, useState } from 'react';
 
 interface CollapsibleCodeBlockProps {
     path: string;
@@ -15,6 +15,27 @@ interface CollapsibleCodeBlockProps {
     applied: boolean;
     isStream?: boolean;
     branchId?: string;
+}
+
+const MAX_STREAMING_PREVIEW_CHARS = 12000;
+const MAX_STREAMING_PREVIEW_LINES = 250;
+
+function getStreamingPreview(content: string) {
+    const lines = content.split('\n');
+    const truncatedByLines = lines.length > MAX_STREAMING_PREVIEW_LINES;
+    const previewByLines = truncatedByLines
+        ? lines.slice(0, MAX_STREAMING_PREVIEW_LINES).join('\n')
+        : content;
+
+    const truncatedByChars = previewByLines.length > MAX_STREAMING_PREVIEW_CHARS;
+    const preview = truncatedByChars
+        ? previewByLines.slice(0, MAX_STREAMING_PREVIEW_CHARS)
+        : previewByLines;
+
+    return {
+        preview,
+        truncated: truncatedByLines || truncatedByChars,
+    };
 }
 
 const CollapsibleCodeBlockComponent = ({
@@ -26,6 +47,7 @@ const CollapsibleCodeBlockComponent = ({
     const editorEngine = useEditorEngine();
     const [isOpen, setIsOpen] = useState(false);
     const [copied, setCopied] = useState(false);
+    const { preview, truncated } = useMemo(() => getStreamingPreview(content), [content]);
 
     useEffect(() => {
         if (isStream) {
@@ -102,7 +124,17 @@ const CollapsibleCodeBlockComponent = ({
                                 {/* Render streaming code immediately so users can follow file writes live. */}
                                 {(isOpen || isStream) && (
                                     <div className="border-t">
-                                        <CodeBlock code={content} language="jsx" isStreaming={isStream} className="text-xs overflow-x-auto" />
+                                        <CodeBlock
+                                            code={isStream ? preview : content}
+                                            language="jsx"
+                                            isStreaming={isStream}
+                                            className="text-xs overflow-x-auto"
+                                        />
+                                        {isStream && truncated && (
+                                            <div className="border-t px-3 py-2 text-xs text-foreground-tertiary">
+                                                Showing a live preview while the file is being written. Expand after the tool finishes to inspect the full content.
+                                            </div>
+                                        )}
                                         <div className="flex justify-end gap-1.5 p-1 border-t">
                                             <Button
                                                 size="sm"
