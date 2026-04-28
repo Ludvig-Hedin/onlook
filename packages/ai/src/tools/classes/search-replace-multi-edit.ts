@@ -2,7 +2,7 @@ import { Icons } from '@onlook/ui/icons';
 import type { EditorEngine } from '@onlook/web-client/src/components/store/editor/engine';
 import { z } from 'zod';
 import { ClientTool } from '../models/client';
-import { getFileSystem } from '../shared/helpers/files';
+import { getFileSystem, refreshPagesIfNeeded } from '../shared/helpers/files';
 import { BRANCH_ID_SCHEMA } from '../shared/type';
 
 export class SearchReplaceMultiEditFileTool extends ClientTool {
@@ -75,6 +75,7 @@ export class SearchReplaceMultiEditFileTool extends ClientTool {
             }
 
             await fileSystem.writeFile(args.file_path, content);
+            await refreshPagesIfNeeded(args.file_path, editorEngine);
             return `File ${args.file_path} edited with ${args.edits.length} changes`;
         } catch (error) {
             throw new Error(`Cannot multi-edit file ${args.file_path}: ${(error as Error).message}`);

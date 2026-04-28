@@ -2,6 +2,7 @@ import { Icons } from '@onlook/ui/icons';
 import type { EditorEngine } from '@onlook/web-client/src/components/store/editor/engine';
 import { z } from 'zod';
 import { ClientTool } from '../models/client';
+import { refreshPagesIfNeeded } from '../shared/helpers/files';
 import { BRANCH_ID_SCHEMA } from '../shared/type';
 
 export class BashEditTool extends ClientTool {
@@ -70,6 +71,10 @@ export class BashEditTool extends ClientTool {
             }
 
             const result = await sandbox.session.runCommand(args.command);
+            if (result.success) {
+                // Bash edits can create, move, or remove route files/directories.
+                await editorEngine.pages.scanPages();
+            }
             return {
                 output: result.output,
                 success: result.success,

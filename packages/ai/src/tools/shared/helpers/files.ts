@@ -11,6 +11,25 @@ export async function getFileSystem(branchId: string, editorEngine: EditorEngine
     return fileSystem;
 }
 
+const NEXT_ROUTE_PREFIXES = ['src/app/', 'app/', 'src/pages/', 'pages/'];
+
+export function shouldRefreshPagesForPath(filePath: string): boolean {
+    const normalizedPath = filePath.replace(/^\/+/, '').replace(/\\/g, '/').toLowerCase();
+    return NEXT_ROUTE_PREFIXES.some((prefix) => normalizedPath.startsWith(prefix));
+}
+
+export async function refreshPagesIfNeeded(filePath: string, editorEngine: EditorEngine): Promise<void> {
+    if (!shouldRefreshPagesForPath(filePath)) {
+        return;
+    }
+
+    try {
+        await editorEngine.pages.scanPages();
+    } catch (error) {
+        console.error('Failed to refresh pages after file mutation:', error);
+    }
+}
+
 export async function resolveDirectoryPath(inputPath: string | undefined, sandbox: SandboxManager): Promise<string> {
     if (!inputPath) {
         // Get current working directory
