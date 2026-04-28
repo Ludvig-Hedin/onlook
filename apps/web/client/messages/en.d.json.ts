@@ -18,12 +18,12 @@ declare const messages: {
                 "load": "Load Existing Project"
             },
             "loading": {
-                "title": "Setting up your new Onlook app...",
+                "title": "Setting up your new Weblab app...",
                 "description": "This may take a few seconds",
                 "cancel": "Cancel"
             },
             "error": {
-                "title": "Error creating your Onlook app",
+                "title": "Error creating your Weblab app",
                 "backToPrompt": "Back to Prompting"
             }
         },
@@ -38,7 +38,7 @@ declare const messages: {
         "actions": {
             "import": "Import Project",
             "close": "Close",
-            "about": "About Onlook",
+            "about": "About Weblab",
             "signOut": "Sign out",
             "editApp": "Edit App",
             "projectSettings": "Project settings",
@@ -94,8 +94,8 @@ declare const messages: {
         }
     },
     "welcome": {
-        "title": "Welcome to Onlook",
-        "titleReturn": "Welcome back to Onlook",
+        "title": "Welcome to Weblab",
+        "titleReturn": "Welcome back to Weblab",
         "description": "A next-generation visual code editor that lets designers and product managers craft web experiences with AI.",
         "alpha": "Alpha",
         "login": {
@@ -136,8 +136,8 @@ declare const messages: {
                     "Unlimited projects",
                     "Unlimited AI chat messages a day",
                     "Unlimited monthly chats",
-                    "Remove built with Onlook watermark",
-                    "1 free custom domain hosted with Onlook",
+                    "Remove built with Weblab watermark",
+                    "1 free custom domain hosted with Weblab",
                     "Priority support"
                 ]
             },
@@ -348,7 +348,7 @@ declare const messages: {
     },
     "help": {
         "menu": {
-            "reloadOnlook": "Reload Onlook",
+            "reloadOnlook": "Reload Weblab",
             "theme": {
                 "title": "Theme",
                 "light": "Light",

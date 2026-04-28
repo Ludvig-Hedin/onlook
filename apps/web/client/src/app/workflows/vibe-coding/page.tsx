@@ -1,5 +1,6 @@
 'use client';
 
+import { APP_NAME } from '@onlook/constants';
 import { CreateManagerProvider } from '@/components/store/create';
 import { SubscriptionModal } from '@/components/ui/pricing-modal';
 import { NonProjectSettingsModal } from '@/components/ui/settings-modal/non-project';
@@ -24,16 +25,16 @@ const vibeCodingFaqs = [
         answer: "Most vibe coding tools are solo workflows. You can't easily share work-in-progress, collaborate in real-time, or hand off to engineers. The output is often throwaway code that doesn't match your design system.",
     },
     {
-        question: 'How does Onlook make vibe coding work for teams?',
-        answer: 'Onlook adds a visual canvas layer. Share your canvas with teammates, leave spatial comments, work together in real-time. AI is constrained to your design system, so outputs are consistent. Changes become PRs engineers can merge.',
+        question: `How does ${APP_NAME} make vibe coding work for teams?`,
+        answer: `${APP_NAME} adds a visual canvas layer. Share your canvas with teammates, leave spatial comments, work together in real-time. AI is constrained to your design system, so outputs are consistent. Changes become PRs engineers can merge.`,
     },
     {
-        question: 'Can I use my existing vibe coding tools with Onlook?',
-        answer: 'Yes. Use any AI coding tool to build. Open in Onlook to visually iterate, collaborate with your team, and refine before shipping. Onlook works with your existing codebase.',
+        question: `Can I use my existing vibe coding tools with ${APP_NAME}?`,
+        answer: `Yes. Use any AI coding tool to build. Open in ${APP_NAME} to visually iterate, collaborate with your team, and refine before shipping. ${APP_NAME} works with your existing codebase.`,
     },
     {
-        question: 'Does vibe coding in Onlook use my real components?',
-        answer: "Yes. Unlike tools that generate generic HTML, Onlook connects to your component library. AI uses YOUR buttons, cards, and layouts. No brand drift, no rebuilding.",
+        question: `Does vibe coding in ${APP_NAME} use my real components?`,
+        answer: `Yes. Unlike tools that generate generic HTML, ${APP_NAME} connects to your component library. AI uses YOUR buttons, cards, and layouts. No brand drift, no rebuilding.`,
     },
     {
         question: 'How do I share vibe-coded work with my team?',
@@ -89,7 +90,7 @@ function VibeCodingHero() {
                     transition={{ duration: 0.6, delay: 0.15, ease: 'easeOut' }}
                     style={{ willChange: 'opacity, filter', transform: 'translateZ(0)' }}
                 >
-                    Most AI coding tools are solo workflows. Onlook adds the missing layer —
+                    Most AI coding tools are solo workflows. {APP_NAME} adds the missing layer —
                     a visual canvas where teams collaborate on AI-generated UIs with their real components.
                 </motion.p>
                 <motion.div
@@ -145,7 +146,7 @@ export default function VibeCodingWorkflowPage() {
                         Vibe coding — describing what you want and letting AI generate the code — is powerful but has
                         a collaboration problem. Most AI coding tools are solo workflows. You can't
                         easily share work-in-progress, collaborate in real-time, or ensure outputs match your design
-                        system. Onlook solves this.
+                        system. {APP_NAME} solves this.
                     </p>
                     <h2>The Problem with Solo Vibe Coding</h2>
                     <ul>
@@ -154,7 +155,7 @@ export default function VibeCodingWorkflowPage() {
                         <li>Brand drift — AI generates generic HTML/CSS, not your design system</li>
                         <li>No handoff path — "now how do I share this?" becomes a blocker</li>
                     </ul>
-                    <h2>Onlook Makes Vibe Coding Work for Teams</h2>
+                    <h2>{APP_NAME} Makes Vibe Coding Work for Teams</h2>
                     <ul>
                         <li>Visual canvas — see and arrange AI-generated UIs spatially</li>
                         <li>Your real components — AI constrained to your design system</li>
@@ -235,7 +236,7 @@ export default function VibeCodingWorkflowPage() {
                             className="mb-24 max-w-3xl text-4xl font-light leading-tight text-balance md:text-5xl"
                             {...getBlurAnimationProps(0.1)}
                         >
-                            Onlook adds the visual layer. Vibe code with your team, on your components, to real PRs.
+                            {APP_NAME} adds the visual layer. Vibe code with your team, on your components, to real PRs.
                         </motion.p>
                     </div>
 
@@ -308,7 +309,7 @@ export default function VibeCodingWorkflowPage() {
                             className="mb-16 max-w-3xl text-4xl font-light leading-tight text-balance md:text-5xl"
                             {...getBlurAnimationProps(0.1)}
                         >
-                            Vibe code anywhere. Collaborate in Onlook. Ship together.
+                            Vibe code anywhere. Collaborate in {APP_NAME}. Ship together.
                         </motion.p>
 
                         <div className="grid gap-12 md:grid-cols-3">
@@ -316,12 +317,12 @@ export default function VibeCodingWorkflowPage() {
                                 {
                                     step: '01',
                                     title: 'Build with any AI tool',
-                                    description: 'Use any AI coding tool to generate your initial UI. Onlook works with your existing codebase.',
+                                    description: `Use any AI coding tool to generate your initial UI. ${APP_NAME} works with your existing codebase.`,
                                 },
                                 {
                                     step: '02',
                                     title: 'Iterate on the canvas',
-                                    description: 'Open in Onlook to visually refine. Drag elements, adjust styles, use AI with your real components. See changes in real code.',
+                                    description: `Open in ${APP_NAME} to visually refine. Drag elements, adjust styles, use AI with your real components. See changes in real code.`,
                                 },
                                 {
                                     step: '03',
@@ -387,7 +388,7 @@ export default function VibeCodingWorkflowPage() {
                             {/* Team Column */}
                             <div className="border-foreground-primary/30 rounded-lg border bg-gradient-to-b from-white/5 to-transparent p-8">
                                 <h3 className="text-foreground-secondary mb-6 text-sm font-medium uppercase tracking-wider">
-                                    Team Vibe Coding with Onlook
+                                    Team Vibe Coding with {APP_NAME}
                                 </h3>
                                 <ul className="space-y-4">
                                     {[

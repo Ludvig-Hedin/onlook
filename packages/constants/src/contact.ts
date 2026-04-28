@@ -1,2 +1,2 @@
-export const SUPPORT_EMAIL = 'support@onlook.com';
-export const CONTACT_EMAIL = 'contact@onlook.com';
+export const SUPPORT_EMAIL = 'support@weblab.build';
+export const CONTACT_EMAIL = 'contact@weblab.build';

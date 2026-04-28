@@ -1,3 +1,4 @@
+import { APP_NAME } from '@onlook/constants';
 import { Routes } from '@/utils/constants';
 import { createClient } from '@/utils/supabase/server';
 import { getReturnUrlQueryParam } from '@/utils/url';
@@ -6,8 +7,8 @@ import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 
 export const metadata: Metadata = {
-    title: 'Onlook',
-    description: 'Onlook – Projects',
+    title: APP_NAME,
+    description: `${APP_NAME} – Projects`,
 };
 
 export default async function Layout({ children }: Readonly<{ children: React.ReactNode }>) {

@@ -12,18 +12,18 @@ export default function PrivacyPage() {
 
                     <div className="prose prose-invert max-w-none">
                         <p className="text-foreground-secondary mb-8">
-                            If you have any questions, please write to us at contact@onlook.com
+                            If you have any questions, please write to us at contact@weblab.build
                         </p>
 
                         <h2 className="text-2xl font-light text-foreground-primary mt-12 mb-6">Introduction</h2>
                         <p className="text-foreground-secondary mb-6">
-                            At Onlook, we take your privacy seriously. Please read this Privacy Policy to learn how we treat your personal data. <strong>By using or accessing our Services in any manner, you acknowledge that you accept the practices and policies outlined below, and you hereby consent that we will collect, use and disclose your information as described in this Privacy Policy.</strong>
+                            At Weblab, we take your privacy seriously. Please read this Privacy Policy to learn how we treat your personal data. <strong>By using or accessing our Services in any manner, you acknowledge that you accept the practices and policies outlined below, and you hereby consent that we will collect, use and disclose your information as described in this Privacy Policy.</strong>
                         </p>
                         <p className="text-foreground-secondary mb-6">
-                            Remember that your use of Onlook's Services is at all times subject to our Terms of Use, which incorporates this Privacy Policy. Any terms we use in this Policy without defining them have the definitions given to them in the Terms of Use.
+                            Remember that your use of Weblab's Services is at all times subject to our Terms of Use, which incorporates this Privacy Policy. Any terms we use in this Policy without defining them have the definitions given to them in the Terms of Use.
                         </p>
                         <p className="text-foreground-secondary mb-6">
-                            As we continually work to improve our Services, we may need to change this Privacy Policy from time to time. We will alert you of material changes by placing a notice on the Onlook website, by sending you an email and/or by some other means. Please note that if you've opted not to receive legal notice emails from us (or you haven't provided us with your email address), those legal notices will still govern your use of the Services, and you are still responsible for reading and understanding them. If you use the Services after any changes to the Privacy Policy have been posted, that means you agree to all of the changes.
+                            As we continually work to improve our Services, we may need to change this Privacy Policy from time to time. We will alert you of material changes by placing a notice on the Weblab website, by sending you an email and/or by some other means. Please note that if you've opted not to receive legal notice emails from us (or you haven't provided us with your email address), those legal notices will still govern your use of the Services, and you are still responsible for reading and understanding them. If you use the Services after any changes to the Privacy Policy have been posted, that means you agree to all of the changes.
                         </p>
 
                         <h2 className="text-2xl font-light text-foreground-primary mt-12 mb-6">Privacy Policy Table of Contents</h2>
@@ -143,7 +143,7 @@ export default function PrivacyPage() {
                             <li>
                                 <strong>Corresponding with You</strong>
                                 <ul className="list-disc pl-6 mt-2">
-                                    <li>Responding to correspondence that we receive from you, contacting you when necessary or requested, and sending you information about Onlook or the Services.</li>
+                                    <li>Responding to correspondence that we receive from you, contacting you when necessary or requested, and sending you information about Weblab or the Services.</li>
                                     <li>Sending emails and other communications according to your preferences.</li>
                                 </ul>
                             </li>
@@ -190,13 +190,13 @@ export default function PrivacyPage() {
 
                         <h2 className="text-2xl font-light text-foreground-primary mt-12 mb-6">Personal Data of Children</h2>
                         <p className="text-foreground-secondary mb-6">
-                            As noted in the Terms of Use, we do not knowingly collect or solicit Personal Data from children under 13 years of age; if you are a child under the age of 13, please do not attempt to register for or otherwise use the Services or send us any Personal Data. If we learn we have collected Personal Data from a child under 13 years of age, we will delete that information as quickly as possible. If you believe that a child under 13 years of age may have provided Personal Data to us, please contact us at contact@onlook.com.
+                            As noted in the Terms of Use, we do not knowingly collect or solicit Personal Data from children under 13 years of age; if you are a child under the age of 13, please do not attempt to register for or otherwise use the Services or send us any Personal Data. If we learn we have collected Personal Data from a child under 13 years of age, we will delete that information as quickly as possible. If you believe that a child under 13 years of age may have provided Personal Data to us, please contact us at contact@weblab.build.
                         </p>
 
                         <h2 className="text-2xl font-light text-foreground-primary mt-12 mb-6">Other State Law Privacy Rights</h2>
                         <h3 className="text-xl font-light text-foreground-primary mt-8 mb-4">California Resident Rights</h3>
                         <p className="text-foreground-secondary mb-6">
-                            Under California Civil Code Sections 1798.83-1798.84, California residents are entitled to contact us to prevent disclosure of Personal Data to third parties for such third parties' direct marketing purposes; in order to submit such a request, please contact us at contact@onlook.com.
+                            Under California Civil Code Sections 1798.83-1798.84, California residents are entitled to contact us to prevent disclosure of Personal Data to third parties for such third parties' direct marketing purposes; in order to submit such a request, please contact us at contact@weblab.build.
                         </p>
 
                         <h3 className="text-xl font-light text-foreground-primary mt-8 mb-4">Nevada Resident Rights</h3>
@@ -210,7 +210,7 @@ export default function PrivacyPage() {
                         </p>
                         <ul className="text-foreground-secondary mb-6 list-disc pl-6">
                             <li>https://onlook.dev/</li>
-                            <li>contact@onlook.com</li>
+                            <li>contact@weblab.build</li>
                         </ul>
                     </div>
                 </div>

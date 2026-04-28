@@ -1,7 +1,7 @@
 import { makeAutoObservable } from 'mobx';
 import stripAnsi from 'strip-ansi';
 
-import { SUPPORT_EMAIL } from '@onlook/constants';
+import { APP_NAME, SUPPORT_EMAIL } from '@onlook/constants';
 import { type GitCommit } from '@onlook/git';
 
 import type { SandboxManager } from '../sandbox';
@@ -74,7 +74,7 @@ export class GitManager {
 
             // Set user.name if not configured
             if (!hasName) {
-                const nameConfigResult = await this.runCommand('git config user.name "Onlook"');
+                const nameConfigResult = await this.runCommand('git config user.name `${APP_NAME}`');
                 if (!nameConfigResult.success) {
                     console.error('Failed to set git user.name:', nameConfigResult.error);
                 }
@@ -181,7 +181,7 @@ export class GitManager {
     /**
      * Create a commit (high-level) - handles full flow: stage, config, commit
      */
-    async createCommit(message = 'New Onlook backup'): Promise<GitCommandResult> {
+    async createCommit(message = `New ${APP_NAME} backup`): Promise<GitCommandResult> {
         const status = await this.getStatus();
 
         // Stage all files

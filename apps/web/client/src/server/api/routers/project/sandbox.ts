@@ -6,7 +6,7 @@ import {
     createCodeProviderClient,
     getStaticCodeProvider,
 } from '@onlook/code-provider';
-import { DEFAULT_NEW_PROJECT_TEMPLATE, getSandboxPreviewUrl } from '@onlook/constants';
+import { APP_NAME, DEFAULT_NEW_PROJECT_TEMPLATE, getSandboxPreviewUrl } from '@onlook/constants';
 import { shortenUuid } from '@onlook/utility/src/id';
 
 import { createTRPCRouter, protectedProcedure } from '../../trpc';
@@ -52,8 +52,8 @@ export const sandboxRouter = createTRPCRouter({
             const newSandbox = await CodesandboxProvider.createProject({
                 source: 'template',
                 id: DEFAULT_NEW_PROJECT_TEMPLATE.id,
-                title: input.title || 'Onlook Test Sandbox',
-                description: 'Test sandbox for Onlook sync engine',
+                title: input.title || `${APP_NAME} Test Sandbox`,
+                description: `Test sandbox for ${APP_NAME} sync engine`,
                 tags: ['onlook-test'],
             });
 

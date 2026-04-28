@@ -26,22 +26,22 @@ const sitemapSections: SitemapSection[] = [
             {
                 title: "Home",
                 href: Routes.HOME,
-                description: "Onlook homepage — Cursor for Designers. AI-powered visual editor for frontend development."
+                description: "Weblab homepage — Cursor for Designers. AI-powered visual editor for frontend development."
             },
             {
                 title: "Pricing",
                 href: Routes.PRICING,
-                description: "Onlook pricing plans and tiers for individuals and teams."
+                description: "Weblab pricing plans and tiers for individuals and teams."
             },
             {
                 title: "About",
                 href: Routes.ABOUT,
-                description: "Meet the team behind Onlook. Our mission, values, and story."
+                description: "Meet the team behind Weblab. Our mission, values, and story."
             },
             {
                 title: "FAQ",
                 href: Routes.FAQ,
-                description: "Frequently asked questions about Onlook features, compatibility, and workflow."
+                description: "Frequently asked questions about Weblab features, compatibility, and workflow."
             },
         ]
     },
@@ -52,7 +52,7 @@ const sitemapSections: SitemapSection[] = [
             {
                 title: "All Features",
                 href: Routes.FEATURES,
-                description: "Overview of all Onlook features — infinite canvas, AI, collaboration, and more."
+                description: "Overview of all Weblab features — infinite canvas, AI, collaboration, and more."
             },
             {
                 title: "AI",
@@ -83,7 +83,7 @@ const sitemapSections: SitemapSection[] = [
             {
                 title: "All Workflows",
                 href: Routes.WORKFLOWS,
-                description: "Connect Onlook to your existing AI coding tools."
+                description: "Connect Weblab to your existing AI coding tools."
             },
             {
                 title: "Claude Code",
@@ -104,13 +104,13 @@ const sitemapSections: SitemapSection[] = [
             {
                 title: "Documentation",
                 href: ExternalRoutes.DOCS,
-                description: "Learn how to use Onlook with guides and API references.",
+                description: "Learn how to use Weblab with guides and API references.",
                 external: true
             },
             {
                 title: "Blog",
                 href: ExternalRoutes.BLOG,
-                description: "News, updates, and insights from the Onlook team.",
+                description: "News, updates, and insights from the Weblab team.",
                 external: true
             },
             {
@@ -122,7 +122,7 @@ const sitemapSections: SitemapSection[] = [
             {
                 title: "Discord",
                 href: ExternalRoutes.DISCORD,
-                description: "Join the Onlook community for support and discussions.",
+                description: "Join the Weblab community for support and discussions.",
                 external: true
             },
         ]
@@ -140,7 +140,7 @@ const sitemapSections: SitemapSection[] = [
             {
                 title: "LinkedIn",
                 href: ExternalRoutes.LINKEDIN,
-                description: "Connect with Onlook on LinkedIn.",
+                description: "Connect with Weblab on LinkedIn.",
                 external: true
             },
             {
@@ -164,7 +164,7 @@ const sitemapSections: SitemapSection[] = [
             {
                 title: "Terms of Service",
                 href: "/terms-of-service",
-                description: "Onlook terms of service and usage agreement."
+                description: "Weblab terms of service and usage agreement."
             },
             {
                 title: "Privacy Policy",
@@ -241,9 +241,9 @@ export default function SitemapPage() {
         <WebsiteLayout showFooter={true}>
             {/* Hidden AI-friendly summary */}
             <section className="sr-only" aria-label="Sitemap Summary">
-                <h1>Onlook Sitemap</h1>
+                <h1>Weblab Sitemap</h1>
                 <p>
-                    Complete sitemap for Onlook.com — the AI-powered visual editor for frontend development.
+                    Complete sitemap for Weblab.com — the AI-powered visual editor for frontend development.
                     Browse all pages including features, workflows, resources, and documentation.
                 </p>
                 <h2>Main Pages</h2>
@@ -272,7 +272,7 @@ export default function SitemapPage() {
                     Sitemap
                 </h1>
                 <p className="text-foreground-secondary text-lg mb-16 max-w-2xl">
-                    Browse all pages on Onlook.com — features, workflows, resources, and more.
+                    Browse all pages on Weblab.com — features, workflows, resources, and more.
                 </p>
 
                 <div className="flex flex-col lg:flex-row gap-12" ref={containerRef}>

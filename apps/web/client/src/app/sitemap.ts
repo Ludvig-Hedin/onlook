@@ -1,7 +1,8 @@
+import { APP_DOMAIN } from '@onlook/constants';
 import type { MetadataRoute } from 'next';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-    const baseUrl = 'https://onlook.com';
+    const baseUrl = `https://${APP_DOMAIN}`;
 
     return [
         // Main Pages

@@ -3,7 +3,7 @@ import {
     type NextJsProjectValidation,
     type ProcessedFile,
 } from '@/app/projects/types';
-import { IGNORED_UPLOAD_DIRECTORIES, IGNORED_UPLOAD_FILES } from '@onlook/constants';
+import { APP_NAME, IGNORED_UPLOAD_DIRECTORIES, IGNORED_UPLOAD_FILES } from '@onlook/constants';
 import { Button } from '@onlook/ui/button';
 import { CardDescription, CardTitle } from '@onlook/ui/card';
 import { Icons } from '@onlook/ui/icons';
@@ -307,16 +307,16 @@ export const NewSelectFolder = () => {
                 description: "This is where we'll reference your App",
             },
             validating: {
-                title: 'Verifying compatibility with Onlook',
-                description: "We're checking to make sure this project can work with Onlook",
+                title: `Verifying compatibility with ${APP_NAME}`,
+                description: "We're checking to make sure this project can work with {APP_NAME}",
             },
             valid: {
                 title: 'Project verified',
-                description: 'Your project is ready to import to Onlook',
+                description: `Your project is ready to import to ${APP_NAME}`,
             },
             invalid: {
-                title: "This project won't work with Onlook",
-                description: 'Onlook only works with NextJS + React + Tailwind projects',
+                title: "This project won't work with {APP_NAME}",
+                description: `${APP_NAME} only works with NextJS + React + Tailwind projects`,
             },
         };
 

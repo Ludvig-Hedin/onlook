@@ -1,10 +1,11 @@
+import { APP_NAME } from '@onlook/constants';
 import { createClient } from '@/utils/supabase/server';
 import { type Metadata } from 'next';
 import { HandleAuth } from './_components/auth';
 
 export const metadata: Metadata = {
-    title: 'Onlook',
-    description: 'Onlook – Invitation',
+    title: APP_NAME,
+    description: `${APP_NAME} – Invitation`,
 };
 
 export default async function Layout({ children }: Readonly<{ children: React.ReactNode }>) {

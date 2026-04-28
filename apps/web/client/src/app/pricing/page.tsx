@@ -1,4 +1,5 @@
 'use client';
+import { APP_NAME } from '@onlook/constants';
 
 import { Button } from '@onlook/ui/button';
 import { Icons, type IconProps } from '@onlook/ui/icons';
@@ -23,7 +24,7 @@ const HIGHLIGHTED_FEATURES = [
     {
         icon: 'Component',
         title: 'Your Real Design system',
-        description: 'Bring your real components in Onlook and use them in your projects',
+        description: `Bring your real components in ${APP_NAME} and use them in your projects`,
     },
     {
         icon: 'Brand',
@@ -70,10 +71,10 @@ const ENTERPRISE_FEATURES = [
 
 export default function PricingPage() {
     const handleContactUs = () => {
-        const subject = encodeURIComponent('[Team Inquiry]: Getting Started with Onlook');
+        const subject = encodeURIComponent(`[Team Inquiry]: Getting Started with ${APP_NAME}`);
         const body = encodeURIComponent(`Hi Daniel,
 
-I'm interested in setting up Onlook for our team.
+I'm interested in setting up {APP_NAME} for our team.
 
 Looking forward to hearing from you.
 
@@ -165,7 +166,7 @@ Best regards,
 
                         <div className="border-t border-border-primary my-8" />
                         <p className="text-small text-muted-foreground/50 max-w-2xl text-balance">
-                            Existing paid plan users can continue using Onlook. New users – Please contact us or book a demo to get your team set up. If you're looking to self-host Onlook, please check out the <Link href="https://github.com/onlook-dev/onlook" target="_blank" className="underline">GitHub repository</Link> or reach out to us to schedule a call.
+                            Existing paid plan users can continue using {APP_NAME}. New users – Please contact us or book a demo to get your team set up. If you're looking to self-host {APP_NAME}, please check out the <Link href="https://github.com/onlook-dev/onlook" target="_blank" className="underline">GitHub repository</Link> or reach out to us to schedule a call.
                         </p>
                     </div>
                 </div>

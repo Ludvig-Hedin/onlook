@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-    title: 'Visual Builder | Design with Your Real React Components | Onlook',
+    title: 'Visual Builder | Design with Your Real React Components | Weblab',
     description:
-        'Onlook is a visual builder that works with your existing codebase. Design with your real React, Vue, or Angular components on an infinite canvas. Changes become mergeable pull requests.',
+        'Weblab is a visual builder that works with your existing codebase. Design with your real React, Vue, or Angular components on an infinite canvas. Changes become mergeable pull requests.',
     keywords: [
         // Primary keywords
         'visual builder',
@@ -29,12 +29,12 @@ export const metadata: Metadata = {
         'design engineer tools',
     ],
     openGraph: {
-        title: 'Visual Builder | Onlook',
+        title: 'Visual Builder | Weblab',
         description:
             'Design with your real React components on an infinite canvas. Changes become mergeable PRs.',
         type: 'website',
         url: 'https://onlook.com/features/builder',
-        siteName: 'Onlook',
+        siteName: 'Weblab',
         images: [
             {
                 url: 'https://framerusercontent.com/images/ScnnNT7JpmUya7afqGAets8.png',
@@ -43,7 +43,7 @@ export const metadata: Metadata = {
     },
     twitter: {
         card: 'summary_large_image',
-        title: 'Visual Builder | Onlook',
+        title: 'Visual Builder | Weblab',
         description:
             'Design with your real React components on an infinite canvas. Changes become mergeable PRs.',
         images: ['https://framerusercontent.com/images/ScnnNT7JpmUya7afqGAets8.png'],
@@ -68,11 +68,11 @@ export const metadata: Metadata = {
 const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'SoftwareApplication',
-    name: 'Onlook Visual Builder',
+    name: 'Weblab Visual Builder',
     applicationCategory: 'DeveloperApplication',
     operatingSystem: 'Web',
     description:
-        'Onlook is a visual builder that works with your existing codebase. Design with your real React, Vue, or Angular components on an infinite canvas. Changes become mergeable pull requests.',
+        'Weblab is a visual builder that works with your existing codebase. Design with your real React, Vue, or Angular components on an infinite canvas. Changes become mergeable pull requests.',
     url: 'https://onlook.com/features/builder',
     featureList: [
         'Infinite canvas for visual design',
@@ -98,26 +98,26 @@ const faqJsonLd = {
     mainEntity: [
         {
             '@type': 'Question',
-            name: 'What is Onlook?',
+            name: 'What is Weblab?',
             acceptedAnswer: {
                 '@type': 'Answer',
-                text: 'Onlook is an open-source visual builder for frontend development. It connects to your existing codebase and lets you design with your real components on an infinite canvas.',
+                text: 'Weblab is an open-source visual builder for frontend development. It connects to your existing codebase and lets you design with your real components on an infinite canvas.',
             },
         },
         {
             '@type': 'Question',
-            name: 'What can I use Onlook to do?',
+            name: 'What can I use Weblab to do?',
             acceptedAnswer: {
                 '@type': 'Answer',
-                text: 'Onlook is great for creating websites, prototypes, user interfaces, and designs. Design visually with your real React, Vue, or Angular components, and changes become mergeable pull requests.',
+                text: 'Weblab is great for creating websites, prototypes, user interfaces, and designs. Design visually with your real React, Vue, or Angular components, and changes become mergeable pull requests.',
             },
         },
         {
             '@type': 'Question',
-            name: 'What is the difference between Onlook and other design tools?',
+            name: 'What is the difference between Weblab and other design tools?',
             acceptedAnswer: {
                 '@type': 'Answer',
-                text: "Onlook is a visual editor for code. Unlike traditional design tools that create static mockups, Onlook works with your real components — what you design IS the code. Changes become PRs, not specs.",
+                text: "Weblab is a visual editor for code. Unlike traditional design tools that create static mockups, Weblab works with your real components — what you design IS the code. Changes become PRs, not specs.",
             },
         },
         {

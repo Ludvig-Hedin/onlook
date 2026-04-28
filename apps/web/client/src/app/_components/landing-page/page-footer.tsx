@@ -22,51 +22,51 @@ export function Footer() {
                         <h3 className="text-regularPlus mb-4 text-foreground-primary">Company</h3>
                         <ul className="flex flex-col gap-4 text-regular text-foreground-secondary">
                             <li><a href={Routes.ABOUT} className="hover:underline">About</a></li>
-                            <li><a href={ExternalRoutes.DOCS} target="_blank" className="hover:underline" title="View Onlook documentation">Docs</a></li>
+                            <li><a href={ExternalRoutes.DOCS} target="_blank" className="hover:underline" title="View Weblab documentation">Docs</a></li>
                             <li><a href={Routes.FAQ} className="hover:underline" title="Frequently Asked Questions">FAQ</a></li>
-                            <li><a href={ExternalRoutes.BLOG} target="_blank" className="hover:underline" title="Read the Onlook blog">Blog</a></li>
-                            <li><a href="mailto:contact@onlook.com" className="hover:underline" title="Contact Onlook support">Contact</a></li>
+                            <li><a href={ExternalRoutes.BLOG} target="_blank" className="hover:underline" title="Read the Weblab blog">Blog</a></li>
+                            <li><a href="mailto:contact@weblab.build" className="hover:underline" title="Contact Weblab support">Contact</a></li>
                         </ul>
                     </div>
                     <div>
                         <h3 className="text-regularPlus mb-4 text-foreground-primary">Product</h3>
                         <ul className="flex flex-col gap-4 text-regular text-foreground-secondary">
                             <li><a href={Routes.PROJECTS} className="hover:underline" title="View your projects">My Projects</a></li>
-                            <li><a href={ExternalRoutes.GITHUB} target="_blank" className="hover:underline" title="View Onlook on GitHub">GitHub Repo</a></li>
-                            <li><a href="/features" className="hover:underline" title="View Onlook features">Features</a></li>
+                            <li><a href={ExternalRoutes.GITHUB} target="_blank" className="hover:underline" title="View Weblab on GitHub">GitHub Repo</a></li>
+                            <li><a href="/features" className="hover:underline" title="View Weblab features">Features</a></li>
                             <li><a href={Routes.FEATURES_AI} className="hover:underline" title="AI-powered development tools">AI</a></li>
                             <li><a href={Routes.FEATURES_AI_FRONTEND} className="hover:underline" title="AI constrained to your design system">AI for Frontend</a></li>
                             <li><a href={Routes.FEATURES_PROTOTYPE} className="hover:underline" title="Rapid prototyping features">Prototyping</a></li>
                             <li><a href={Routes.FEATURES_BUILDER} className="hover:underline" title="Visual builder tools">Visual Builder</a></li>
-                            <li><a href="/pricing" className="hover:underline" title="View Onlook pricing">Pricing</a></li>
+                            <li><a href="/pricing" className="hover:underline" title="View Weblab pricing">Pricing</a></li>
                         </ul>
                     </div>
                     <div>
                         <h3 className="text-regularPlus mb-4 text-foreground-primary">Workflows</h3>
                         <ul className="flex flex-col gap-4 text-regular text-foreground-secondary">
-                            <li><a href={Routes.WORKFLOWS_CLAUDE_CODE} className="hover:underline" title="Use Onlook with Claude Code">Claude Code</a></li>
+                            <li><a href={Routes.WORKFLOWS_CLAUDE_CODE} className="hover:underline" title="Use Weblab with Claude Code">Claude Code</a></li>
                             <li><a href={Routes.WORKFLOWS_VIBE_CODING} className="hover:underline" title="Vibe coding for teams">Vibe Coding</a></li>
                         </ul>
                     </div>
                     <div>
                         <h3 className="text-regularPlus mb-4 text-foreground-primary">Follow Us</h3>
                         <div className="flex gap-6 mt-2 items-center">
-                            <a href={ExternalRoutes.X} target="_blank" rel="noopener noreferrer" title="Follow Onlook on X">
+                            <a href={ExternalRoutes.X} target="_blank" rel="noopener noreferrer" title="Follow Weblab on X">
                                 <Icons.SocialX className="w-6 h-6 text-foreground-secondary hover:text-foreground-primary transition-colors" />
                             </a>
-                            <a href={ExternalRoutes.LINKEDIN} target="_blank" rel="noopener noreferrer" title="Connect with Onlook on LinkedIn">
+                            <a href={ExternalRoutes.LINKEDIN} target="_blank" rel="noopener noreferrer" title="Connect with Weblab on LinkedIn">
                                 <Icons.SocialLinkedIn className="w-6 h-6 text-foreground-secondary hover:text-foreground-primary transition-colors" />
                             </a>
-                            <a href={ExternalRoutes.SUBSTACK} target="_blank" rel="noopener noreferrer" title="Subscribe to Onlook on Substack">
+                            <a href={ExternalRoutes.SUBSTACK} target="_blank" rel="noopener noreferrer" title="Subscribe to Weblab on Substack">
                                 <Icons.SocialSubstack className="w-6 h-6 text-foreground-secondary hover:text-foreground-primary transition-colors" />
                             </a>
-                            <a href={ExternalRoutes.YOUTUBE} target="_blank" rel="noopener noreferrer" title="Watch Onlook on YouTube">
+                            <a href={ExternalRoutes.YOUTUBE} target="_blank" rel="noopener noreferrer" title="Watch Weblab on YouTube">
                                 <Icons.SocialYoutube className="w-6 h-6 text-foreground-secondary hover:text-foreground-primary transition-colors" />
                             </a>
-                            <a href={ExternalRoutes.GITHUB} target="_blank" rel="noopener noreferrer" title="View Onlook on GitHub">
+                            <a href={ExternalRoutes.GITHUB} target="_blank" rel="noopener noreferrer" title="View Weblab on GitHub">
                                 <Icons.GitHubLogo className="w-5.5 h-5.5 text-foreground-secondary hover:text-foreground-primary transition-colors" />
                             </a>
-                            <a href={ExternalRoutes.DISCORD} target="_blank" rel="noopener noreferrer" title="Join the Onlook Discord community">
+                            <a href={ExternalRoutes.DISCORD} target="_blank" rel="noopener noreferrer" title="Join the Weblab Discord community">
                                 <Icons.DiscordLogo className="w-6 h-6 text-foreground-secondary hover:text-foreground-primary transition-colors" />
                             </a>
                         </div>

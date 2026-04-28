@@ -26,7 +26,7 @@ export function BuilderBenefitsSection() {
                         <h2 className="text-foreground-secondary text-sm font-medium uppercase tracking-wider mb-4">No-Code React Builder with Developer Tools</h2>
                         <p className="text-foreground-primary text-2xl md:text-4xl font-light mb-6">Create Complex React UIs Without Writing Every Line</p>
                         <p className="text-foreground-secondary text-regular mb-8 text-balance max-w-xl">
-                            Use drag-and-drop for layouts, components, and state management while Onlook generates production-ready React code.
+                            Use drag-and-drop for layouts, components, and state management while Weblab generates production-ready React code.
                         </p>
                     </div>
                     <div className="w-full h-100 rounded-lg order-1 lg:order-2">

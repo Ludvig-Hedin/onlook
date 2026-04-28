@@ -1,3 +1,4 @@
+import { APP_NAME } from '@onlook/constants';
 import { ExternalRoutes, Routes } from './index';
 
 export interface NavigationLink {
@@ -41,7 +42,7 @@ export const PRODUCT_LINKS: NavigationLink[] = [
     {
         title: 'All Features',
         href: Routes.FEATURES,
-        description: 'See everything Onlook offers',
+        description: `See everything ${APP_NAME} offers`,
     },
 ];
 
@@ -49,7 +50,7 @@ export const RESOURCES_LINKS: NavigationLink[] = [
     {
         title: 'Documentation',
         href: ExternalRoutes.DOCS,
-        description: 'Learn how to use Onlook',
+        description: `Learn how to use ${APP_NAME}`,
         external: true,
     },
     {

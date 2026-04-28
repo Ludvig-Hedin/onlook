@@ -188,7 +188,7 @@ export function ContributorSection({
                         target="_blank"
                         className="bg-foreground-primary text-background-primary text-regularPlus rounded-lg px-6 py-3 flex items-center gap-2 shadow hover:bg-foreground-primary/80 transition cursor-pointer"
                     >
-                        Contribute to Onlook
+                        Contribute to Weblab
                         <Icons.GitHubLogo className="w-4.5 h-4.5" />
                     </Link>
                     <Link

@@ -1,15 +1,16 @@
+import { APP_DOMAIN, APP_NAME } from '@onlook/constants';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-    title: 'About Onlook | The Team Behind the Visual Editor for React',
+    title: `About ${APP_NAME} | The Team Behind the Visual Editor for React`,
     description:
-        'Meet the team behind Onlook — an AI-powered visual editor for frontend development. Founded to obliterate the divide between creativity and implementation. YC W25, 24k+ GitHub stars, open source.',
+        `Meet the team behind ${APP_NAME} — an AI-powered visual editor for frontend development. Founded to obliterate the divide between creativity and implementation. YC W25, 24k+ GitHub stars, open source.`,
     keywords: [
         // Company
-        'Onlook team',
-        'Onlook founders',
-        'Onlook company',
-        'Onlook about',
+        `${APP_NAME} team`,
+        `${APP_NAME} founders`,
+        `${APP_NAME} company`,
+        `${APP_NAME} about`,
         // Mission
         'design engineering',
         'design to code',
@@ -20,8 +21,8 @@ export const metadata: Metadata = {
         'YC W25',
         'Y Combinator startup',
         // Hiring
-        'Onlook careers',
-        'Onlook jobs',
+        `${APP_NAME} careers`,
+        `${APP_NAME} jobs`,
         'design tools jobs',
         'developer tools jobs',
         // Open source
@@ -29,12 +30,12 @@ export const metadata: Metadata = {
         'open source visual editor',
     ],
     openGraph: {
-        title: 'About Onlook',
+        title: `About ${APP_NAME}`,
         description:
-            'Meet the team behind Onlook. Founded to obliterate the divide between creativity and implementation.',
+            `Meet the team behind ${APP_NAME}. Founded to obliterate the divide between creativity and implementation.`,
         type: 'website',
-        url: 'https://onlook.com/about',
-        siteName: 'Onlook',
+        url: `https://${APP_DOMAIN}/about`,
+        siteName: APP_NAME,
         images: [
             {
                 url: 'https://framerusercontent.com/images/ScnnNT7JpmUya7afqGAets8.png',
@@ -43,13 +44,13 @@ export const metadata: Metadata = {
     },
     twitter: {
         card: 'summary_large_image',
-        title: 'About Onlook',
+        title: `About ${APP_NAME}`,
         description:
-            'Meet the team behind Onlook. Founded to obliterate the divide between creativity and implementation.',
+            `Meet the team behind ${APP_NAME}. Founded to obliterate the divide between creativity and implementation.`,
         images: ['https://framerusercontent.com/images/ScnnNT7JpmUya7afqGAets8.png'],
     },
     alternates: {
-        canonical: 'https://onlook.com/about',
+        canonical: `https://${APP_DOMAIN}/about`,
     },
     robots: {
         index: true,
@@ -68,11 +69,11 @@ export const metadata: Metadata = {
 const organizationJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Organization',
-    name: 'Onlook',
-    url: 'https://onlook.com',
-    logo: 'https://onlook.com/logo.png',
+    name: APP_NAME,
+    url: `https://${APP_DOMAIN}`,
+    logo: `https://${APP_DOMAIN}/logo.png`,
     description:
-        'Onlook is an AI-powered visual editor for frontend development. Design with your real React, Vue, or Angular components. Changes become mergeable pull requests.',
+        `${APP_NAME} is an AI-powered visual editor for frontend development. Design with your real React, Vue, or Angular components. Changes become mergeable pull requests.`,
     foundingDate: '2024',
     founders: [
         {
@@ -114,42 +115,42 @@ const faqJsonLd = {
     mainEntity: [
         {
             '@type': 'Question',
-            name: 'What is Onlook?',
+            name: `What is ${APP_NAME}?`,
             acceptedAnswer: {
                 '@type': 'Answer',
-                text: 'Onlook is an AI-powered visual editor for frontend development. It connects to your existing React, Vue, or Angular codebase and lets you design with your real components. AI is constrained to your design system, and changes become mergeable pull requests.',
+                text: `${APP_NAME} is an AI-powered visual editor for frontend development. It connects to your existing React, Vue, or Angular codebase and lets you design with your real components. AI is constrained to your design system, and changes become mergeable pull requests.`,
             },
         },
         {
             '@type': 'Question',
-            name: 'Who founded Onlook?',
+            name: `Who founded ${APP_NAME}?`,
             acceptedAnswer: {
                 '@type': 'Answer',
-                text: 'Onlook was founded by Daniel Farrell (Design & Growth) and Kiet Ho (Engineering). Daniel is a designer with over a decade of experience, former Head of Growth at Bird. Kiet is an ex-Amazon engineer who maintained the design system at ServiceNow.',
+                text: `${APP_NAME} was founded by Daniel Farrell (Design & Growth) and Kiet Ho (Engineering). Daniel is a designer with over a decade of experience, former Head of Growth at Bird. Kiet is an ex-Amazon engineer who maintained the design system at ServiceNow.`,
             },
         },
         {
             '@type': 'Question',
-            name: 'Where is Onlook based?',
+            name: `Where is ${APP_NAME} based?`,
             acceptedAnswer: {
                 '@type': 'Answer',
-                text: 'Onlook is based in San Francisco, California. The team operates from their headquarters (the "Barracks") after completing Y Combinator W25.',
+                text: `${APP_NAME} is based in San Francisco, California. The team operates from their headquarters (the "Barracks") after completing Y Combinator W25.`,
             },
         },
         {
             '@type': 'Question',
-            name: 'Is Onlook open source?',
+            name: `Is ${APP_NAME} open source?`,
             acceptedAnswer: {
                 '@type': 'Answer',
-                text: 'Yes. Onlook is open source with 24k+ GitHub stars and 100+ contributors. You can browse the codebase, contribute improvements, or self-host it for your team.',
+                text: `Yes. ${APP_NAME} is open source with 24k+ GitHub stars and 100+ contributors. You can browse the codebase, contribute improvements, or self-host it for your team.`,
             },
         },
         {
             '@type': 'Question',
-            name: 'Is Onlook hiring?',
+            name: `Is ${APP_NAME} hiring?`,
             acceptedAnswer: {
                 '@type': 'Answer',
-                text: 'Yes. Onlook is hiring for "The Odyssey" — their founding team. They look for commitment, passion for design/devtools/AI, and world-class excellence. The hiring process includes screening calls, technical interviews, reference calls, and a paid work trial.',
+                text: `Yes. ${APP_NAME} is hiring for "The Odyssey" — their founding team. They look for commitment, passion for design/devtools/AI, and world-class excellence. The hiring process includes screening calls, technical interviews, reference calls, and a paid work trial.`,
             },
         },
     ],

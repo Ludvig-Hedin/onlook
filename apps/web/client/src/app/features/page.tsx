@@ -15,16 +15,16 @@ import { WebsiteLayout } from '../_components/website-layout';
 
 const featuresFaqs = [
     {
-        question: 'What is Onlook?',
-        answer: 'Onlook is a visual design canvas that connects to your existing codebase. Designers drag real components onto an infinite canvas, make changes visually, and submit pull requests — no coding required.',
+        question: 'What is Weblab?',
+        answer: 'Weblab is a visual design canvas that connects to your existing codebase. Designers drag real components onto an infinite canvas, make changes visually, and submit pull requests — no coding required.',
     },
     {
-        question: 'How is Onlook different from other design tools?',
-        answer: 'Traditional design tools create static mockups that must be rebuilt in code. Onlook works with your real components — what you design IS the code. Changes become PRs, not handoff specs.',
+        question: 'How is Weblab different from other design tools?',
+        answer: 'Traditional design tools create static mockups that must be rebuilt in code. Weblab works with your real components — what you design IS the code. Changes become PRs, not handoff specs.',
     },
     {
-        question: 'How is Onlook different from AI code generators?',
-        answer: 'AI generators create new code from scratch. Onlook constrains AI to YOUR existing components, so outputs match your design system. No translation, no drift.',
+        question: 'How is Weblab different from AI code generators?',
+        answer: 'AI generators create new code from scratch. Weblab constrains AI to YOUR existing components, so outputs match your design system. No translation, no drift.',
     },
     {
         question: 'Do I need to know how to code?',
@@ -35,7 +35,7 @@ const featuresFaqs = [
         answer: 'Yes. Share your canvas, leave spatial comments, and work together in real-time. Changes sync to code and can be submitted as PRs for engineers to review.',
     },
     {
-        question: 'What tech stack does Onlook support?',
+        question: 'What tech stack does Weblab support?',
         answer: 'React, Next.js, and any CSS approach (Tailwind, CSS modules, styled-components). Works with any component library.',
     },
 ];
@@ -46,9 +46,9 @@ export default function FeaturesPage() {
             <WebsiteLayout showFooter={true}>
                 {/* AI-Friendly Summary Section */}
                 <section className="sr-only" aria-label="Features Summary">
-                    <h1>Onlook Features: Design with Your Real Components</h1>
+                    <h1>Weblab Features: Design with Your Real Components</h1>
                     <p>
-                        Onlook is a visual design canvas that connects to your existing codebase.
+                        Weblab is a visual design canvas that connects to your existing codebase.
                         Design with your real components on an infinite canvas. AI is constrained to your design system —
                         no brand drift, no throwaway code. Changes become mergeable pull requests.
                     </p>

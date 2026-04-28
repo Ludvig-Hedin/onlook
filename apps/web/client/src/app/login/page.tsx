@@ -79,7 +79,7 @@ export default function LoginPage() {
                 <Image
                     className="w-full h-full object-cover rounded-xl"
                     src={backgroundUrl}
-                    alt="Onlook dunes dark"
+                    alt="Weblab dunes dark"
                     width={1000}
                     height={1000}
                 />

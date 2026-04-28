@@ -1,9 +1,10 @@
+import { APP_DOMAIN, APP_NAME } from '@onlook/constants';
 import { type Metadata } from 'next';
 
 export const metadata: Metadata = {
-    title: 'Claude Code for Designers: Add a Visual Canvas to Your Workflow | Onlook',
+    title: `Claude Code for Designers: Add a Visual Canvas to Your Workflow | ${APP_NAME}`,
     description:
-        'Designers using Claude Code need a visual layer. Onlook gives you an infinite canvas for your AI-built UIs — with your real components, team collaboration, and PR output.',
+        `Designers using Claude Code need a visual layer. ${APP_NAME} gives you an infinite canvas for your AI-built UIs — with your real components, team collaboration, and PR output.`,
     keywords: [
         // Primary keywords
         'claude code for designers',
@@ -28,12 +29,12 @@ export const metadata: Metadata = {
         'AI generated UI editor',
     ],
     openGraph: {
-        url: 'https://onlook.com/workflows/claude-code',
+        url: `https://${APP_DOMAIN}/workflows/claude-code`,
         type: 'website',
-        siteName: 'Onlook',
-        title: 'Claude Code for Designers: Add a Visual Canvas to Your Workflow | Onlook',
+        siteName: APP_NAME,
+        title: `Claude Code for Designers: Add a Visual Canvas to Your Workflow | ${APP_NAME}`,
         description:
-            'Designers using Claude Code need a visual layer. Onlook gives you an infinite canvas for your AI-built UIs — with your real components, team collaboration, and PR output.',
+            `Designers using Claude Code need a visual layer. ${APP_NAME} gives you an infinite canvas for your AI-built UIs — with your real components, team collaboration, and PR output.`,
         images: [
             {
                 url: 'https://framerusercontent.com/images/ScnnNT7JpmUya7afqGAets8.png',
@@ -44,7 +45,7 @@ export const metadata: Metadata = {
         card: 'summary_large_image',
         site: '@onlookdev',
         creator: '@onlookdev',
-        title: 'Claude Code for Designers | Onlook',
+        title: `Claude Code for Designers | ${APP_NAME}`,
         description:
             'The visual canvas your Claude Code workflow is missing. Design with your real components, collaborate with your team, ship PRs.',
         images: [
@@ -54,7 +55,7 @@ export const metadata: Metadata = {
         ],
     },
     alternates: {
-        canonical: 'https://onlook.com/workflows/claude-code',
+        canonical: `https://${APP_DOMAIN}/workflows/claude-code`,
     },
     robots: {
         index: true,
@@ -73,12 +74,12 @@ export const metadata: Metadata = {
 const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'SoftwareApplication',
-    name: 'Onlook for Claude Code',
+    name: `${APP_NAME} for Claude Code`,
     applicationCategory: 'DeveloperApplication',
     operatingSystem: 'Web',
     description:
-        'Onlook adds a visual design layer to Claude Code. An infinite canvas for AI-built UIs with your real components, team collaboration, and direct PR output.',
-    url: 'https://onlook.com/workflows/claude-code',
+        `${APP_NAME} adds a visual design layer to Claude Code. An infinite canvas for AI-built UIs with your real components, team collaboration, and direct PR output.`,
+    url: `https://${APP_DOMAIN}/workflows/claude-code`,
     featureList: [
         'Infinite canvas for Claude Code projects',
         'Visual editing of AI-generated UIs',
@@ -103,42 +104,42 @@ const faqJsonLd = {
     mainEntity: [
         {
             '@type': 'Question',
-            name: 'How does Onlook work with Claude Code?',
+            name: `How does ${APP_NAME} work with Claude Code?`,
             acceptedAnswer: {
                 '@type': 'Answer',
-                text: 'Claude Code handles the terminal and code generation. Onlook provides the visual canvas. Together, they give you a complete design-to-code workflow — Claude Code builds, Onlook lets you visually iterate and refine.',
+                text: `Claude Code handles the terminal and code generation. ${APP_NAME} provides the visual canvas. Together, they give you a complete design-to-code workflow — Claude Code builds, ${APP_NAME} lets you visually iterate and refine.`,
             },
         },
         {
             '@type': 'Question',
-            name: 'Do I need to know code to use Onlook with Claude Code?',
+            name: `Do I need to know code to use ${APP_NAME} with Claude Code?`,
             acceptedAnswer: {
                 '@type': 'Answer',
-                text: "No. Onlook gives you a visual canvas where you can drag, resize, and arrange elements. The code runs underneath — you don't need to touch it unless you want to.",
+                text: `No. ${APP_NAME} gives you a visual canvas where you can drag, resize, and arrange elements. The code runs underneath — you don't need to touch it unless you want to.`,
             },
         },
         {
             '@type': 'Question',
-            name: 'Can I use my existing components with Onlook?',
+            name: `Can I use my existing components with ${APP_NAME}?`,
             acceptedAnswer: {
                 '@type': 'Answer',
-                text: 'Yes. Onlook connects to your existing codebase and lets you design with your real components — the buttons, cards, and layouts your engineers already built.',
+                text: `Yes. ${APP_NAME} connects to your existing codebase and lets you design with your real components — the buttons, cards, and layouts your engineers already built.`,
             },
         },
         {
             '@type': 'Question',
-            name: 'What makes Onlook different from using Claude Code alone?',
+            name: `What makes ${APP_NAME} different from using Claude Code alone?`,
             acceptedAnswer: {
                 '@type': 'Answer',
-                text: 'Claude Code is terminal-based and works best for building. Onlook adds the visual layer designers need — an infinite canvas, team collaboration, and visual iteration on AI-generated UIs.',
+                text: `Claude Code is terminal-based and works best for building. ${APP_NAME} adds the visual layer designers need — an infinite canvas, team collaboration, and visual iteration on AI-generated UIs.`,
             },
         },
         {
             '@type': 'Question',
-            name: 'Does Onlook constrain AI to my design system?',
+            name: `Does ${APP_NAME} constrain AI to my design system?`,
             acceptedAnswer: {
                 '@type': 'Answer',
-                text: 'Yes. Unlike raw AI code generation, Onlook constrains AI to your existing components, colors, and tokens. This means outputs match your design system — no drift, no off-brand results.',
+                text: `Yes. Unlike raw AI code generation, ${APP_NAME} constrains AI to your existing components, colors, and tokens. This means outputs match your design system — no drift, no off-brand results.`,
             },
         },
     ],

@@ -1,3 +1,4 @@
+import { APP_NAME } from '@onlook/constants';
 import React from 'react';
 
 export function FeaturesGridSection() {
@@ -48,7 +49,7 @@ export function FeaturesGridSection() {
                     <h3 className="text-foreground-secondary text-small uppercase tracking-wider mb-4">Version History</h3>
                     <p className="text-foreground-primary text-lg md:text-xl font-light mb-6 text-balance">Never lose your progress</p>
                     <p className="text-foreground-secondary text-regular text-balance leading-relaxed">
-                        Onlook automatically saves project snapshots. Experiment with confidence — roll back to any previous version with one click.
+                        {APP_NAME} automatically saves project snapshots. Experiment with confidence — roll back to any previous version with one click.
                     </p>
                 </div>
             </div>

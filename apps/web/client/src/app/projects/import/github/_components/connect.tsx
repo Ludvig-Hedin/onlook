@@ -1,4 +1,5 @@
 'use client';
+import { APP_NAME } from '@onlook/constants';
 
 import { Button } from '@onlook/ui/button';
 import { CardDescription, CardTitle } from '@onlook/ui/card';
@@ -49,7 +50,7 @@ export const ConnectGithub = () => {
                 </div>
                 <CardTitle className="text-xl font-normal">{'Connect to GitHub'}</CardTitle>
                 <CardDescription className="font-normal">
-                    {'Work with real code directly in Onlook'}
+                    {`Work with real code directly in ${APP_NAME}`}
                 </CardDescription>
             </StepHeader>
             <StepContent>
@@ -64,7 +65,7 @@ export const ConnectGithub = () => {
                     {itemContent({
                         title: installation.hasInstallation
                             ? 'GitHub App already connected'
-                            : 'Install Onlook GitHub App',
+                            : `Install ${APP_NAME} GitHub App`,
                         description: installation.hasInstallation
                             ? 'You can access your repositories through the GitHub App'
                             : 'Get secure repository access with fine-grained permissions',

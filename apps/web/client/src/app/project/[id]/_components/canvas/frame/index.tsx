@@ -1,3 +1,4 @@
+import { APP_NAME } from '@onlook/constants';
 import { useEditorEngine } from '@/components/store/editor';
 import { PreloadScriptState } from '@/components/store/editor/sandbox';
 import { EditorMode, type Frame } from '@onlook/models';
@@ -34,7 +35,7 @@ const LOADING_MESSAGES = [
     'You may want to try refreshing your tab...',
     'Still not loading? Try refreshing your browser...',
     'If you\'re seeing this message, it\'s probably because your project is large...',
-    'Onlook is still working on it...',
+    `${APP_NAME} is still working on it...`,
     'If you\'re seeing this message, it\'s probably because your project is large...',
     'If it\'s still not loading, contact support with the ? button in the bottom left corner',
     'If it\'s still not loading, contact support with the ? button in the bottom left corner',

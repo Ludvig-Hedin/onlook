@@ -1,8 +1,9 @@
+import { APP_DOMAIN, APP_NAME } from '@onlook/constants';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-    title: 'Features | Onlook - AI-Powered Visual Editor for React, Vue, Angular',
-    description: 'Explore Onlook\'s features: AI constrained to your design system, infinite canvas, real-time collaboration, component library integration, version history, and direct GitHub PR output. Works with React, Next.js, Vue, Angular, Tailwind, shadcn/ui, and more.',
+    title: `Features | ${APP_NAME} - AI-Powered Visual Editor for React, Vue, Angular`,
+    description: `Explore ${APP_NAME}'s features: AI constrained to your design system, infinite canvas, real-time collaboration, component library integration, version history, and direct GitHub PR output. Works with React, Next.js, Vue, Angular, Tailwind, shadcn/ui, and more.`,
     keywords: [
         // Core features
         'visual editor features',
@@ -27,11 +28,11 @@ export const metadata: Metadata = {
         'design engineer tools',
     ],
     openGraph: {
-        title: 'Features | Onlook',
+        title: 'Features | ${APP_NAME}',
         description: 'AI-powered visual editor with infinite canvas, real-time collaboration, component library integration, and direct PR output.',
         type: 'website',
-        url: 'https://onlook.com/features',
-        siteName: 'Onlook',
+        url: `https://${APP_DOMAIN}/features`,
+        siteName: APP_NAME,
         images: [
             {
                 url: 'https://framerusercontent.com/images/ScnnNT7JpmUya7afqGAets8.png',
@@ -40,12 +41,12 @@ export const metadata: Metadata = {
     },
     twitter: {
         card: 'summary_large_image',
-        title: 'Features | Onlook',
+        title: 'Features | ${APP_NAME}',
         description: 'AI-powered visual editor with infinite canvas, real-time collaboration, and direct PR output.',
         images: ['https://framerusercontent.com/images/ScnnNT7JpmUya7afqGAets8.png'],
     },
     alternates: {
-        canonical: 'https://onlook.com/features',
+        canonical: `https://${APP_DOMAIN}/features`,
     },
     robots: {
         index: true,
@@ -62,11 +63,11 @@ export const metadata: Metadata = {
 const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'SoftwareApplication',
-    name: 'Onlook',
+    name: APP_NAME,
     applicationCategory: 'DeveloperApplication',
     operatingSystem: 'Web',
-    description: 'Onlook is an AI-powered visual editor for frontend development. Design with your real React, Vue, or Angular components on an infinite canvas. AI is constrained to your design system. Changes become mergeable pull requests.',
-    url: 'https://onlook.com/features',
+    description: `${APP_NAME} is an AI-powered visual editor for frontend development. Design with your real React, Vue, or Angular components on an infinite canvas. AI is constrained to your design system. Changes become mergeable pull requests.`,
+    url: `https://${APP_DOMAIN}/features`,
     featureList: [
         'AI constrained to your design system',
         'Infinite canvas for visual design',
@@ -94,42 +95,42 @@ const faqJsonLd = {
     mainEntity: [
         {
             '@type': 'Question',
-            name: 'What is Onlook?',
+            name: `What is ${APP_NAME}?`,
             acceptedAnswer: {
                 '@type': 'Answer',
-                text: 'Onlook is an AI-powered visual editor for frontend development. It connects to your existing React, Vue, or Angular codebase and lets you design with your real components on an infinite canvas. AI is constrained to your design system, and changes become pull requests engineers can merge directly.',
+                text: `${APP_NAME} is an AI-powered visual editor for frontend development. It connects to your existing React, Vue, or Angular codebase and lets you design with your real components on an infinite canvas. AI is constrained to your design system, and changes become pull requests engineers can merge directly.`,
             },
         },
         {
             '@type': 'Question',
-            name: 'What features does Onlook offer?',
+            name: `What features does ${APP_NAME} offer?`,
             acceptedAnswer: {
                 '@type': 'Answer',
-                text: 'Onlook offers: an infinite canvas for visual design, AI constrained to your design system, real-time team collaboration, component library integration, centralized theming and branding, visual layer management, version history with auto-save, and direct GitHub PR output.',
+                text: `${APP_NAME} offers: an infinite canvas for visual design, AI constrained to your design system, real-time team collaboration, component library integration, centralized theming and branding, visual layer management, version history with auto-save, and direct GitHub PR output.`,
             },
         },
         {
             '@type': 'Question',
-            name: 'What frameworks and libraries does Onlook support?',
+            name: `What frameworks and libraries does ${APP_NAME} support?`,
             acceptedAnswer: {
                 '@type': 'Answer',
-                text: 'Onlook works with React, Next.js, Vue, Angular, Svelte, and more. It supports all CSS approaches including Tailwind, CSS Modules, and styled-components. Compatible with component libraries like shadcn/ui, Material UI, Chakra UI, Mantine, and Radix UI.',
+                text: `${APP_NAME} works with React, Next.js, Vue, Angular, Svelte, and more. It supports all CSS approaches including Tailwind, CSS Modules, and styled-components. Compatible with component libraries like shadcn/ui, Material UI, Chakra UI, Mantine, and Radix UI.`,
             },
         },
         {
             '@type': 'Question',
-            name: 'How is Onlook different from other design tools?',
+            name: `How is ${APP_NAME} different from other design tools?`,
             acceptedAnswer: {
                 '@type': 'Answer',
-                text: 'Onlook is a visual editor for code. Unlike traditional design tools that create static mockups, Onlook works with your real components — what you design IS the code. Changes become PRs, not specs. AI is constrained to your design system, so there\'s no brand drift.',
+                text: `${APP_NAME} is a visual editor for code. Unlike traditional design tools that create static mockups, ${APP_NAME} works with your real components — what you design IS the code. Changes become PRs, not specs. AI is constrained to your design system, so there's no brand drift.`,
             },
         },
         {
             '@type': 'Question',
-            name: 'Is Onlook open source?',
+            name: `Is ${APP_NAME} open source?`,
             acceptedAnswer: {
                 '@type': 'Answer',
-                text: 'Yes. Onlook is open source with 24k+ GitHub stars. You can browse the codebase, contribute improvements, or self-host it for your team.',
+                text: `Yes. ${APP_NAME} is open source with 24k+ GitHub stars. You can browse the codebase, contribute improvements, or self-host it for your team.`,
             },
         },
     ],

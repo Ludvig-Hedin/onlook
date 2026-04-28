@@ -339,7 +339,7 @@ export function MobileEmailCapture() {
                     ref={notificationRef}
                 >
                     <div className="text-center text-base xs:text-lg font-light my-2 text-foreground-secondary px-2">
-                        Onlook is optimized for larger screens
+                        Weblab is optimized for larger screens
                     </div>
                     <Button
                         size="sm"
@@ -371,14 +371,14 @@ export function MobileEmailCapture() {
                         >
                             <Icons.Check className="size-8" />
                             <div className="text-foreground-secondary text-base xs:text-lg font-light w-full px-2">
-                                Thanks, an email to use Onlook has been sent to you!
+                                Thanks, an email to use Weblab has been sent to you!
                             </div>
                         </motion.div>
                     ) : (
                         <>
                             <div className="text-left text-foreground-secondary text-sm xs:text-base font-light w-full px-1">
                                 <h3 className="text-sm xs:text-base font-medium text-foreground-primary break-words">
-                                    Email me a link to Onlook
+                                    Email me a link to Weblab
                                 </h3>
                             </div>
 

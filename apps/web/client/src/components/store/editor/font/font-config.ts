@@ -216,7 +216,7 @@ export const readFontConfigFile = async (fontConfigPath: string, editorEngine: E
  */
 const createDefaultFontConfigTemplate = (): string => {
     return `// This file contains font configurations for your application.
-// Fonts added through Onlook will be automatically exported from this file.
+// Fonts added through Weblab will be automatically exported from this file.
 //
 // Example Google Font:
 // import { Inter } from 'next/font/google';

@@ -1,5 +1,6 @@
 'use client';
 
+import { APP_NAME } from '@onlook/constants';
 import { CreateManagerProvider } from '@/components/store/create';
 import { SubscriptionModal } from '@/components/ui/pricing-modal';
 import { NonProjectSettingsModal } from '@/components/ui/settings-modal/non-project';
@@ -30,14 +31,14 @@ const getBlurAnimationProps = (delay: number = 0) => ({
 const workflows = [
     {
         title: 'Claude Code',
-        description: 'The visual canvas your AI workflow is missing. Claude Code builds it, Onlook lets you design it.',
+        description: `The visual canvas your AI workflow is missing. Claude Code builds it, ${APP_NAME} lets you design it.`,
         href: Routes.WORKFLOWS_CLAUDE_CODE,
         logo: '/assets/logo-claude-code.svg',
         available: true,
     },
     {
         title: 'Vibe Coding',
-        description: 'Vibe coding has a collaboration problem. Onlook solves it — team canvas, real components, PRs.',
+        description: `Vibe coding has a collaboration problem. ${APP_NAME} solves it — team canvas, real components, PRs.`,
         href: Routes.WORKFLOWS_VIBE_CODING,
         icon: Icons.Sparkles,
         available: true,
@@ -57,16 +58,16 @@ export default function WorkflowsPage() {
             <WebsiteLayout showFooter={true}>
                 {/* AI-Friendly Summary Section */}
                 <section className="sr-only" aria-label="Workflows Summary">
-                    <h1>Onlook Workflows: Integrate with Claude Code, Cursor, and AI Coding Tools</h1>
+                    <h1>{APP_NAME} Workflows: Integrate with Claude Code, Cursor, and AI Coding Tools</h1>
                     <p>
-                        Onlook adds a visual design layer to your AI coding workflow. Connect Onlook to the tools
+                        {APP_NAME} adds a visual design layer to your AI coding workflow. Connect {APP_NAME} to the tools
                         you already use — Claude Code, Cursor, and more. Design visually with your real components,
                         collaborate with your team in real-time, and ship changes as mergeable pull requests.
                     </p>
                     <h2>Available Integrations</h2>
                     <ul>
-                        <li>Claude Code — The visual canvas your AI workflow is missing. Claude Code builds it, Onlook lets you design it.</li>
-                        <li>Vibe Coding — Vibe coding has a collaboration problem. Onlook solves it with a team canvas, real components, and PR output.</li>
+                        <li>Claude Code — The visual canvas your AI workflow is missing. Claude Code builds it, {APP_NAME} lets you design it.</li>
+                        <li>Vibe Coding — Vibe coding has a collaboration problem. {APP_NAME} solves it with a team canvas, real components, and PR output.</li>
                         <li>Cursor — Visual design layer for Cursor users (coming soon)</li>
                         <li>Codex — Visual design layer for OpenAI Codex users (coming soon)</li>
                     </ul>
@@ -100,7 +101,7 @@ export default function WorkflowsPage() {
                             transition={{ duration: 0.6, delay: 0.1, ease: 'easeOut' }}
                             style={{ willChange: 'opacity, filter', transform: 'translateZ(0)' }}
                         >
-                            Onlook fits into your stack
+                            {APP_NAME} fits into your stack
                         </motion.p>
                         <motion.h2
                             className="text-foreground-secondary mx-auto max-w-xl text-center text-lg text-balance"
@@ -109,7 +110,7 @@ export default function WorkflowsPage() {
                             transition={{ duration: 0.6, delay: 0.15, ease: 'easeOut' }}
                             style={{ willChange: 'opacity, filter', transform: 'translateZ(0)' }}
                         >
-                            Connect Onlook to the tools you already use. Design visually, ship real code.
+                            Connect {APP_NAME} to the tools you already use. Design visually, ship real code.
                         </motion.h2>
                     </div>
                 </div>
@@ -164,7 +165,7 @@ export default function WorkflowsPage() {
 
                 {/* CTA Section */}
                 <CTASection
-                    ctaText={`Ready to add Onlook\nto your workflow?`}
+                    ctaText={`Ready to add ${APP_NAME}\nto your workflow?`}
                     buttonText="Book a Demo"
                     href={ExternalRoutes.BOOK_DEMO}
                 />

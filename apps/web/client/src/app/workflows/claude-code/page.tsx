@@ -1,5 +1,6 @@
 'use client';
 
+import { APP_NAME } from '@onlook/constants';
 import { CreateManagerProvider } from '@/components/store/create';
 import { SubscriptionModal } from '@/components/ui/pricing-modal';
 import { NonProjectSettingsModal } from '@/components/ui/settings-modal/non-project';
@@ -14,28 +15,28 @@ import { WebsiteLayout } from '../../_components/website-layout';
 
 const claudeCodeFaqs = [
     {
-        question: 'How does Onlook work with Claude Code?',
-        answer: 'Claude Code handles the terminal and code generation. Onlook provides the visual canvas. Together, they give you a complete design-to-code workflow — Claude Code builds, Onlook lets you visually iterate and refine.',
+        question: `How does ${APP_NAME} work with Claude Code?`,
+        answer: `Claude Code handles the terminal and code generation. ${APP_NAME} provides the visual canvas. Together, they give you a complete design-to-code workflow — Claude Code builds, ${APP_NAME} lets you visually iterate and refine.`,
     },
     {
-        question: 'Do I need to know code to use Onlook with Claude Code?',
-        answer: 'No. Onlook gives you a visual canvas where you can drag, resize, and arrange elements. The code runs underneath — you don\'t need to touch it unless you want to.',
+        question: `Do I need to know code to use ${APP_NAME} with Claude Code?`,
+        answer: `No. ${APP_NAME} gives you a visual canvas where you can drag, resize, and arrange elements. The code runs underneath — you don't need to touch it unless you want to.`,
     },
     {
-        question: 'Can I use my existing components with Onlook?',
-        answer: 'Yes. Onlook connects to your existing codebase and lets you design with your real components — the buttons, cards, and layouts your engineers already built.',
+        question: `Can I use my existing components with ${APP_NAME}?`,
+        answer: `Yes. ${APP_NAME} connects to your existing codebase and lets you design with your real components — the buttons, cards, and layouts your engineers already built.`,
     },
     {
         question: 'How do I share my work with my team?',
-        answer: 'Onlook has built-in team collaboration. Share your canvas, leave spatial comments, and work together in real-time. Changes sync to code and can be submitted as PRs.',
+        answer: `${APP_NAME} has built-in team collaboration. Share your canvas, leave spatial comments, and work together in real-time. Changes sync to code and can be submitted as PRs.`,
     },
     {
-        question: 'What makes Onlook different from using Claude Code alone?',
-        answer: 'Claude Code is terminal-based and works best for building. Onlook adds the visual layer designers need — an infinite canvas, team collaboration, and visual iteration on AI-generated UIs.',
+        question: `What makes ${APP_NAME} different from using Claude Code alone?`,
+        answer: `Claude Code is terminal-based and works best for building. ${APP_NAME} adds the visual layer designers need — an infinite canvas, team collaboration, and visual iteration on AI-generated UIs.`,
     },
     {
-        question: 'Does Onlook constrain AI to my design system?',
-        answer: 'Yes. Unlike raw AI code generation, Onlook constrains AI to your existing components, colors, and tokens. This means outputs match your design system — no drift, no off-brand results.',
+        question: `Does ${APP_NAME} constrain AI to my design system?`,
+        answer: `Yes. Unlike raw AI code generation, ${APP_NAME} constrains AI to your existing components, colors, and tokens. This means outputs match your design system — no drift, no off-brand results.`,
     },
 ];
 
@@ -64,7 +65,7 @@ export default function ClaudeCodeWorkflowPage() {
                     <h1>Claude Code for Designers: Add a Visual Canvas to Your AI Coding Workflow</h1>
                     <p>
                         Claude Code is amazing for building — but designers need to see, arrange, and refine visually.
-                        Onlook adds the visual layer. Design with Claude Code, refine on an infinite canvas, ship PRs.
+                        {APP_NAME} adds the visual layer. Design with Claude Code, refine on an infinite canvas, ship PRs.
                         Together, they give you a complete design-to-code workflow.
                     </p>
                     <h2>The Challenge with Claude Code Alone</h2>
@@ -74,7 +75,7 @@ export default function ClaudeCodeWorkflowPage() {
                         <li>AI drift — raw AI generation doesn't know your design system</li>
                         <li>No canvas — can't spatially arrange ideas or see the full picture</li>
                     </ul>
-                    <h2>Onlook Solves This</h2>
+                    <h2>{APP_NAME} Solves This</h2>
                     <ul>
                         <li>Infinite canvas — visual environment with real code running underneath</li>
                         <li>Your real components — design with buttons, cards, layouts engineers already built</li>
@@ -82,7 +83,7 @@ export default function ClaudeCodeWorkflowPage() {
                         <li>PR output — changes become real pull requests engineers can review</li>
                         <li>AI constrained — outputs match your design system, no drift</li>
                     </ul>
-                    <h2>Coming Soon: Onlook MCP for Claude Code</h2>
+                    <h2>Coming Soon: {APP_NAME} MCP for Claude Code</h2>
                     <p>
                         Use /onlook directly in Claude Code to open your UI in a visual canvas, iterate with your
                         design system, and push changes back — all without leaving the terminal.
@@ -160,7 +161,7 @@ export default function ClaudeCodeWorkflowPage() {
                             className="mb-24 max-w-3xl text-4xl font-light leading-tight text-balance md:text-5xl"
                             {...getBlurAnimationProps(0.1)}
                         >
-                            Onlook adds the visual layer. Design with Claude Code, refine on the canvas, ship PRs.
+                            {APP_NAME} adds the visual layer. Design with Claude Code, refine on the canvas, ship PRs.
                         </motion.p>
                     </div>
 
@@ -232,7 +233,7 @@ export default function ClaudeCodeWorkflowPage() {
                                     Coming Soon
                                 </span>
                                 <h2 className="mb-6 max-w-2xl text-3xl font-light leading-tight text-balance md:text-5xl">
-                                    Onlook MCP for Claude Code
+                                    {APP_NAME} MCP for Claude Code
                                 </h2>
                                 <p className="text-foreground-secondary mb-8 max-w-xl text-lg text-balance">
                                     Use <code className="bg-foreground-primary/10 rounded px-2 py-0.5 font-mono text-base">/onlook</code> directly in Claude Code to open your UI in a visual canvas, iterate with your design system, and push changes back — all without leaving the terminal.
@@ -252,7 +253,7 @@ export default function ClaudeCodeWorkflowPage() {
 
                 {/* CTA Section */}
                 <CTASection
-                    ctaText={`Try Onlook with your\nClaude Code project`}
+                    ctaText={`Try ${APP_NAME} with your\nClaude Code project`}
                     buttonText="Book a Demo"
                     href={ExternalRoutes.BOOK_DEMO}
                 />

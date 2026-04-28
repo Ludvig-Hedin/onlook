@@ -116,7 +116,7 @@ export class PublishManager {
             await updateDeployment({
                 id: deploymentId,
                 status: DeploymentStatus.IN_PROGRESS,
-                message: 'Adding "Built with Onlook" badge...',
+                message: 'Adding `Built with ${APP_NAME}` badge...',
                 progress: 35,
                 envVars,
             });

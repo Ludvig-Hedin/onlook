@@ -1,3 +1,4 @@
+import { APP_NAME } from '@onlook/constants';
 import { Routes } from '@/utils/constants';
 import { Icons } from '@onlook/ui/icons';
 import React from 'react';
@@ -19,16 +20,16 @@ interface FAQSectionProps {
 
 const defaultFaqs = [
     {
-        question: 'What is Onlook?',
-        answer: 'Onlook is a visual design canvas that connects to your existing codebase. Designers drag real components onto an infinite canvas, make changes visually, and submit pull requests — no coding required.',
+        question: `What is ${APP_NAME}?`,
+        answer: `${APP_NAME} is a visual design canvas that connects to your existing codebase. Designers drag real components onto an infinite canvas, make changes visually, and submit pull requests — no coding required.`,
     },
     {
-        question: 'How is Onlook different from other design tools?',
-        answer: 'Traditional design tools create static mockups that must be rebuilt in code. Onlook works with your real components — what you design IS the code. Changes become PRs, not handoff specs.',
+        question: `How is ${APP_NAME} different from other design tools?`,
+        answer: `Traditional design tools create static mockups that must be rebuilt in code. ${APP_NAME} works with your real components — what you design IS the code. Changes become PRs, not handoff specs.`,
     },
     {
-        question: 'How is Onlook different from AI code generators?',
-        answer: 'AI generators create new code from scratch. Onlook constrains AI to YOUR existing components, so outputs match your design system. No translation, no drift.',
+        question: `How is ${APP_NAME} different from AI code generators?`,
+        answer: `AI generators create new code from scratch. ${APP_NAME} constrains AI to YOUR existing components, so outputs match your design system. No translation, no drift.`,
     },
     {
         question: 'Do I need to know how to code?',
@@ -39,16 +40,16 @@ const defaultFaqs = [
         answer: 'Yes. Share your canvas, leave spatial comments, and work together in real-time. Changes sync to code and can be submitted as PRs for engineers to review.',
     },
     {
-        question: 'What tech stack does Onlook support?',
+        question: `What tech stack does ${APP_NAME} support?`,
         answer: 'React, Next.js, and any CSS approach (Tailwind, CSS modules, styled-components). Works with any component library.',
     },
     {
-        question: 'Is there a free version of Onlook?',
-        answer: 'Yes, Onlook can be self-hosted for free on GitHub. For the hosted cloud version, please contact our team or book a demo.',
+        question: `Is there a free version of ${APP_NAME}?`,
+        answer: `Yes, ${APP_NAME} can be self-hosted for free on GitHub. For the hosted cloud version, please contact our team or book a demo.`,
     },
     {
         question: 'Who owns the code?',
-        answer: 'The code you make with Onlook is all yours. Export it locally, publish to GitHub, or deploy to a custom domain.',
+        answer: `The code you make with ${APP_NAME} is all yours. Export it locally, publish to GitHub, or deploy to a custom domain.`,
     },
 ];
 

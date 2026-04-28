@@ -1,4 +1,5 @@
 'use client';
+import { APP_NAME } from '@onlook/constants';
 
 import { type NextJsProjectValidation } from '@/app/projects/types';
 import { Button } from '@onlook/ui/button';
@@ -74,9 +75,9 @@ export const VerifyProject = () => {
         if (!validation) {
             return (
                 <>
-                    <CardTitle>{'Verifying compatibility with Onlook'}</CardTitle>
+                    <CardTitle>{`Verifying compatibility with ${APP_NAME}`}</CardTitle>
                     <CardDescription>
-                        {"We're checking to make sure this project can work with Onlook"}
+                        {`We're checking to make sure this project can work with ${APP_NAME}`}
                     </CardDescription>
                 </>
             );
@@ -85,15 +86,15 @@ export const VerifyProject = () => {
             return (
                 <>
                     <CardTitle>{'Project verified'}</CardTitle>
-                    <CardDescription>{'Your project is ready to import to Onlook'}</CardDescription>
+                    <CardDescription>{`Your project is ready to import to ${APP_NAME}`}</CardDescription>
                 </>
             );
         } else {
             return (
                 <>
-                    <CardTitle>{"This project won't work with Onlook"}</CardTitle>
+                    <CardTitle>{`This project won't work with ${APP_NAME}`}</CardTitle>
                     <CardDescription>
-                        {'Onlook only works with NextJS + React + Tailwind projects'}
+                        {`${APP_NAME} only works with NextJS + React + Tailwind projects`}
                     </CardDescription>
                 </>
             );

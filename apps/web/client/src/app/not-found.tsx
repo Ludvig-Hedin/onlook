@@ -9,7 +9,7 @@ export default function NotFound() {
     return (
         <WebsiteLayout>
             <main className="relative min-h-screen w-full overflow-hidden">
-                {/* Giant Onlook Seal - positioned to overflow top */}
+                {/* Giant Weblab Seal - positioned to overflow top */}
                 <motion.div
                     className="absolute left-1/2 -translate-x-1/2 -top-[35vh] pointer-events-none"
                     initial={{ opacity: 0 }}

@@ -2,6 +2,7 @@ import '@/styles/globals.css';
 import '@onlook/ui/globals.css';
 
 import RB2BLoader from '@/components/rb2b-loader';
+import { APP_DOMAIN, APP_NAME, APP_TAGLINE } from '@onlook/constants';
 import { TelemetryProvider } from '@/components/telemetry-provider';
 import { env } from '@/env';
 import { FeatureFlagsProvider } from '@/hooks/use-feature-flags';
@@ -18,16 +19,18 @@ import { faqSchema, organizationSchema } from './seo';
 
 const isProduction = env.NODE_ENV === 'production';
 
+const description = `The power of Cursor for your own website. ${APP_NAME} lets you edit your React website and write your changes back to code in real-time. Iterate and experiment with AI.`;
+
 export const metadata: Metadata = {
-    title: 'Onlook – Cursor for Designers',
-    description: 'The power of Cursor for your own website. Onlook lets you edit your React website and write your changes back to code in real-time. Iterate and experiment with AI.',
+    title: `${APP_NAME} – ${APP_TAGLINE}`,
+    description,
     icons: [{ rel: 'icon', url: '/favicon.ico' }],
     openGraph: {
-        url: 'https://onlook.com/',
+        url: `https://${APP_DOMAIN}/`,
         type: 'website',
-        siteName: 'Onlook',
-        title: 'Onlook – Cursor for Designers',
-        description: 'The power of Cursor for your own website. Onlook lets you edit your React website and write your changes back to code in real-time. Iterate and experiment with AI.',
+        siteName: APP_NAME,
+        title: `${APP_NAME} – ${APP_TAGLINE}`,
+        description,
         images: [
             {
                 url: 'https://framerusercontent.com/images/ScnnNT7JpmUya7afqGAets8.png',
@@ -36,10 +39,10 @@ export const metadata: Metadata = {
     },
     twitter: {
         card: 'summary_large_image',
-        site: '@onlookdev',
+        site: '@onlookdev', // update when Twitter handle changes
         creator: '@onlookdev',
-        title: 'Onlook – Cursor for Designers',
-        description: 'The power of Cursor for your own website. Onlook lets you edit your React website and write your changes back to code in real-time. Iterate and experiment with AI.',
+        title: `${APP_NAME} – ${APP_TAGLINE}`,
+        description,
         images: [
             {
                 url: 'https://framerusercontent.com/images/ScnnNT7JpmUya7afqGAets8.png',
@@ -59,7 +62,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     return (
         <html lang={locale} className={inter.variable} suppressHydrationWarning>
             <head>
-                <link rel="canonical" href="https://onlook.com/" />
+                <link rel="canonical" href={`https://${APP_DOMAIN}/`} />
                 <meta name="robots" content="index, follow" />
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
                 <script

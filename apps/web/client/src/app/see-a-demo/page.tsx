@@ -36,10 +36,10 @@ export default function DemoOnlyPage() {
                 <div className="flex flex-col gap-6">
                     <div className="flex flex-col gap-4">
                         <h1 className="text-4xl font-thin">
-                            Onboard to Onlook
+                            Onboard to Weblab
                         </h1>
                         <p className="text-foreground-secondary text-regular max-w-lg text-balance">
-                            Get the most out of Onlook with a personalized onboarding session. Book a demo with our team to get started, or{' '}
+                            Get the most out of Weblab with a personalized onboarding session. Book a demo with our team to get started, or{' '}
                             <a
                                 href="https://github.com/onlook-dev/onlook"
                                 target="_blank"

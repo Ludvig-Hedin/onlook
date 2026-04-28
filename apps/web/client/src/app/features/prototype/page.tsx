@@ -54,7 +54,7 @@ function PrototypeFeaturesHero() {
                     transition={{ duration: 0.6, delay: 0.15, ease: 'easeOut' }}
                     style={{ willChange: 'opacity, filter', transform: 'translateZ(0)' }}
                 >
-                    Onlook's AI prototype generator creates functional React prototypes with real
+                    Weblab's AI prototype generator creates functional React prototypes with real
                     interactions, not static mockups. Perfect for product managers and designers who
                     need rapid prototyping tools that generate production-ready code.
                 </motion.p>
@@ -114,7 +114,7 @@ function PrototypeBenefitsSection() {
                         </p>
                         <p className="text-foreground-secondary text-regular mb-8 max-w-xl text-balance">
                             Unlike traditional prototyping tools that create static mockups,
-                            Onlook's AI prototype generator builds fully interactive React
+                            Weblab's AI prototype generator builds fully interactive React
                             applications with real databases, user authentication, and working
                             features. Go beyond clickable wireframes.
                         </p>
@@ -257,28 +257,28 @@ function PrototypeFeaturesGridSection() {
 
 const prototypeFaqs = [
     {
-        question: 'What makes Onlook different from other prototyping tools?',
-        answer: "Onlook generates functional React prototypes with real interactions, databases, and working features—not just clickable mockups. While other tools create static prototypes, Onlook's AI builds production-ready code you can actually test and deploy.",
+        question: 'What makes Weblab different from other prototyping tools?',
+        answer: "Weblab generates functional React prototypes with real interactions, databases, and working features—not just clickable mockups. While other tools create static prototypes, Weblab's AI builds production-ready code you can actually test and deploy.",
     },
     {
-        question: 'How quickly can I create a prototype with Onlook?',
-        answer: "Most prototypes can be generated in minutes. Simply describe your idea or import a Figma design, and Onlook's AI will create a functional React prototype with working components, proper styling, and interactive features ready for testing.",
+        question: 'How quickly can I create a prototype with Weblab?',
+        answer: "Most prototypes can be generated in minutes. Simply describe your idea or import a Figma design, and Weblab's AI will create a functional React prototype with working components, proper styling, and interactive features ready for testing.",
     },
     {
         question: 'Can I use my existing Figma designs?',
-        answer: 'Yes! Onlook can import Figma designs and automatically convert them to functional React prototypes with proper component structure, responsive layouts, and clean code. Your designs become working applications, not just static screens.',
+        answer: 'Yes! Weblab can import Figma designs and automatically convert them to functional React prototypes with proper component structure, responsive layouts, and clean code. Your designs become working applications, not just static screens.',
     },
     {
         question: 'What kind of prototypes can I build?',
-        answer: 'You can build any type of web application prototype—dashboards, e-commerce sites, social platforms, SaaS tools, mobile apps, and more. Onlook generates React components with real functionality like forms, navigation, data visualization, and user authentication.',
+        answer: 'You can build any type of web application prototype—dashboards, e-commerce sites, social platforms, SaaS tools, mobile apps, and more. Weblab generates React components with real functionality like forms, navigation, data visualization, and user authentication.',
     },
     {
         question: 'Is the generated code production-ready?',
-        answer: 'Yes! Onlook generates clean, well-structured React code with proper TypeScript, Tailwind CSS, and modern best practices. You can use the prototype code as a foundation for your production application or continue iterating within Onlook.',
+        answer: 'Yes! Weblab generates clean, well-structured React code with proper TypeScript, Tailwind CSS, and modern best practices. You can use the prototype code as a foundation for your production application or continue iterating within Weblab.',
     },
     {
         question: 'How do I share prototypes with my team?',
-        answer: 'Onlook provides instant deployment to live URLs that you can share with anyone. Team members can interact with the prototype, leave comments, and collaborate in real-time. No downloads or special software required for stakeholders to test your prototypes.',
+        answer: 'Weblab provides instant deployment to live URLs that you can share with anyone. Team members can interact with the prototype, leave comments, and collaborate in real-time. No downloads or special software required for stakeholders to test your prototypes.',
     },
 ];
 
@@ -313,9 +313,9 @@ export default function PrototypeFeaturesPage() {
             <WebsiteLayout showFooter={true}>
                 {/* AI-Friendly Summary Section */}
                 <section className="sr-only" aria-label="AI Prototype Generator Summary">
-                    <h1>Onlook AI Prototype Generator: From Idea to Interactive Prototype in Minutes</h1>
+                    <h1>Weblab AI Prototype Generator: From Idea to Interactive Prototype in Minutes</h1>
                     <p>
-                        Onlook generates functional React prototypes with real interactions, databases, and working
+                        Weblab generates functional React prototypes with real interactions, databases, and working
                         features — not static mockups. Perfect for product managers and designers who need rapid
                         prototyping tools that generate production-ready code.
                     </p>
@@ -363,7 +363,7 @@ export default function PrototypeFeaturesPage() {
                 </div>
                 <PrototypeFeaturesGridSection />
                 <CTASection
-                    ctaText={`Bring your team \nto Onlook today`}
+                    ctaText={`Bring your team \nto Weblab today`}
                     buttonText="Book a Demo"
                     href={ExternalRoutes.BOOK_DEMO}
                 />

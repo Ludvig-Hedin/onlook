@@ -1,9 +1,10 @@
+import { APP_DOMAIN, APP_NAME } from '@onlook/constants';
 import { type Metadata } from 'next';
 
 export const metadata: Metadata = {
-    title: 'Workflows | Integrate Onlook with Claude Code, Cursor & AI Coding Tools | Onlook',
+    title: `Workflows | Integrate ${APP_NAME} with Claude Code, Cursor & AI Coding Tools | ${APP_NAME}`,
     description:
-        'Connect Onlook to your AI coding workflow. Add a visual design layer to Claude Code, Cursor, and other AI tools. Design with your real components, collaborate with your team, ship PRs.',
+        `Connect ${APP_NAME} to your AI coding workflow. Add a visual design layer to Claude Code, Cursor, and other AI tools. Design with your real components, collaborate with your team, ship PRs.`,
     keywords: [
         // Primary keywords
         'claude code visual editor',
@@ -26,12 +27,12 @@ export const metadata: Metadata = {
         'team collaboration AI',
     ],
     openGraph: {
-        url: 'https://onlook.com/workflows',
+        url: `https://${APP_DOMAIN}/workflows`,
         type: 'website',
-        siteName: 'Onlook',
-        title: 'Workflows | Onlook',
+        siteName: APP_NAME,
+        title: 'Workflows | ${APP_NAME}',
         description:
-            'Connect Onlook to your AI coding workflow. Visual design layer for Claude Code, Cursor, and more.',
+            `Connect ${APP_NAME} to your AI coding workflow. Visual design layer for Claude Code, Cursor, and more.`,
         images: [
             {
                 url: 'https://framerusercontent.com/images/ScnnNT7JpmUya7afqGAets8.png',
@@ -40,12 +41,12 @@ export const metadata: Metadata = {
     },
     twitter: {
         card: 'summary_large_image',
-        title: 'Workflows | Onlook',
+        title: 'Workflows | ${APP_NAME}',
         description: 'Visual design layer for Claude Code, Cursor, and AI coding tools.',
         images: ['https://framerusercontent.com/images/ScnnNT7JpmUya7afqGAets8.png'],
     },
     alternates: {
-        canonical: 'https://onlook.com/workflows',
+        canonical: `https://${APP_DOMAIN}/workflows`,
     },
     robots: {
         index: true,
@@ -62,17 +63,17 @@ export const metadata: Metadata = {
 const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'WebPage',
-    name: 'Onlook Workflows',
+    name: `${APP_NAME} Workflows`,
     description:
-        'Connect Onlook to your AI coding workflow. Add a visual design layer to Claude Code, Cursor, and other AI tools.',
-    url: 'https://onlook.com/workflows',
+        `Connect ${APP_NAME} to your AI coding workflow. Add a visual design layer to Claude Code, Cursor, and other AI tools.`,
+    url: `https://${APP_DOMAIN}/workflows`,
     mainEntity: {
         '@type': 'SoftwareApplication',
-        name: 'Onlook',
+        name: APP_NAME,
         applicationCategory: 'DeveloperApplication',
         operatingSystem: 'Web',
         description:
-            'Onlook is an AI-powered visual editor that integrates with your AI coding workflow. Design with your real components, collaborate with your team, ship PRs.',
+            `${APP_NAME} is an AI-powered visual editor that integrates with your AI coding workflow. Design with your real components, collaborate with your team, ship PRs.`,
         featureList: [
             'Visual canvas for AI-generated UIs',
             'Integration with Claude Code',

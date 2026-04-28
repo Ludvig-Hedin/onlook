@@ -1,3 +1,4 @@
+import { APP_NAME } from '@onlook/constants';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { vujahdayScript } from '@/app/fonts';
 import { AiChatPreviewBlock } from './feature-blocks/ai-chat-preview-block';
@@ -131,7 +132,7 @@ export function WhatCanOnlookDoSection() {
     // Version data for Today section
     const todayVersions = [
         { title: 'New typography and layout', subtitle: 'Alessandro · 3h ago' },
-        { title: 'Save before publishing', subtitle: 'Onlook · 10h ago' },
+        { title: 'Save before publishing', subtitle: `${APP_NAME} · 10h ago` },
         { title: 'Added new background image', subtitle: 'Sandra · 12h ago' },
         { title: 'Copy improvements and new branding', subtitle: 'Jonathan · 3d ago' },
     ];

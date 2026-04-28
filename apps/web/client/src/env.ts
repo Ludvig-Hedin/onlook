@@ -83,6 +83,8 @@ export const env = createEnv({
         NEXT_PUBLIC_FEATURE_COLLABORATION: z.coerce.boolean().default(false),
         NEXT_PUBLIC_HOSTING_DOMAIN: z.string().optional(),
         NEXT_PUBLIC_RB2B_ID: z.string().optional(),
+        NEXT_PUBLIC_APP_NAME: z.string().default('Weblab'),
+        NEXT_PUBLIC_APP_DOMAIN: z.string().default('weblab.build'),
     },
 
     /**
@@ -125,6 +127,10 @@ export const env = createEnv({
 
         // RB2B
         NEXT_PUBLIC_RB2B_ID: process.env.NEXT_PUBLIC_RB2B_ID,
+
+        // Brand
+        NEXT_PUBLIC_APP_NAME: process.env.NEXT_PUBLIC_APP_NAME,
+        NEXT_PUBLIC_APP_DOMAIN: process.env.NEXT_PUBLIC_APP_DOMAIN,
 
         // Hosting
         FREESTYLE_API_KEY: process.env.FREESTYLE_API_KEY,

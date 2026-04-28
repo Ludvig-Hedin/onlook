@@ -1,4 +1,5 @@
 'use client';
+import { APP_NAME } from '@onlook/constants';
 
 import { motion } from 'motion/react';
 
@@ -41,7 +42,7 @@ export function ClaudeCodeHero() {
                     transition={{ duration: 0.6, delay: 0.15, ease: 'easeOut' }}
                     style={{ willChange: 'opacity, filter', transform: 'translateZ(0)' }}
                 >
-                    The visual canvas your AI workflow is missing. Claude Code builds it. Onlook lets you design it.
+                    The visual canvas your AI workflow is missing. Claude Code builds it. {APP_NAME} lets you design it.
                 </motion.h2>
                 <motion.div
                     className="mt-8 flex flex-row gap-4"

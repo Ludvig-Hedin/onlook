@@ -1,36 +1,37 @@
+import { APP_DOMAIN, APP_NAME } from '@onlook/constants';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-    title: 'FAQ | Onlook - AI-Powered Visual Editor for Frontend Development',
-    description: 'Frequently asked questions about Onlook, the AI-powered visual editor for frontend development. Learn about supported frameworks (React, Vue, Angular), component libraries (shadcn/ui, Material UI), AI features, pricing, and how Onlook differs from other design tools.',
+    title: `FAQ | ${APP_NAME} - AI-Powered Visual Editor for Frontend Development`,
+    description: `Frequently asked questions about ${APP_NAME}, the AI-powered visual editor for frontend development. Learn about supported frameworks (React, Vue, Angular), component libraries (shadcn/ui, Material UI), AI features, pricing, and how ${APP_NAME} differs from other design tools.`,
     keywords: [
-        'Onlook FAQ',
-        'Onlook questions',
+        `${APP_NAME} FAQ`,
+        `${APP_NAME} questions`,
         'AI visual editor FAQ',
         'React visual editor',
         'design to code tool',
         'frontend AI tools',
-        'Onlook vs Figma',
-        'Onlook vs V0',
-        'Onlook pricing',
-        'Onlook features',
+        `${APP_NAME} vs Figma`,
+        `${APP_NAME} vs V0`,
+        `${APP_NAME} pricing`,
+        `${APP_NAME} features`,
         'design system tools',
         'component library editor',
     ],
     openGraph: {
-        title: 'FAQ | Onlook',
-        description: 'Everything you need to know about Onlook - the AI-powered visual editor for frontend development.',
+        title: `FAQ | ${APP_NAME}`,
+        description: `Everything you need to know about ${APP_NAME} - the AI-powered visual editor for frontend development.`,
         type: 'website',
-        url: 'https://onlook.com/faq',
-        siteName: 'Onlook',
+        url: `https://${APP_DOMAIN}/faq`,
+        siteName: APP_NAME,
     },
     twitter: {
         card: 'summary_large_image',
-        title: 'FAQ | Onlook',
-        description: 'Everything you need to know about Onlook - the AI-powered visual editor for frontend development.',
+        title: `FAQ | ${APP_NAME}`,
+        description: `Everything you need to know about ${APP_NAME} - the AI-powered visual editor for frontend development.`,
     },
     alternates: {
-        canonical: 'https://onlook.com/faq',
+        canonical: `https://${APP_DOMAIN}/faq`,
     },
     robots: {
         index: true,

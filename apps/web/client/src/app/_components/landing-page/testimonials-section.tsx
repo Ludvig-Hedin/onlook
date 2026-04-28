@@ -53,7 +53,7 @@ export function TestimonialsSection() {
     return (
         <div className="w-full max-w-6xl mx-auto py-48 px-8">
             <h2 className="text-foreground-primary text-6xl leading-[1.1] font-light mb-16 max-w-4xl text-left text-balance">
-                Tens of thousands of <br />builders love Onlook
+                Tens of thousands of <br />builders love Weblab
             </h2>
             <div className="w-full flex flex-col md:flex-row gap-6 md:gap-8">
                 {/* Column 1 */}
@@ -66,7 +66,7 @@ export function TestimonialsSection() {
                         href="https://x.com/koder_dev/status/1884179672847847522" 
                     />
                     <TestimonialCard
-                        text="From an era where web designers were synonymous with Photoshop and XD, we've moved into the Figma era. And now, a new tool powered by AI has emerged! Its name is 'Onlook'. In summary, it seems you can publish your designs directly."
+                        text="From an era where web designers were synonymous with Photoshop and XD, we've moved into the Figma era. And now, a new tool powered by AI has emerged! Its name is 'Weblab'. In summary, it seems you can publish your designs directly."
                         name="Ryutaro"
                         label="Studio Nika"
                         profileImage="/assets/testimonials-ryutaro.png"

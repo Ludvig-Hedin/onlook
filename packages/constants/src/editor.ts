@@ -1,8 +1,10 @@
 import { Orientation, Theme } from './frame';
 
-export const APP_NAME = 'Onlook';
-export const APP_SCHEMA = 'onlook';
-export const HOSTING_DOMAIN = 'onlook.live';
+export const APP_NAME = 'Weblab';
+export const APP_DOMAIN = 'weblab.build';
+export const APP_TAGLINE = 'Cursor for Designers';
+export const APP_SCHEMA = 'onlook'; // keep: URL protocol, backend contract
+export const HOSTING_DOMAIN = 'onlook.live'; // keep: hosting infra, change in Phase 2
 export const MAX_NAME_LENGTH = 50;
 export enum EditorAttributes {
     // DOM attributes

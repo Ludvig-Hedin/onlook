@@ -1,4 +1,5 @@
 'use client';
+import { APP_NAME } from '@onlook/constants';
 
 import { CreateManagerProvider } from '@/components/store/create';
 import { SubscriptionModal } from '@/components/ui/pricing-modal';
@@ -14,40 +15,40 @@ import { WebsiteLayout } from '../../_components/website-layout';
 
 const aiFrontendFaqs = [
     {
-        question: 'What is Onlook?',
-        answer: 'Onlook is an AI-powered visual editor for frontend development. It connects to your existing React, Vue, or Angular codebase and lets designers create interfaces using real components. AI is constrained to your design system, and changes become pull requests engineers can merge directly.',
+        question: `What is ${APP_NAME}?`,
+        answer: `${APP_NAME} is an AI-powered visual editor for frontend development. It connects to your existing React, Vue, or Angular codebase and lets designers create interfaces using real components. AI is constrained to your design system, and changes become pull requests engineers can merge directly.`,
     },
     {
-        question: 'How is Onlook different from other AI code generators?',
-        answer: 'Most AI tools generate generic HTML/CSS from scratch. Onlook is different — it connects to your existing component library and constrains AI to YOUR design system. This means outputs are consistent, on-brand, and directly mergeable. No translation step needed.',
+        question: `How is ${APP_NAME} different from other AI code generators?`,
+        answer: `Most AI tools generate generic HTML/CSS from scratch. ${APP_NAME} is different — it connects to your existing component library and constrains AI to YOUR design system. This means outputs are consistent, on-brand, and directly mergeable. No translation step needed.`,
     },
     {
-        question: 'Does Onlook work with my existing React components?',
-        answer: 'Yes. Onlook connects to your codebase and lets you design with your real components — the buttons, cards, and layouts your engineers already built. AI suggestions use your actual component API, not generic alternatives.',
+        question: `Does ${APP_NAME} work with my existing React components?`,
+        answer: `Yes. ${APP_NAME} connects to your codebase and lets you design with your real components — the buttons, cards, and layouts your engineers already built. AI suggestions use your actual component API, not generic alternatives.`,
     },
     {
-        question: 'What frontend frameworks does Onlook support?',
-        answer: 'Onlook works with React, Next.js, Vue, Angular, Svelte, Preact, SolidJS, Qwik, and Web Components. It also supports any CSS approach — Tailwind, CSS Modules, styled-components, Emotion, SASS/SCSS, Less, Vanilla Extract, and more.',
+        question: `What frontend frameworks does ${APP_NAME} support?`,
+        answer: `${APP_NAME} works with React, Next.js, Vue, Angular, Svelte, Preact, SolidJS, Qwik, and Web Components. It also supports any CSS approach — Tailwind, CSS Modules, styled-components, Emotion, SASS/SCSS, Less, Vanilla Extract, and more.`,
     },
     {
-        question: 'What component libraries does Onlook support?',
-        answer: 'Onlook works with all major component libraries including shadcn/ui, Material UI, Mantine, Chakra UI, Radix UI, Ant Design, Headless UI, Blueprint, Fluent UI, and PrimeReact. If your components work in your codebase, they work in Onlook.',
+        question: `What component libraries does ${APP_NAME} support?`,
+        answer: `${APP_NAME} works with all major component libraries including shadcn/ui, Material UI, Mantine, Chakra UI, Radix UI, Ant Design, Headless UI, Blueprint, Fluent UI, and PrimeReact. If your components work in your codebase, they work in ${APP_NAME}.`,
     },
     {
         question: 'Can AI drift from my design system?',
-        answer: 'No. Unlike raw AI code generation, Onlook constrains AI to your existing components, colors, and tokens. AI can only use what\'s in your design system — no drift, no off-brand results.',
+        answer: `No. Unlike raw AI code generation, ${APP_NAME} constrains AI to your existing components, colors, and tokens. AI can only use what\'s in your design system — no drift, no off-brand results.`,
     },
     {
         question: 'How do I get AI-generated changes into production?',
-        answer: 'Changes you make in Onlook become real code changes. When you\'re ready, submit them as a pull request for engineers to review and merge. No export, no copy-paste, no translation.',
+        answer: `Changes you make in ${APP_NAME} become real code changes. When you\'re ready, submit them as a pull request for engineers to review and merge. No export, no copy-paste, no translation.`,
     },
     {
         question: 'Do I need to know how to code?',
         answer: 'No. Designers use a familiar visual canvas with drag-and-drop, resize, and styling controls. The code runs underneath — you don\'t need to touch it unless you want to.',
     },
     {
-        question: 'Who is Onlook for?',
-        answer: 'Onlook is for product teams with designers and an existing component library. Ideal users include design engineers, product designers working in code-forward teams, and teams maintaining design systems.',
+        question: `Who is ${APP_NAME} for?`,
+        answer: `${APP_NAME} is for product teams with designers and an existing component library. Ideal users include design engineers, product designers working in code-forward teams, and teams maintaining design systems.`,
     },
 ];
 
@@ -77,12 +78,12 @@ export default function AiForFrontendPage() {
                 </div>
 
                 {/* AI-Friendly Summary Section - Hidden visually but available for crawlers */}
-                <section className="sr-only" aria-label="Product Summary">
-                    <h1>Onlook: AI for Frontend Development</h1>
+                <section className="sr-only" aria-label="Product Summary`>
+                    <h1>${APP_NAME}: AI for Frontend Development</h1>
                     <p>
-                        Onlook is an AI-powered visual editor for frontend development that connects to your existing
+                        ${APP_NAME} is an AI-powered visual editor for frontend development that connects to your existing
                         React, Vue, or Angular codebase. Unlike generic AI code generators that produce throwaway HTML/CSS,
-                        Onlook constrains AI to your real components and design system — your buttons, cards, and layouts.
+                        ${APP_NAME} constrains AI to your real components and design system — your buttons, cards, and layouts.
                         Changes become mergeable pull requests, not prototypes that need translation.
                     </p>
                     <h2>Key Features</h2>
@@ -95,16 +96,16 @@ export default function AiForFrontendPage() {
                         <li>Changes become real pull requests engineers can merge</li>
                         <li>Open source with 24k+ GitHub stars</li>
                     </ul>
-                    <h2>Who is Onlook for?</h2>
+                    <h2>Who is ${APP_NAME} for?</h2>
                     <p>
-                        Onlook is for product teams with designers and an existing component library.
+                        ${APP_NAME} is for product teams with designers and an existing component library.
                         Ideal users include design engineers, product designers working in code-forward teams,
                         and teams maintaining design systems who want AI that respects their existing work.
                     </p>
                 </section>
 
                 {/* The Problem Section */}
-                <section className="w-full bg-black py-32">
+                <section className=`w-full bg-black py-32">
                     <div className="mx-auto max-w-6xl px-8">
                         <motion.h2
                             className="text-foreground-secondary mb-6 text-sm font-medium uppercase tracking-wider"

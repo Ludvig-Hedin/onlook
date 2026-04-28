@@ -42,7 +42,7 @@ export function BuilderFeaturesHero() {
                     transition={{ duration: 0.6, delay: 0.15, ease: 'easeOut' }}
                     style={{ willChange: 'opacity, filter', transform: 'translateZ(0)' }}
                 >
-                    Onlook's visual builder lets you drag, drop, and edit webapps directly in your
+                    Weblab's visual builder lets you drag, drop, and edit webapps directly in your
                     browser while maintaining full code access. Perfect for builders who want visual
                     speed without no-code limitations.
                 </motion.p>

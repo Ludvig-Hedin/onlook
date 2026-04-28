@@ -15,12 +15,12 @@
                 "load": "Cargar Proyecto Existente"
             },
             "loading": {
-                "title": "Configurando su nueva aplicación Onlook...",
+                "title": "Configurando su nueva aplicación Weblab...",
                 "description": "Esto puede tomar unos segundos",
                 "cancel": "Cancelar"
             },
             "error": {
-                "title": "Error al crear su aplicación Onlook",
+                "title": "Error al crear su aplicación Weblab",
                 "backToPrompt": "Volver al Prompt"
             }
         },
@@ -35,7 +35,7 @@
         "actions": {
             "import": "Importar",
             "close": "Cerrar",
-            "about": "Acerca de Onlook",
+            "about": "Acerca de Weblab",
             "signOut": "Cerrar sesión",
             "editApp": "Editar Aplicación",
             "projectSettings": "Configuración del proyecto",
@@ -91,8 +91,8 @@
         }
     },
     "welcome": {
-        "title": "Bienvenido a Onlook",
-        "titleReturn": "Bienvenido de vuelta a Onlook",
+        "title": "Bienvenido a Weblab",
+        "titleReturn": "Bienvenido de vuelta a Weblab",
         "description": "Un editor visual de código de última generación que permite a diseñadores y gerentes de productos crear experiencias web con IA.",
         "alpha": "Alpha",
         "login": {
@@ -113,7 +113,7 @@
     "pricing": {
         "plans": {
             "basic": {
-                "name": "Onlook Básico",
+                "name": "Weblab Básico",
                 "price": "$0/mes",
                 "description": "Prototipe y experimente en código con facilidad.",
                 "features": [
@@ -125,7 +125,7 @@
                 ]
             },
             "pro": {
-                "name": "Onlook Pro",
+                "name": "Weblab Pro",
                 "price": "$20/mes",
                 "description": "Creatividad sin restricciones. Construya sitios impresionantes con IA.",
                 "features": [
@@ -133,8 +133,8 @@
                     "Proyectos ilimitados",
                     "Mensajes de chat IA ilimitados por día",
                     "Chats mensuales ilimitados",
-                    "Remover marca de agua 'construido con Onlook'",
-                    "1 dominio personalizado gratuito alojado con Onlook",
+                    "Remover marca de agua 'construido con Weblab'",
+                    "1 dominio personalizado gratuito alojado con Weblab",
                     "Soporte prioritario"
                 ]
             },
@@ -345,7 +345,7 @@
     },
     "help": {
         "menu": {
-            "reloadOnlook": "Recargar Onlook",
+            "reloadOnlook": "Recargar Weblab",
             "theme": {
                 "title": "Tema",
                 "light": "Claro",

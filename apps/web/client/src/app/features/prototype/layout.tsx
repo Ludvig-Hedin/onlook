@@ -1,9 +1,10 @@
+import { APP_DOMAIN, APP_NAME } from '@onlook/constants';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-    title: 'AI Prototype Generator | Create Functional React Prototypes | Onlook',
+    title: 'AI Prototype Generator | Create Functional React Prototypes | ${APP_NAME}',
     description:
-        'Onlook generates functional React prototypes with real interactions — not static mockups. From idea to interactive prototype in minutes. Perfect for rapid prototyping and product validation.',
+        `${APP_NAME} generates functional React prototypes with real interactions — not static mockups. From idea to interactive prototype in minutes. Perfect for rapid prototyping and product validation.`,
     keywords: [
         // Primary keywords
         'AI prototype generator',
@@ -30,12 +31,12 @@ export const metadata: Metadata = {
         'rapid product iteration',
     ],
     openGraph: {
-        title: 'AI Prototype Generator | Onlook',
+        title: 'AI Prototype Generator | ${APP_NAME}',
         description:
             'Create functional React prototypes with real interactions in minutes. Not static mockups — working applications.',
         type: 'website',
-        url: 'https://onlook.com/features/prototype',
-        siteName: 'Onlook',
+        url: `https://${APP_DOMAIN}/features/prototype`,
+        siteName: APP_NAME,
         images: [
             {
                 url: 'https://framerusercontent.com/images/ScnnNT7JpmUya7afqGAets8.png',
@@ -44,13 +45,13 @@ export const metadata: Metadata = {
     },
     twitter: {
         card: 'summary_large_image',
-        title: 'AI Prototype Generator | Onlook',
+        title: 'AI Prototype Generator | ${APP_NAME}',
         description:
             'Create functional React prototypes with real interactions in minutes. Not static mockups — working applications.',
         images: ['https://framerusercontent.com/images/ScnnNT7JpmUya7afqGAets8.png'],
     },
     alternates: {
-        canonical: 'https://onlook.com/features/prototype',
+        canonical: `https://${APP_DOMAIN}/features/prototype`,
     },
     robots: {
         index: true,
@@ -69,12 +70,12 @@ export const metadata: Metadata = {
 const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'SoftwareApplication',
-    name: 'Onlook AI Prototype Generator',
+    name: `${APP_NAME} AI Prototype Generator`,
     applicationCategory: 'DeveloperApplication',
     operatingSystem: 'Web',
     description:
-        'Onlook generates functional React prototypes with real interactions. Perfect for rapid prototyping, product validation, and user testing.',
-    url: 'https://onlook.com/features/prototype',
+        `${APP_NAME} generates functional React prototypes with real interactions. Perfect for rapid prototyping, product validation, and user testing.`,
+    url: `https://${APP_DOMAIN}/features/prototype`,
     featureList: [
         'AI-powered prototype generation',
         'Functional React prototypes with real interactions',
@@ -97,18 +98,18 @@ const faqJsonLd = {
     mainEntity: [
         {
             '@type': 'Question',
-            name: 'What makes Onlook different from other prototyping tools?',
+            name: `What makes ${APP_NAME} different from other prototyping tools?`,
             acceptedAnswer: {
                 '@type': 'Answer',
-                text: "Onlook generates functional React prototypes with real interactions — not just clickable mockups. While other tools create static prototypes, Onlook's AI builds production-ready code you can actually test and deploy.",
+                text: `${APP_NAME} generates functional React prototypes with real interactions — not just clickable mockups. While other tools create static prototypes, ${APP_NAME}'s AI builds production-ready code you can actually test and deploy.`,
             },
         },
         {
             '@type': 'Question',
-            name: 'How quickly can I create a prototype with Onlook?',
+            name: `How quickly can I create a prototype with ${APP_NAME}?`,
             acceptedAnswer: {
                 '@type': 'Answer',
-                text: "Most prototypes can be generated in seconds. Simply describe your idea or import a reference design image, and Onlook's AI will create a functional prototype with working components, proper styling, and interactive features ready for testing.",
+                text: `Most prototypes can be generated in seconds. Simply describe your idea or import a reference design image, and ${APP_NAME}'s AI will create a functional prototype with working components, proper styling, and interactive features ready for testing.`,
             },
         },
         {
@@ -116,7 +117,7 @@ const faqJsonLd = {
             name: 'What kind of prototypes can I build?',
             acceptedAnswer: {
                 '@type': 'Answer',
-                text: 'You can build any type of web application prototype — dashboards, e-commerce sites, social platforms, SaaS tools, mobile apps, and more. Onlook generates components with real interactions.',
+                text: `You can build any type of web application prototype — dashboards, e-commerce sites, social platforms, SaaS tools, mobile apps, and more. ${APP_NAME} generates components with real interactions.`,
             },
         },
         {
@@ -124,7 +125,7 @@ const faqJsonLd = {
             name: 'Is the generated code production-ready?',
             acceptedAnswer: {
                 '@type': 'Answer',
-                text: 'Yes! Onlook generates clean, well-structured React code with proper TypeScript, Tailwind CSS, and modern best practices. You can use the prototype code as a foundation for your production application.',
+                text: `Yes! ${APP_NAME} generates clean, well-structured React code with proper TypeScript, Tailwind CSS, and modern best practices. You can use the prototype code as a foundation for your production application.`,
             },
         },
         {
@@ -132,7 +133,7 @@ const faqJsonLd = {
             name: 'How do I share prototypes with my team?',
             acceptedAnswer: {
                 '@type': 'Answer',
-                text: 'Onlook provides instant deployment to live URLs that you can share with anyone. Team members can interact with the prototype, leave comments, and collaborate in real-time.',
+                text: `${APP_NAME} provides instant deployment to live URLs that you can share with anyone. Team members can interact with the prototype, leave comments, and collaborate in real-time.`,
             },
         },
     ],

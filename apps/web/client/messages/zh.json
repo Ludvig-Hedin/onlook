@@ -15,12 +15,12 @@
                 "load": "加载现有项目"
             },
             "loading": {
-                "title": "正在设置您的新 Onlook 应用...",
+                "title": "正在设置您的新 Weblab 应用...",
                 "description": "这可能需要几秒钟",
                 "cancel": "取消"
             },
             "error": {
-                "title": "创建 Onlook 应用时出错",
+                "title": "创建 Weblab 应用时出错",
                 "backToPrompt": "返回提示"
             }
         },
@@ -35,7 +35,7 @@
         "actions": {
             "import": "导入",
             "close": "关闭",
-            "about": "关于 Onlook",
+            "about": "关于 Weblab",
             "signOut": "退出登录",
             "editApp": "编辑应用",
             "projectSettings": "项目设置",
@@ -91,8 +91,8 @@
         }
     },
     "welcome": {
-        "title": "欢迎使用 Onlook",
-        "titleReturn": "欢迎回到 Onlook",
+        "title": "欢迎使用 Weblab",
+        "titleReturn": "欢迎回到 Weblab",
         "description": "一个下一代的视觉代码编辑器，让设计师和产品经理用 AI 在代码中创造网页体验。",
         "alpha": "Alpha",
         "login": {
@@ -133,8 +133,8 @@
                     "无限制项目",
                     "每日无限制 AI 聊天消息",
                     "每月无限制聊天",
-                    "移除 Onlook 水印",
-                    "1 个免费使用 Onlook 托管的自定义域名",
+                    "移除 Weblab 水印",
+                    "1 个免费使用 Weblab 托管的自定义域名",
                     "优先支持"
                 ]
             },
@@ -345,7 +345,7 @@
     },
     "help": {
         "menu": {
-            "reloadOnlook": "重新加载 Onlook",
+            "reloadOnlook": "重新加载 Weblab",
             "theme": {
                 "title": "主题",
                 "light": "浅色",

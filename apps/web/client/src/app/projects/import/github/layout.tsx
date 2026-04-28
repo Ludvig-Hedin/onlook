@@ -1,3 +1,4 @@
+import { APP_NAME } from '@onlook/constants';
 import { Routes } from '@/utils/constants';
 import { createClient } from '@/utils/supabase/server';
 import { type Metadata } from 'next';
@@ -5,8 +6,8 @@ import { redirect } from 'next/navigation';
 import { ImportGithubProjectProvider } from './_context';
 
 export const metadata: Metadata = {
-    title: 'Onlook',
-    description: 'Onlook – Import Github Project',
+    title: APP_NAME,
+    description: `${APP_NAME} – Import Github Project`,
 };
 
 export default async function Layout({ children }: Readonly<{ children: React.ReactNode }>) {

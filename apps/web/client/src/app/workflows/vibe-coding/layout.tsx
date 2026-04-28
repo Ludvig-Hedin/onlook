@@ -1,9 +1,10 @@
+import { APP_DOMAIN, APP_NAME } from '@onlook/constants';
 import { type Metadata } from 'next';
 
 export const metadata: Metadata = {
-    title: 'Vibe Coding for Teams: Add Collaboration to Your AI Workflow | Onlook',
+    title: 'Vibe Coding for Teams: Add Collaboration to Your AI Workflow | ${APP_NAME}',
     description:
-        'Vibe coding has a collaboration problem. Onlook solves it. Design with your real components on an infinite canvas, work together in real-time, and ship PRs — not throwaway prototypes.',
+        `Vibe coding has a collaboration problem. ${APP_NAME} solves it. Design with your real components on an infinite canvas, work together in real-time, and ship PRs — not throwaway prototypes.`,
     keywords: [
         // Primary keywords
         'vibe coding',
@@ -29,12 +30,12 @@ export const metadata: Metadata = {
         'visual AI coding',
     ],
     openGraph: {
-        url: 'https://onlook.com/workflows/vibe-coding',
+        url: `https://${APP_DOMAIN}/workflows/vibe-coding`,
         type: 'website',
-        siteName: 'Onlook',
-        title: 'Vibe Coding for Teams | Onlook',
+        siteName: APP_NAME,
+        title: 'Vibe Coding for Teams | ${APP_NAME}',
         description:
-            'Vibe coding has a collaboration problem. Onlook solves it. Design with your real components, collaborate in real-time, ship PRs.',
+            `Vibe coding has a collaboration problem. ${APP_NAME} solves it. Design with your real components, collaborate in real-time, ship PRs.`,
         images: [
             {
                 url: 'https://framerusercontent.com/images/ScnnNT7JpmUya7afqGAets8.png',
@@ -45,9 +46,9 @@ export const metadata: Metadata = {
         card: 'summary_large_image',
         site: '@onlookdev',
         creator: '@onlookdev',
-        title: 'Vibe Coding for Teams | Onlook',
+        title: 'Vibe Coding for Teams | ${APP_NAME}',
         description:
-            'Vibe coding has a collaboration problem. Onlook solves it. Real components, real-time collaboration, real PRs.',
+            `Vibe coding has a collaboration problem. ${APP_NAME} solves it. Real components, real-time collaboration, real PRs.`,
         images: [
             {
                 url: 'https://framerusercontent.com/images/ScnnNT7JpmUya7afqGAets8.png',
@@ -55,7 +56,7 @@ export const metadata: Metadata = {
         ],
     },
     alternates: {
-        canonical: 'https://onlook.com/workflows/vibe-coding',
+        canonical: `https://${APP_DOMAIN}/workflows/vibe-coding`,
     },
     robots: {
         index: true,
@@ -74,12 +75,12 @@ export const metadata: Metadata = {
 const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'SoftwareApplication',
-    name: 'Onlook for Vibe Coding Teams',
+    name: `${APP_NAME} for Vibe Coding Teams`,
     applicationCategory: 'DeveloperApplication',
     operatingSystem: 'Web',
     description:
-        'Onlook adds collaboration to vibe coding. Design with your real components on an infinite canvas, work together in real-time, and ship changes as mergeable pull requests.',
-    url: 'https://onlook.com/workflows/vibe-coding',
+        `${APP_NAME} adds collaboration to vibe coding. Design with your real components on an infinite canvas, work together in real-time, and ship changes as mergeable pull requests.`,
+    url: `https://${APP_DOMAIN}/workflows/vibe-coding`,
     featureList: [
         'Team collaboration for vibe coding',
         'Real-time multiplayer canvas',
@@ -120,26 +121,26 @@ const faqJsonLd = {
         },
         {
             '@type': 'Question',
-            name: 'How does Onlook solve the vibe coding collaboration problem?',
+            name: `How does ${APP_NAME} solve the vibe coding collaboration problem?`,
             acceptedAnswer: {
                 '@type': 'Answer',
-                text: 'Onlook adds a visual canvas layer to vibe coding. Share your canvas with teammates, leave spatial comments, and work together in real-time. AI is constrained to your design system, so outputs are consistent. Changes become PRs engineers can merge.',
+                text: `${APP_NAME} adds a visual canvas layer to vibe coding. Share your canvas with teammates, leave spatial comments, and work together in real-time. AI is constrained to your design system, so outputs are consistent. Changes become PRs engineers can merge.`,
             },
         },
         {
             '@type': 'Question',
-            name: 'Can I use Onlook with my existing vibe coding tools?',
+            name: `Can I use ${APP_NAME} with my existing vibe coding tools?`,
             acceptedAnswer: {
                 '@type': 'Answer',
-                text: 'Yes. Use any AI coding tool to build. Then open in Onlook to visually iterate, collaborate with your team, and refine before shipping. Onlook works with your existing codebase.',
+                text: `Yes. Use any AI coding tool to build. Then open in ${APP_NAME} to visually iterate, collaborate with your team, and refine before shipping. ${APP_NAME} works with your existing codebase.`,
             },
         },
         {
             '@type': 'Question',
-            name: 'Does Onlook work with my design system?',
+            name: `Does ${APP_NAME} work with my design system?`,
             acceptedAnswer: {
                 '@type': 'Answer',
-                text: 'Yes. Onlook connects to your existing component library and constrains AI to your design system. Your buttons, cards, and layouts — not generic HTML. No brand drift.',
+                text: `Yes. ${APP_NAME} connects to your existing component library and constrains AI to your design system. Your buttons, cards, and layouts — not generic HTML. No brand drift.`,
             },
         },
         {
@@ -147,7 +148,7 @@ const faqJsonLd = {
             name: 'How do vibe-coded changes get into production?',
             acceptedAnswer: {
                 '@type': 'Answer',
-                text: 'Changes you make in Onlook become real code changes. When ready, submit as a pull request for engineers to review and merge. No export, no translation — the code is production-ready.',
+                text: `Changes you make in ${APP_NAME} become real code changes. When ready, submit as a pull request for engineers to review and merge. No export, no translation — the code is production-ready.`,
             },
         },
     ],

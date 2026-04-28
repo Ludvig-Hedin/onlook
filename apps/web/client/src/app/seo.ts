@@ -1,12 +1,14 @@
+import { APP_DOMAIN, APP_NAME } from '@onlook/constants';
+
 export const organizationSchema = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    name: "Onlook",
-    url: "https://onlook.com/",
-    logo: "https://onlook.com/favicon.ico",
+    name: APP_NAME,
+    url: `https://${APP_DOMAIN}/`,
+    logo: `https://${APP_DOMAIN}/favicon.ico`,
     sameAs: [
-        "https://github.com/onlook-dev/onlook",
-        "https://twitter.com/onlookdev",
+        "https://github.com/onlook-dev/onlook", // update in Phase 2 when repo renamed
+        "https://twitter.com/onlookdev", // update when social handles change
         "https://www.linkedin.com/company/onlook-dev/",
     ],
 };
@@ -17,26 +19,26 @@ export const faqSchema = {
     mainEntity: [
         {
             "@type": "Question",
-            name: "What kinds of things can I design with Onlook?",
+            name: `What kinds of things can I design with ${APP_NAME}?`,
             acceptedAnswer: {
                 "@type": "Answer",
-                text: "You can prototype, ideate, and create websites from scratch with Onlook",
+                text: `You can prototype, ideate, and create websites from scratch with ${APP_NAME}`,
             },
         },
         {
             "@type": "Question",
-            name: "Why would I use Onlook?",
+            name: `Why would I use ${APP_NAME}?`,
             acceptedAnswer: {
                 "@type": "Answer",
-                text: "When you design in Onlook you design in the real product – in other words, the source of truth. Other products are great for ideating, but Onlook is the only one that lets you design with the existing product and the only one that translates your designs to code instantly.",
+                text: `When you design in ${APP_NAME} you design in the real product – in other words, the source of truth. Other products are great for ideating, but ${APP_NAME} is the only one that lets you design with the existing product and the only one that translates your designs to code instantly.`,
             },
         },
         {
             "@type": "Question",
-            name: "Who owns the code that I write with Onlook?",
+            name: `Who owns the code that I write with ${APP_NAME}?`,
             acceptedAnswer: {
                 "@type": "Answer",
-                text: "The code you make with Onlook is all yours. You can export it on your local machine or publish it to a custom domain.",
+                text: `The code you make with ${APP_NAME} is all yours. You can export it on your local machine or publish it to a custom domain.`,
             },
         },
     ],

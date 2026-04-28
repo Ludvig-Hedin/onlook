@@ -1,3 +1,4 @@
+import { APP_NAME } from '@onlook/constants';
 import { Button } from '@onlook/ui/button';
 import { Icons } from '@onlook/ui/icons';
 import { MotionCard } from '@onlook/ui/motion-card';
@@ -26,17 +27,17 @@ export const EnterpriseCard = ({
     const t = useTranslations();
 
     const handleContactUs = () => {
-        const subject = encodeURIComponent('[Enterprise]: Onlook Enterprise Inquiry');
-        const body = encodeURIComponent(`Hi Daniel,
+        const subject = encodeURIComponent(`[Enterprise]: ${APP_NAME} Enterprise Inquiry`);
+        const body = encodeURIComponent(`Hi,
 
-I'm interested in learning more about Onlook's enterprise offering for our organization.
+I'm interested in learning more about ${APP_NAME}'s enterprise offering for our organization.
 
 Looking forward to hearing from you.
 
 Best regards,
 [Your name]`);
 
-        window.location.href = `mailto:daniel@onlook.com?subject=${subject}&body=${body}`;
+        window.location.href = `mailto:contact@weblab.build?subject=${subject}&body=${body}`;
     };
 
     return (

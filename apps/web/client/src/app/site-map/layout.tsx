@@ -1,19 +1,20 @@
+import { APP_DOMAIN, APP_NAME } from '@onlook/constants';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-    title: 'Sitemap | Onlook',
+    title: 'Sitemap | ${APP_NAME}',
     description:
-        'Complete sitemap for Onlook.com — the AI-powered visual editor for frontend development. Browse all pages including features, workflows, resources, and documentation.',
+        `Complete sitemap for ${APP_NAME}.com — the AI-powered visual editor for frontend development. Browse all pages including features, workflows, resources, and documentation.`,
     openGraph: {
-        title: 'Sitemap | Onlook',
+        title: 'Sitemap | ${APP_NAME}',
         description:
-            'Complete sitemap for Onlook.com. Browse all pages including features, workflows, and resources.',
+            `Complete sitemap for ${APP_NAME}.com. Browse all pages including features, workflows, and resources.`,
         type: 'website',
-        url: 'https://onlook.com/site-map',
-        siteName: 'Onlook',
+        url: `https://${APP_DOMAIN}/site-map`,
+        siteName: APP_NAME,
     },
     alternates: {
-        canonical: 'https://onlook.com/site-map',
+        canonical: `https://${APP_DOMAIN}/site-map`,
     },
     robots: {
         index: true,
@@ -25,9 +26,9 @@ export const metadata: Metadata = {
 const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'WebPage',
-    name: 'Onlook Sitemap',
-    description: 'Complete sitemap for Onlook.com — the AI-powered visual editor for frontend development.',
-    url: 'https://onlook.com/site-map',
+    name: `${APP_NAME} Sitemap`,
+    description: `Complete sitemap for ${APP_NAME}.com — the AI-powered visual editor for frontend development.`,
+    url: `https://${APP_DOMAIN}/site-map`,
     mainEntity: {
         '@type': 'ItemList',
         itemListElement: [
@@ -35,37 +36,37 @@ const jsonLd = {
                 '@type': 'SiteNavigationElement',
                 position: 1,
                 name: 'Home',
-                url: 'https://onlook.com/',
+                url: `https://${APP_DOMAIN}/`,
             },
             {
                 '@type': 'SiteNavigationElement',
                 position: 2,
                 name: 'Features',
-                url: 'https://onlook.com/features',
+                url: `https://${APP_DOMAIN}/features`,
             },
             {
                 '@type': 'SiteNavigationElement',
                 position: 3,
                 name: 'Workflows',
-                url: 'https://onlook.com/workflows',
+                url: `https://${APP_DOMAIN}/workflows`,
             },
             {
                 '@type': 'SiteNavigationElement',
                 position: 4,
                 name: 'Pricing',
-                url: 'https://onlook.com/pricing',
+                url: `https://${APP_DOMAIN}/pricing`,
             },
             {
                 '@type': 'SiteNavigationElement',
                 position: 5,
                 name: 'About',
-                url: 'https://onlook.com/about',
+                url: `https://${APP_DOMAIN}/about`,
             },
             {
                 '@type': 'SiteNavigationElement',
                 position: 6,
                 name: 'FAQ',
-                url: 'https://onlook.com/faq',
+                url: `https://${APP_DOMAIN}/faq`,
             },
         ],
     },

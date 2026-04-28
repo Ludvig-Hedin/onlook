@@ -79,10 +79,10 @@ export default function AboutPage() {
     return (
         <WebsiteLayout showFooter={true}>
             {/* AI-Friendly Summary Section */}
-            <section className="sr-only" aria-label="About Onlook Summary">
-                <h1>About Onlook: The Team Behind the Visual Editor for React</h1>
+            <section className="sr-only" aria-label="About Weblab Summary">
+                <h1>About Weblab: The Team Behind the Visual Editor for React</h1>
                 <p>
-                    Onlook was founded to obliterate the divide between creativity and implementation.
+                    Weblab was founded to obliterate the divide between creativity and implementation.
                     We're building a bridge between designers and developers — a visual editor that works
                     with your real React, Vue, or Angular components. AI is constrained to your design system.
                     Changes become mergeable pull requests.
@@ -155,7 +155,7 @@ export default function AboutPage() {
                                 {...getBlurAnimationProps(0.2)}
                             >
                                 <p className="text-lg md:text-large max-w-lg md:max-w-none text-foreground-secondary text-left font-light text-balance">
-                                    Onlook was founded to obliterate the divide between creativity and implementation.<br /><br />
+                                    Weblab was founded to obliterate the divide between creativity and implementation.<br /><br />
                                     For too long, the most brilliant creative teams have been severed by the complexity of tools.
                                     We're building a global movement, led by a passionate and highly technical team based in San Francisco called "The Odyssey" to build a bridge that will end the gap between creativity and implementation.<br /><br />
                                     If you're deeply opinionated about design, developer tools, and how AI can enhance the creative process, or are looking to be a part of an entirely new kind of organization, apply to join The Odyssey below.
@@ -631,7 +631,7 @@ export default function AboutPage() {
                                         <div className="w-3 h-3 bg-foreground-tertiary absolute left-0 top-2 transform -translate-x-1/2" />
                                         <div className="ml-12">
                                             <div className="mb-3 text-title3 md:text-lg">Paid work trial</div>
-                                            <div className="text-foreground-secondary text-lg md:text-large font-light text-balance">Collaborate with us on a problem and get a feel for what it's like to work with the team at Onlook.</div>
+                                            <div className="text-foreground-secondary text-lg md:text-large font-light text-balance">Collaborate with us on a problem and get a feel for what it's like to work with the team at Weblab.</div>
                                         </div>
                                     </motion.div>
                                     {/* Step 6: Offer */}
