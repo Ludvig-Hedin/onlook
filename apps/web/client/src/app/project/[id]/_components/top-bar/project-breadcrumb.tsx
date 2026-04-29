@@ -43,9 +43,7 @@ export const ProjectBreadcrumb = observer(() => {
     async function handleNavigateToProjects(_route?: 'create' | 'import') {
         try {
             setIsClosingProject(true);
-            void editorEngine.screenshot?.captureScreenshot().catch((error) => {
-                console.error('Failed to take screenshots:', error);
-            });
+            editorEngine.screenshot.captureScreenshot();
         } catch (error) {
             console.error('Failed to take screenshots:', error);
         } finally {
