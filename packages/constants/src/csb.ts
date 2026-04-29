@@ -16,8 +16,10 @@ export const SandboxTemplates: Record<Templates, SandboxTemplate> = {
     },
 };
 
-// New project creation should use the template that boots a healthy preview.
-export const DEFAULT_NEW_PROJECT_TEMPLATE = SandboxTemplates[Templates.EMPTY_NEXTJS];
+// New project creation should use the stable public blank template.
+// EMPTY_NEXTJS (pt_EphPmsurimGCQdiB44wa7s) has a broken getPreviewInfo call inside
+// its bundled Next.js server that returns a JSON error for every request.
+export const DEFAULT_NEW_PROJECT_TEMPLATE = SandboxTemplates[Templates.BLANK];
 
 export const CSB_PREVIEW_TASK_NAME = 'dev';
 export const CSB_DOMAIN = 'csb.app';

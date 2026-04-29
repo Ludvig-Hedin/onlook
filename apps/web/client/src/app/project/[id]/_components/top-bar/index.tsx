@@ -16,8 +16,10 @@ import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { Members } from '../members';
 import { BranchDisplay } from './branch';
+import { DiffButton } from './diff';
 import { ModeToggle } from './mode-toggle';
 import { ProjectBreadcrumb } from './project-breadcrumb';
+import { GitActionsButton } from './git-actions';
 import { PublishButton } from './publish';
 
 export const TopBar = observer(() => {
@@ -114,6 +116,8 @@ export const TopBar = observer(() => {
                         {t(transKeys.editor.toolbar.versionHistory)}
                     </TooltipContent>
                 </Tooltip>
+                <DiffButton />
+                <GitActionsButton />
                 <PublishButton />
             </div>
         </div>

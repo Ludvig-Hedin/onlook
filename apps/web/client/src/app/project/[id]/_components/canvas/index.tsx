@@ -13,6 +13,7 @@ import { DragSelectOverlay } from './overlay/drag-select';
 import { PanOverlay } from './overlay/pan';
 import { RecenterCanvasButton } from './recenter-canvas-button';
 import { getFramesInSelection, getSelectedFrameData } from './selection-utils';
+import { cn } from '@onlook/ui/utils';
 
 const ZOOM_SENSITIVITY = 0.006;
 const PAN_SENSITIVITY = 0.52;
@@ -286,7 +287,10 @@ export const Canvas = observer(() => {
         <HotkeysArea>
             <div
                 ref={containerRef}
-                className="overflow-hidden bg-background-onlook flex flex-grow relative"
+                className={cn(
+                    'overflow-hidden bg-background-onlook flex flex-grow relative',
+                    editorEngine.state.editorMode === EditorMode.COMMENT && 'cursor-crosshair',
+                )}
                 onMouseDown={handleCanvasMouseDown}
                 onMouseMove={handleCanvasMouseMove}
                 onMouseUp={handleCanvasMouseUp}

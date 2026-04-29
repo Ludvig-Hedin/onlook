@@ -65,6 +65,9 @@ export const HotkeysArea = ({ children }: { children: ReactNode }) => {
         preventDefault: true,
     });
     useHotkeys(Hotkey.PREVIEW.command, () => editorEngine.state.setEditorMode(EditorMode.PREVIEW));
+    useHotkeys(Hotkey.SIDEBAR_INSERT.command, () => toggleLeftPanelTab(LeftPanelTabValue.INSERT), {
+        preventDefault: true,
+    });
     useHotkeys(Hotkey.SIDEBAR_LAYERS.command, () => toggleLeftPanelTab(LeftPanelTabValue.LAYERS), {
         preventDefault: true,
     });
@@ -83,6 +86,27 @@ export const HotkeysArea = ({ children }: { children: ReactNode }) => {
         {
             preventDefault: true,
         },
+    );
+    useHotkeys(
+        Hotkey.SIDEBAR_SEARCH.command,
+        () => toggleLeftPanelTab(LeftPanelTabValue.SEARCH),
+        {
+            preventDefault: true,
+        },
+    );
+
+    // Find in design (cmd+f) — opens & focuses Search tab, suppresses browser Find.
+    // enableOnFormTags so it works even when other inputs (chat, etc.) are focused.
+    useHotkeys(
+        Hotkey.SEARCH.command,
+        (e) => {
+            e.preventDefault();
+            editorEngine.state.setEditorMode(EditorMode.DESIGN);
+            editorEngine.state.setLeftPanelTab(LeftPanelTabValue.SEARCH);
+            editorEngine.state.setLeftPanelLocked(true);
+            window.dispatchEvent(new Event('onlook:search:focus'));
+        },
+        { enableOnFormTags: true, enableOnContentEditable: true, preventDefault: true },
     );
 
     // Quick mode switching with CMD+1/2/3 (overrides browser defaults)
@@ -117,8 +141,19 @@ export const HotkeysArea = ({ children }: { children: ReactNode }) => {
         },
         { preventDefault: true },
     );
-    useHotkeys(Hotkey.INSERT_DIV.command, () =>
-        editorEngine.state.setInsertMode(InsertMode.INSERT_DIV),
+    useHotkeys(
+        [
+            Hotkey.INSERT_DIV.command,
+            Hotkey.INSERT_DIV_F.command,
+            Hotkey.INSERT_DIV_D.command,
+        ],
+        () => editorEngine.state.setInsertMode(InsertMode.INSERT_DIV),
+    );
+    useHotkeys(Hotkey.INSERT_FLEX_DIV.command, () =>
+        editorEngine.state.setInsertMode(InsertMode.INSERT_FLEX_DIV),
+    );
+    useHotkeys(Hotkey.INSERT_BUTTON.command, () =>
+        editorEngine.state.setInsertMode(InsertMode.INSERT_BUTTON),
     );
     useHotkeys(Hotkey.INSERT_TEXT.command, () =>
         editorEngine.state.setInsertMode(InsertMode.INSERT_TEXT),
@@ -150,9 +185,15 @@ export const HotkeysArea = ({ children }: { children: ReactNode }) => {
         { preventDefault: true },
     );
 
-    // Group
-    useHotkeys(Hotkey.GROUP.command, () => editorEngine.group.groupSelectedElements());
-    useHotkeys(Hotkey.UNGROUP.command, () => editorEngine.group.ungroupSelectedElement());
+    // Group / Wrap in Div / Unwrap parent
+    useHotkeys(
+        [Hotkey.GROUP.command, Hotkey.WRAP_IN_DIV.command],
+        () => editorEngine.group.groupSelectedElements(),
+        { preventDefault: true },
+    );
+    useHotkeys(Hotkey.UNGROUP.command, () => editorEngine.group.ungroupSelectedElement(), {
+        preventDefault: true,
+    });
 
     // Copy
     useHotkeys(
@@ -233,8 +274,18 @@ export const HotkeysArea = ({ children }: { children: ReactNode }) => {
     // Move
     useHotkeys(Hotkey.MOVE_LAYER_UP.command, () => editorEngine.move.moveSelected('up'));
     useHotkeys(Hotkey.MOVE_LAYER_DOWN.command, () => editorEngine.move.moveSelected('down'));
-    useHotkeys(Hotkey.SHOW_HOTKEYS.command, () =>
-        editorEngine.state.setHotkeysOpen(!editorEngine.state.hotkeysOpen),
+    useHotkeys(
+        Hotkey.SHOW_HOTKEYS.command,
+        () => editorEngine.state.setHotkeysOpen(!editorEngine.state.hotkeysOpen),
+        { preventDefault: true },
+    );
+
+    // Element palette (cmd+k) — Webflow-style searchable insert menu
+    useHotkeys(
+        Hotkey.OPEN_ELEMENT_PALETTE.command,
+        () =>
+            editorEngine.state.setElementPaletteOpen(!editorEngine.state.elementPaletteOpen),
+        { preventDefault: true },
     );
 
     return <>{children}</>;

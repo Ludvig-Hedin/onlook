@@ -328,7 +328,7 @@ export const ChatInput = observer(
                     throw new Error('No active frame available for screenshot');
                 }
 
-                let screenshotData = null;
+                let screenshotData: string | null = null;
                 let mimeType = 'image/jpeg';
 
                 for (const frame of framesWithViews) {
@@ -343,8 +343,8 @@ export const ChatInput = observer(
                             mimeType = result.mimeType || 'image/jpeg';
                             break;
                         }
-                    } catch (frameError) {
-                        // Continue to next frame on error
+                    } catch {
+                        continue;
                     }
                 }
 
@@ -357,7 +357,7 @@ export const ChatInput = observer(
                     type: MessageContextType.IMAGE,
                     source: 'external',
                     content: screenshotData,
-                    mimeType: mimeType,
+                    mimeType,
                     displayName: 'Screenshot',
                 };
                 editorEngine.chat.context.addContexts([contextImage]);
@@ -395,7 +395,7 @@ export const ChatInput = observer(
         return (
             <div
                 className={cn(
-                    'text-foreground-tertiary text-small flex w-full flex-col border-t transition-colors duration-200 [&[data-dragging-image=true]]:bg-blue-500/40',
+                    'text-foreground-tertiary text-small flex w-full flex-col p-2 transition-colors duration-200 [&[data-dragging-image=true]]:bg-blue-500/40',
                     isDragging && 'cursor-copy',
                 )}
                 onDrop={(e) => {
@@ -413,7 +413,8 @@ export const ChatInput = observer(
                     }
                 }}
             >
-                <div className="flex w-full flex-col p-2">
+                <div className="@container bg-background-primary flex w-full flex-col rounded-xl border">
+                <div className="flex w-full flex-col px-2 pt-2">
                     <QueueItems queuedMessages={queuedMessages} removeFromQueue={removeFromQueue} />
                     <InputContextPills />
                     <Textarea
@@ -435,8 +436,8 @@ export const ChatInput = observer(
                         }}
                     />
                 </div>
-                <div className="flex w-full flex-row justify-between px-2 pt-2 pb-2">
-                    <div className="flex flex-row items-center gap-1.5">
+                <div className="flex w-full flex-row justify-between px-2 pt-1 pb-1.5">
+                    <div className="flex flex-row items-center gap-1">
                         <ChatModeToggle
                             chatMode={chatMode}
                             onChatModeChange={handleChatModeChange}
@@ -446,7 +447,7 @@ export const ChatInput = observer(
                             <ChatContextWindow usage={lastUsageMessage?.metadata?.usage} />
                         )}
                     </div>
-                    <div className="flex flex-row items-center gap-1.5">
+                    <div className="flex flex-row items-center gap-1">
                         <ActionButtons
                             handleImageEvent={handleImageEvent}
                             handleScreenshot={handleScreenshot}
@@ -457,13 +458,13 @@ export const ChatInput = observer(
                                     <Button
                                         size={'icon'}
                                         variant={'secondary'}
-                                        className="text-smallPlus text-primary bg-background-primary h-full w-fit rounded-full px-2.5 py-0.5"
+                                        className="text-smallPlus text-primary bg-background-primary h-7 w-7 rounded-full"
                                         onClick={() => {
                                             setActionTooltipOpen(false);
                                             void onStop();
                                         }}
                                     >
-                                        <Icons.Stop />
+                                        <Icons.Stop className="h-3.5 w-3.5" />
                                     </Button>
                                 </TooltipTrigger>
                                 <TooltipContent side="top" sideOffset={6} hideArrow>
@@ -475,7 +476,7 @@ export const ChatInput = observer(
                                 size={'icon'}
                                 variant={'secondary'}
                                 className={cn(
-                                    'text-smallPlus h-full w-fit rounded-full px-2.5 py-0.5',
+                                    'h-7 w-7 rounded-full',
                                     inputEmpty
                                         ? 'text-primary'
                                         : chatMode === ChatType.ASK
@@ -485,10 +486,11 @@ export const ChatInput = observer(
                                 disabled={inputEmpty}
                                 onClick={() => void sendMessage()}
                             >
-                                <Icons.ArrowRight />
+                                <Icons.ArrowRight className="h-3.5 w-3.5" />
                             </Button>
                         )}
                     </div>
+                </div>
                 </div>
             </div>
         );

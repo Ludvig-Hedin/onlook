@@ -319,6 +319,7 @@ declare const messages: {
                 "name": "Layers",
                 "tabs": {
                     "layers": "Layers",
+                    "insert": "Insert",
                     "pages": "Pages",
                     "components": "Elements",
                     "images": "Images",
@@ -328,7 +329,8 @@ declare const messages: {
                     },
                     "brand": "Brand",
                     "branches": "Branches",
-                    "apps": "Apps"
+                    "apps": "Apps",
+                    "search": "Search"
                 }
             }
         },

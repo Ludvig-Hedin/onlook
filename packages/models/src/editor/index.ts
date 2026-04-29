@@ -15,6 +15,11 @@ export enum EditorMode {
 export enum InsertMode {
     INSERT_TEXT = 'insert-text',
     INSERT_DIV = 'insert-div',
+    INSERT_FLEX_DIV = 'insert-flex-div',
+    INSERT_BUTTON = 'insert-button',
+    INSERT_HEADING = 'insert-heading',
+    INSERT_LINK = 'insert-link',
+    INSERT_INPUT = 'insert-input',
     INSERT_IMAGE = 'insert-image',
 }
 
@@ -30,6 +35,8 @@ export enum SettingsTabValue {
 export enum LeftPanelTabValue {
     PAGES = 'pages',
     LAYERS = 'layers',
+    SEARCH = 'search',
+    INSERT = 'insert',
     COMPONENTS = 'components',
     IMAGES = 'images',
     WINDOWS = 'windows',

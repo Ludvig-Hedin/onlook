@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { CHAT_MODEL_OPTIONS, type ChatMessage, type ChatModel } from '@onlook/models';
+import { CHAT_MODEL_OPTIONS, OPENROUTER_MODELS, type ChatMessage, type ChatModel } from '@onlook/models';
 import { useChat } from '../../../../_hooks/use-chat';
 import { ChatInput } from '../chat-input';
 import { ChatMessages } from '../chat-messages';
@@ -16,7 +16,7 @@ export const ChatTabContent = ({
     projectId,
     initialMessages,
 }: ChatTabContentProps) => {
-    const [model, setModel] = useState<ChatModel>(CHAT_MODEL_OPTIONS[0]!.model);
+    const [model, setModel] = useState<ChatModel>(OPENROUTER_MODELS.KIMI_K2_6);
     const { isStreaming, sendMessage, editMessage, messages, error, stop, queuedMessages, removeFromQueue } = useChat({
         conversationId,
         projectId,

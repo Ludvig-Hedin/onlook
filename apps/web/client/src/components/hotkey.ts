@@ -10,12 +10,18 @@ export class Hotkey {
     static readonly TOGGLE_COMMENTS = new Hotkey('shift+c', 'Toggle Comments');
     static readonly PREVIEW = new Hotkey('p', 'Preview');
     static readonly INSERT_DIV = new Hotkey('r', 'Insert Div');
+    static readonly INSERT_DIV_F = new Hotkey('f', 'Insert Div');
+    static readonly INSERT_DIV_D = new Hotkey('d', 'Insert Div');
+    static readonly INSERT_FLEX_DIV = new Hotkey('shift+f', 'Insert Flex Div');
+    static readonly INSERT_BUTTON = new Hotkey('b', 'Insert Button');
     static readonly RELOAD_APP = new Hotkey('mod+r', 'Reload App');
+    static readonly SIDEBAR_INSERT = new Hotkey('alt+a', 'Insert');
     static readonly SIDEBAR_LAYERS = new Hotkey('alt+1', 'Layers');
     static readonly SIDEBAR_BRAND = new Hotkey('alt+2', 'Brand');
     static readonly SIDEBAR_PAGES = new Hotkey('alt+3', 'Pages');
     static readonly SIDEBAR_IMAGES = new Hotkey('alt+4', 'Images');
     static readonly SIDEBAR_BRANCHES = new Hotkey('alt+5', 'Branches');
+    static readonly SIDEBAR_SEARCH = new Hotkey('alt+6', 'Search');
 
     // Mode switching
     static readonly MODE_DESIGN = new Hotkey('mod+1', 'Design Mode');
@@ -35,14 +41,17 @@ export class Hotkey {
     static readonly UNDO = new Hotkey('mod+z', 'Undo');
     static readonly REDO = new Hotkey('mod+shift+z', 'Redo');
     static readonly GROUP = new Hotkey('mod+g', 'Group');
-    static readonly UNGROUP = new Hotkey('mod+shift+g', 'Ungroup');
+    static readonly WRAP_IN_DIV = new Hotkey('mod+alt+g', 'Wrap in Div');
+    static readonly UNGROUP = new Hotkey('mod+shift+g', 'Unwrap parent');
     static readonly OPEN_DEV_TOOL = new Hotkey('mod+shift+i', 'Open Devtool');
     static readonly ADD_AI_CHAT = new Hotkey('mod+shift+l', 'Add to AI chat');
     static readonly NEW_AI_CHAT = new Hotkey('mod+l', 'New AI Chat');
     static readonly CHAT_MODE_TOGGLE = new Hotkey('mod+period', 'Toggle Preview');
     static readonly MOVE_LAYER_UP = new Hotkey('shift+arrowup', 'Move Layer Up');
     static readonly MOVE_LAYER_DOWN = new Hotkey('shift+arrowdown', 'Move Layer Down');
-    static readonly SHOW_HOTKEYS = new Hotkey('mod+k', 'Show Shortcuts');
+    static readonly SHOW_HOTKEYS = new Hotkey('mod+shift+slash', 'Show Shortcuts');
+    static readonly OPEN_ELEMENT_PALETTE = new Hotkey('mod+k', 'Add element');
+    static readonly SEARCH = new Hotkey('mod+f', 'Search');
 
     // Text
     static readonly INSERT_TEXT = new Hotkey('t', 'Insert Text');
@@ -98,6 +107,9 @@ export class Hotkey {
                 }
                 if (value === 'period') {
                     return '.';
+                }
+                if (value === 'slash') {
+                    return '/';
                 }
                 if (value === '`') {
                     return '`';

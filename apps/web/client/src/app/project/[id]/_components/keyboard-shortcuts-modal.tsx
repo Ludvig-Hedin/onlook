@@ -41,6 +41,17 @@ const SHORTCUT_SECTIONS = [
         ],
     },
     {
+        title: 'Insert',
+        hotkeys: [
+            Hotkey.OPEN_ELEMENT_PALETTE,
+            Hotkey.INSERT_DIV_F,
+            Hotkey.INSERT_DIV_D,
+            Hotkey.INSERT_FLEX_DIV,
+            Hotkey.INSERT_TEXT,
+            Hotkey.INSERT_BUTTON,
+        ],
+    },
+    {
         title: 'Canvas',
         hotkeys: [Hotkey.ZOOM_FIT, Hotkey.ZOOM_IN, Hotkey.ZOOM_OUT],
     },
@@ -56,6 +67,7 @@ const SHORTCUT_SECTIONS = [
             Hotkey.DELETE,
             Hotkey.ENTER,
             Hotkey.GROUP,
+            Hotkey.WRAP_IN_DIV,
             Hotkey.UNGROUP,
         ],
     },

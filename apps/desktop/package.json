@@ -34,21 +34,24 @@
             "category": "public.app-category.developer-tools",
             "icon": "assets/icon.icns",
             "target": [
-                { "target": "dmg", "arch": ["x64", "arm64"] }
-            ]
+                { "target": "dmg", "arch": ["universal"] }
+            ],
+            "artifactName": "Onlook.dmg"
         },
         "win": {
             "icon": "assets/icon.ico",
             "target": [
                 { "target": "nsis", "arch": ["x64"] }
-            ]
+            ],
+            "artifactName": "Onlook-Setup.exe"
         },
         "linux": {
             "icon": "assets/icon.png",
             "target": [
                 { "target": "AppImage", "arch": ["x64"] }
             ],
-            "category": "Development"
+            "category": "Development",
+            "artifactName": "Onlook.AppImage"
         },
         "publish": {
             "provider": "github",

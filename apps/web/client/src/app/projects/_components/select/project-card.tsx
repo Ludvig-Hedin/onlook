@@ -73,7 +73,7 @@ export function ProjectCard({
         >
             <div
                 className={cn(
-                    'cursor-pointer rounded-[28px] p-1.5 transition-colors duration-200',
+                    'cursor-pointer rounded-xl p-1.5 transition-colors duration-200',
                     selected ? 'bg-white/8' : 'bg-transparent hover:bg-white/4',
                 )}
                 onClick={handleCardClick}
@@ -108,7 +108,7 @@ export function ProjectCard({
                             checked={selected}
                             onCheckedChange={(checked) => onSelectionChange?.(checked === true)}
                             aria-label={`Select ${project.name}`}
-                            className="border-white/20 bg-white/5 data-[state=checked]:border-white/30 data-[state=checked]:bg-white data-[state=checked]:text-black"
+                            className="rounded-full border-white/20 bg-white/5 data-[state=checked]:border-white/30 data-[state=checked]:bg-white data-[state=checked]:text-black"
                         />
                     </button>
 

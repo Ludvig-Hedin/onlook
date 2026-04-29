@@ -284,8 +284,16 @@ export class GitManager {
         try {
             const escaped = escapeShellString(path);
             const headResult = await this.runCommand(`git show HEAD:${escaped}`, true);
-            const original = headResult.success ? headResult.output : '';
             const existedInHead = headResult.success;
+            let original = '';
+            let isOriginalTooLarge = false;
+            if (existedInHead) {
+                if (headResult.output.length > MAX_DIFF_FILE_BYTES) {
+                    isOriginalTooLarge = true;
+                } else {
+                    original = headResult.output;
+                }
+            }
 
             let modifiedRaw: string | Uint8Array | null = null;
             let modifiedExists = true;
@@ -325,13 +333,13 @@ export class GitManager {
 
             const skipped: FileDiffSkipReason | undefined = isBinary
                 ? 'binary'
-                : isTooLarge
+                : isTooLarge || isOriginalTooLarge
                     ? 'too-large'
                     : undefined;
 
             return {
                 path,
-                original,
+                original: skipped ? '' : original,
                 modified: skipped ? '' : modified,
                 status,
                 skipped,

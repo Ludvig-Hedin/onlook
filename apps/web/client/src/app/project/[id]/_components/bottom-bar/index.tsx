@@ -59,6 +59,7 @@ export const BottomBar = observer(() => {
     const dragStartX = useRef<number | null>(null);
     const dragStartScale = useRef<number>(1);
     const isDragging = useRef(false);
+    const cancelledRef = useRef(false);
 
     const handleZoomPointerDown = useCallback(
         (e: React.PointerEvent<HTMLInputElement>) => {
@@ -106,6 +107,11 @@ export const BottomBar = observer(() => {
     );
 
     const commitZoomInput = useCallback(() => {
+        if (cancelledRef.current) {
+            cancelledRef.current = false;
+            setIsEditingZoom(false);
+            return;
+        }
         const parsed = parseInt(zoomInputValue, 10);
         if (!isNaN(parsed) && parsed > 0) {
             editorEngine.canvas.scale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, parsed / 100));
@@ -194,7 +200,10 @@ export const BottomBar = observer(() => {
                                 onChange={(e) => setZoomInputValue(e.target.value)}
                                 onKeyDown={(e) => {
                                     if (e.key === 'Enter') commitZoomInput();
-                                    if (e.key === 'Escape') setIsEditingZoom(false);
+                                    if (e.key === 'Escape') {
+                                        cancelledRef.current = true;
+                                        zoomInputRef.current?.blur();
+                                    }
                                 }}
                                 onBlur={commitZoomInput}
                                 onPointerDown={handleZoomPointerDown}

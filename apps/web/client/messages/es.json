@@ -325,7 +325,8 @@
                     },
                     "brand": "Marca",
                     "branches": "Ramas",
-                    "apps": "Aplicaciones"
+                    "apps": "Aplicaciones",
+                    "search": "Buscar"
                 }
             }
         },

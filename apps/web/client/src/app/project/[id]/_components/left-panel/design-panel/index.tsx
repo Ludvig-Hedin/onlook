@@ -15,8 +15,10 @@ import { BranchesTab } from './branches-tab';
 import { BrandTab } from './brand-tab';
 import { HelpButton } from './help-button';
 import { ImagesTab } from './image-tab';
+import { InsertTab } from './insert-tab';
 import { LayersTab } from './layers-tab';
 import { PagesTab } from './page-tab';
+import { SearchTab } from './search-tab';
 import { ZoomControls } from './zoom-controls';
 
 const tabs: {
@@ -26,9 +28,19 @@ const tabs: {
     disabled?: boolean;
 }[] = [
     {
+        value: LeftPanelTabValue.INSERT,
+        icon: <Icons.Plus className="h-5 w-5" />,
+        hotkey: Hotkey.SIDEBAR_INSERT,
+    },
+    {
         value: LeftPanelTabValue.LAYERS,
         icon: <Icons.Layers className="h-5 w-5" />,
         hotkey: Hotkey.SIDEBAR_LAYERS,
+    },
+    {
+        value: LeftPanelTabValue.SEARCH,
+        icon: <Icons.MagnifyingGlass className="h-5 w-5" />,
+        hotkey: Hotkey.SIDEBAR_SEARCH,
     },
     {
         value: LeftPanelTabValue.BRAND,
@@ -104,8 +116,12 @@ export const DesignPanel = observer(() => {
 
     const getTabLabel = (tab: LeftPanelTabValue) => {
         switch (tab) {
+            case LeftPanelTabValue.INSERT:
+                return t(transKeys.editor.panels.layers.tabs.insert);
             case LeftPanelTabValue.LAYERS:
                 return t(transKeys.editor.panels.layers.tabs.layers);
+            case LeftPanelTabValue.SEARCH:
+                return t(transKeys.editor.panels.layers.tabs.search);
             case LeftPanelTabValue.BRAND:
                 return t(transKeys.editor.panels.layers.tabs.brand);
             case LeftPanelTabValue.PAGES:
@@ -172,7 +188,9 @@ export const DesignPanel = observer(() => {
                 <>
                     <div className="bg-background/95 w-[272px] flex-1 rounded-xl">
                         <div className="h-full overflow-auto rounded-xl border p-0 shadow backdrop-blur-xl">
+                            {selectedTab === LeftPanelTabValue.INSERT && <InsertTab />}
                             {selectedTab === LeftPanelTabValue.LAYERS && <LayersTab />}
+                            {selectedTab === LeftPanelTabValue.SEARCH && <SearchTab />}
                             {selectedTab === LeftPanelTabValue.BRAND && <BrandTab />}
                             {selectedTab === LeftPanelTabValue.PAGES && <PagesTab />}
                             {selectedTab === LeftPanelTabValue.IMAGES && <ImagesTab />}

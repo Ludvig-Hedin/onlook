@@ -571,9 +571,18 @@
 
 @layer base {
     * {
-        @apply border-border outline-ring/50;
+        @apply border-border;
     }
     body {
         @apply bg-background text-foreground;
+    }
+    button:focus-visible,
+    [role='button']:focus-visible,
+    a[href]:focus-visible,
+    input:focus-visible,
+    select:focus-visible,
+    textarea:focus-visible,
+    summary:focus-visible {
+        @apply outline-hidden ring-2 ring-ring ring-offset-2 ring-offset-background;
     }
 }

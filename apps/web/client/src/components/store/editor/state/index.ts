@@ -13,6 +13,7 @@ import { makeAutoObservable, runInAction } from 'mobx';
 export class StateManager {
     private _canvasScrolling = false;
     hotkeysOpen = false;
+    elementPaletteOpen = false;
     publishOpen = false;
     leftPanelLocked = false;
     canvasPanning = false;
@@ -54,6 +55,10 @@ export class StateManager {
 
     setHotkeysOpen(open: boolean) {
         this.hotkeysOpen = open;
+    }
+
+    setElementPaletteOpen(open: boolean) {
+        this.elementPaletteOpen = open;
     }
 
     setPublishOpen(open: boolean) {
@@ -106,6 +111,7 @@ export class StateManager {
     clear() {
         runInAction(() => {
             this.hotkeysOpen = false;
+            this.elementPaletteOpen = false;
             this.publishOpen = false;
             this.branchTab = null;
             this.manageBranchId = null;

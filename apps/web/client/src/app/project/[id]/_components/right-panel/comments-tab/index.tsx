@@ -1,6 +1,7 @@
 'use client';
 
 import { useEditorEngine } from '@/components/store/editor';
+import { EditorAttributes } from '@onlook/constants';
 import { Icons } from '@onlook/ui/icons';
 import { cn } from '@onlook/ui/utils';
 import { observer } from 'mobx-react-lite';
@@ -36,16 +37,19 @@ export const CommentsTab = observer(() => {
     const comments = editorEngine.comment.comments;
 
     const filtered = comments.filter((c) =>
-        filter === 'open' ? c.resolvedAt === null : c.resolvedAt !== null,
+        filter === 'open' ? c.resolvedAt == null : c.resolvedAt != null,
     );
 
     function flyToComment(commentId: string, canvasX: number, canvasY: number) {
         const scale = editorEngine.canvas.scale;
-        const vw = window.innerWidth;
-        const vh = window.innerHeight;
+        const canvasEl = document.getElementById(EditorAttributes.CANVAS_CONTAINER_ID);
+        const viewportEl = canvasEl?.parentElement;
+        const rect = viewportEl?.getBoundingClientRect();
+        const cw = rect ? rect.width : window.innerWidth;
+        const ch = rect ? rect.height : window.innerHeight;
         editorEngine.canvas.position = {
-            x: vw / 2 - canvasX * scale,
-            y: vh / 2 - canvasY * scale,
+            x: cw / 2 - canvasX * scale,
+            y: ch / 2 - canvasY * scale,
         };
         editorEngine.comment.setActiveCommentId(commentId);
     }

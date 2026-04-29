@@ -30,6 +30,7 @@ import type { ProjectFolder, ProjectListItem } from './project-card-utils';
 import { useCreateBlankProject } from '@/hooks/use-create-blank-project';
 import { api } from '@/trpc/react';
 import { getFileUrlFromStorage } from '@/utils/supabase/client';
+import { StaticTemplates, type StaticTemplate } from '../templates/static-templates';
 import { Templates } from '../templates';
 import { TemplateModal } from '../templates/template-modal';
 import { CreateFolderDialog } from './create-folder-dialog';
@@ -43,6 +44,93 @@ import {
 } from './project-card-utils';
 
 const STARRED_TEMPLATES_KEY = 'onlook_starred_templates';
+
+const STATIC_TEMPLATE_ALIASES: Record<StaticTemplate['id'], string[]> = {
+    portfolio: ['portfolio', 'portfolio website', 'personal site'],
+    saas: ['saas', 'landing', 'marketing'],
+    blog: ['blog', 'writing', 'content'],
+    dashboard: ['dashboard', 'analytics', 'admin'],
+    ecommerce: ['ecommerce', 'e commerce', 'store', 'storefront', 'shop'],
+    agency: ['agency', 'studio', 'creative'],
+    docs: ['docs', 'documentation', 'knowledge base'],
+    app: ['web app', 'application', 'react app'],
+};
+
+function normalizeTemplateText(value: string): string {
+    return value.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+}
+
+function resolveStaticTemplateProject(
+    template: StaticTemplate,
+    templateProjects: Project[],
+): Project | null {
+    const searchTerms = [template.name, ...(STATIC_TEMPLATE_ALIASES[template.id] ?? [])]
+        .map(normalizeTemplateText)
+        .filter(Boolean);
+
+    let bestMatch: Project | null = null;
+    let bestScore = 0;
+
+    for (const project of templateProjects) {
+        const normalizedName = normalizeTemplateText(project.name);
+        const normalizedDescription = normalizeTemplateText(project.metadata.description ?? '');
+        const haystack = `${normalizedName} ${normalizedDescription}`.trim();
+
+        for (const term of searchTerms) {
+            let score = 0;
+            if (normalizedName === term) {
+                score = 100;
+            } else if (normalizedName.includes(term)) {
+                score = 80;
+            } else if (haystack.includes(term)) {
+                score = 60;
+            }
+
+            if (score > bestScore) {
+                bestScore = score;
+                bestMatch = project;
+            }
+        }
+    }
+
+    return bestScore > 0 ? bestMatch : null;
+}
+
+function getStaticTemplateMatches(templateProjects: Project[]): Map<StaticTemplate['id'], Project> {
+    const templateNames: Record<StaticTemplate['id'], string> = {
+        portfolio: 'Portfolio',
+        saas: 'SaaS',
+        blog: 'Blog',
+        dashboard: 'Dashboard',
+        ecommerce: 'E-commerce',
+        agency: 'Agency',
+        docs: 'Docs',
+        app: 'Web App',
+    };
+    const matches = new Map<StaticTemplate['id'], Project>();
+
+    for (const templateId of Object.keys(templateNames) as StaticTemplate['id'][]) {
+        const templateName = templateNames[templateId];
+        if (!templateName) {
+            continue;
+        }
+        const match = resolveStaticTemplateProject(
+            {
+                id: templateId,
+                name: templateName,
+                description: '',
+                bg: '',
+                accent: '',
+            },
+            templateProjects,
+        );
+        if (match) {
+            matches.set(templateId, match);
+        }
+    }
+
+    return matches;
+}
 
 export const SelectProject = ({ externalSearchQuery }: { externalSearchQuery?: string } = {}) => {
     const utils = api.useUtils();
@@ -83,6 +171,14 @@ export const SelectProject = ({ externalSearchQuery }: { externalSearchQuery?: s
         () => listedProjects.filter((project) => project.metadata.tags.includes(Tags.TEMPLATE)),
         [listedProjects],
     );
+    const staticTemplateMatches = useMemo(
+        () => getStaticTemplateMatches(templateProjects),
+        [templateProjects],
+    );
+    const availableStaticTemplateIds = useMemo(
+        () => new Set(staticTemplateMatches.keys()),
+        [staticTemplateMatches],
+    );
     const shouldShowTemplate = templateProjects.length > 0;
 
     const persistFolders = async (nextFolders: ProjectFolder[]) => {
@@ -107,6 +203,17 @@ export const SelectProject = ({ externalSearchQuery }: { externalSearchQuery?: s
     const handleTemplateClick = (project: Project) => {
         setSelectedTemplate(project);
         setIsTemplateModalOpen(true);
+    };
+
+    const handleStaticTemplateClick = (template: StaticTemplate) => {
+        const matchedProject = staticTemplateMatches.get(template.id);
+
+        if (matchedProject) {
+            handleTemplateClick(matchedProject);
+            return;
+        }
+
+        toast.info(`${template.name} template is not available yet.`);
     };
 
     const handleCloseTemplateModal = () => {
@@ -382,25 +489,49 @@ export const SelectProject = ({ externalSearchQuery }: { externalSearchQuery?: s
 
     if (projects.length === 0) {
         return (
-            <div className="flex h-full w-full flex-col items-center justify-center gap-4">
-                <div className="text-foreground-secondary text-xl">No projects found</div>
-                <div className="text-md text-foreground-tertiary">
-                    Create a new project to get started
+            <div className="mx-auto flex h-full w-full max-w-6xl flex-col items-center justify-center gap-10 px-6 py-8">
+                <div className="flex flex-col items-center gap-4">
+                    <div className="text-foreground-secondary text-xl">No projects found</div>
+                    <div className="text-md text-foreground-tertiary">
+                        Create a new project to get started
+                    </div>
+                    <div className="flex justify-center">
+                        <Button
+                            onClick={() => void handleStartBlankProject()}
+                            disabled={isCreatingProject}
+                            variant="default"
+                        >
+                            {isCreatingProject ? (
+                                <Icons.LoadingSpinner className="h-4 w-4 animate-spin" />
+                            ) : (
+                                <Icons.Plus className="h-4 w-4" />
+                            )}
+                            Create blank project
+                        </Button>
+                    </div>
                 </div>
-                <div className="flex justify-center">
-                    <Button
-                        onClick={() => void handleStartBlankProject()}
-                        disabled={isCreatingProject}
-                        variant="default"
-                    >
-                        {isCreatingProject ? (
-                            <Icons.LoadingSpinner className="h-4 w-4 animate-spin" />
-                        ) : (
-                            <Icons.Plus className="h-4 w-4" />
-                        )}
-                        Create blank project
-                    </Button>
-                </div>
+
+                {shouldShowTemplate && (
+                    <div className="w-full">
+                        <Templates
+                            templateProjects={templateProjects}
+                            searchQuery={debouncedSearchQuery}
+                            onTemplateClick={handleTemplateClick}
+                            onToggleStar={handleToggleStar}
+                            starredTemplates={starredTemplates}
+                        />
+                    </div>
+                )}
+
+                {availableStaticTemplateIds.size > 0 && (
+                    <div className="w-full">
+                        <StaticTemplates
+                            onUseTemplate={handleStaticTemplateClick}
+                            isCreating={isCreatingProject}
+                            availableTemplateIds={availableStaticTemplateIds}
+                        />
+                    </div>
+                )}
             </div>
         );
     }
@@ -548,7 +679,7 @@ export const SelectProject = ({ externalSearchQuery }: { externalSearchQuery?: s
 
                         <motion.div
                             layout
-                            className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
+                            className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3"
                         >
                             <AnimatePresence mode="popLayout">
                                 {folderViewModels.map(({ folder, previewProjects }) => (
@@ -584,7 +715,7 @@ export const SelectProject = ({ externalSearchQuery }: { externalSearchQuery?: s
                                 {openFolder.visibleProjects.length > 0 ? (
                                     <motion.div
                                         layout
-                                        className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
+                                        className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3"
                                     >
                                         <AnimatePresence mode="popLayout">
                                             {openFolder.visibleProjects.map((project) => (
@@ -639,7 +770,7 @@ export const SelectProject = ({ externalSearchQuery }: { externalSearchQuery?: s
                     ) : (
                         <motion.div
                             layout
-                            className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
+                            className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3"
                         >
                             <AnimatePresence mode="popLayout">
                                 {looseProjects.map((project) => (
@@ -671,6 +802,14 @@ export const SelectProject = ({ externalSearchQuery }: { externalSearchQuery?: s
                             starredTemplates={starredTemplates}
                         />
                     </div>
+                )}
+
+                {availableStaticTemplateIds.size > 0 && (
+                    <StaticTemplates
+                        onUseTemplate={handleStaticTemplateClick}
+                        isCreating={isCreatingProject}
+                        availableTemplateIds={availableStaticTemplateIds}
+                    />
                 )}
             </div>
 

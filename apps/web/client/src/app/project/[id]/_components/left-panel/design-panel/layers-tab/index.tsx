@@ -4,13 +4,9 @@ import { observer } from 'mobx-react-lite';
 import { Tree } from 'react-arborist';
 import useResizeObserver from 'use-resize-observer';
 
-import { EditorMode } from '@onlook/models';
-import { type DropElementProperties, type LayerNode } from '@onlook/models/element';
-import { Button } from '@onlook/ui/button';
+import { type LayerNode } from '@onlook/models/element';
 import { Icons } from '@onlook/ui/icons';
 import { Input } from '@onlook/ui/input';
-import { Popover, PopoverContent, PopoverTrigger } from '@onlook/ui/popover';
-import { toast } from '@onlook/ui/sonner';
 
 import { useEditorEngine } from '@/components/store/editor';
 import { RightClickMenu } from '../../../right-click-menu';
@@ -20,130 +16,11 @@ import { TreeRow } from './tree/tree-row';
 const getLayerTreeNodeId = (node: Pick<LayerNode, 'frameId' | 'domId'>) =>
     `${node.frameId}:${node.domId}`;
 
-const PLACEHOLDER_IMAGE_SRC =
-    'data:image/svg+xml;utf8,' +
-    encodeURIComponent(
-        `<svg xmlns="http://www.w3.org/2000/svg" width="640" height="400" viewBox="0 0 640 400">
-            <rect width="640" height="400" fill="#E5E7EB" />
-            <rect x="80" y="80" width="480" height="240" rx="24" fill="#CBD5E1" />
-            <path d="M170 270 275 165l60 60 95-95 120 140H170Z" fill="#94A3B8" />
-            <circle cx="255" cy="160" r="28" fill="#F8FAFC" />
-        </svg>`,
-    );
-
-const ELEMENT_PRESETS: Array<{
-    key: string;
-    label: string;
-    description: string;
-    properties: DropElementProperties;
-}> = [
-    {
-        key: 'heading',
-        label: 'Heading',
-        description: 'Large section heading',
-        properties: {
-            tagName: 'h2',
-            textContent: 'Heading',
-            styles: {
-                fontSize: '40px',
-                lineHeight: '1.1',
-                fontWeight: '700',
-                color: '#111827',
-            },
-        },
-    },
-    {
-        key: 'paragraph',
-        label: 'Paragraph',
-        description: 'Body copy block',
-        properties: {
-            tagName: 'p',
-            textContent: 'Add your paragraph text here.',
-            styles: {
-                fontSize: '18px',
-                lineHeight: '1.6',
-                color: '#374151',
-                maxWidth: '560px',
-            },
-        },
-    },
-    {
-        key: 'div',
-        label: 'Div',
-        description: 'Generic layout block',
-        properties: {
-            tagName: 'div',
-            textContent: null,
-            styles: {
-                width: '220px',
-                height: '140px',
-                borderRadius: '20px',
-                backgroundColor: '#E0F2FE',
-                border: '1px solid #7DD3FC',
-            },
-        },
-    },
-    {
-        key: 'section',
-        label: 'Section',
-        description: 'Full-width content section',
-        properties: {
-            tagName: 'section',
-            textContent: null,
-            styles: {
-                width: '100%',
-                minHeight: '220px',
-                padding: '40px',
-                borderRadius: '28px',
-                backgroundColor: '#F8FAFC',
-                border: '1px solid #E2E8F0',
-            },
-        },
-    },
-    {
-        key: 'button',
-        label: 'Button',
-        description: 'Clickable call to action',
-        properties: {
-            tagName: 'button',
-            textContent: 'Button',
-            styles: {
-                padding: '14px 22px',
-                borderRadius: '9999px',
-                backgroundColor: '#111827',
-                color: '#FFFFFF',
-                fontWeight: '600',
-            },
-        },
-    },
-    {
-        key: 'image',
-        label: 'Image',
-        description: 'Placeholder image block',
-        properties: {
-            tagName: 'img',
-            textContent: null,
-            styles: {
-                width: '320px',
-                height: '220px',
-                objectFit: 'cover',
-                borderRadius: '24px',
-                backgroundColor: '#E5E7EB',
-            },
-            attributes: {
-                src: PLACEHOLDER_IMAGE_SRC,
-                alt: 'Placeholder image',
-            },
-        },
-    },
-];
-
 export const LayersTab = observer(() => {
     const treeRef = useRef<TreeApi<LayerNode>>(null);
     const editorEngine = useEditorEngine();
     const [treeHovered, setTreeHovered] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
-    const [paletteOpen, setPaletteOpen] = useState(false);
     const { ref, width, height } = useResizeObserver();
 
     useEffect(handleSelectChange, [
@@ -323,27 +200,6 @@ export const LayersTab = observer(() => {
         [editorEngine.ast.mappings, filteredTree.clonedNodeMap],
     );
 
-    const handlePresetDragStart = useCallback(
-        (event: React.DragEvent<HTMLButtonElement>, properties: DropElementProperties) => {
-            event.dataTransfer.setData('application/json', JSON.stringify(properties));
-            event.dataTransfer.effectAllowed = 'copy';
-            editorEngine.state.setPendingInsertElement(null);
-            editorEngine.state.setEditorMode(EditorMode.DESIGN);
-        },
-        [editorEngine.state],
-    );
-
-    const handlePresetClick = useCallback(
-        (properties: DropElementProperties) => {
-            editorEngine.state.setPendingInsertElement(properties);
-            editorEngine.state.setInsertMode(null);
-            editorEngine.state.setEditorMode(EditorMode.DESIGN);
-            setPaletteOpen(false);
-            toast('Click on the canvas to place this element.');
-        },
-        [editorEngine.state],
-    );
-
     return (
         <div
             id="layer-tab-id"
@@ -370,49 +226,6 @@ export const LayersTab = observer(() => {
                         </button>
                     )}
                 </div>
-                <Popover open={paletteOpen} onOpenChange={setPaletteOpen}>
-                    <PopoverTrigger asChild>
-                        <Button
-                            variant="default"
-                            size="icon"
-                            className="border-border-primary bg-background-secondary text-foreground-primary hover:border-border-onlook hover:bg-background-onlook h-fit w-fit border p-2"
-                        >
-                            <Icons.Plus />
-                        </Button>
-                    </PopoverTrigger>
-                    <PopoverContent align="end" side="bottom" className="w-72 p-2">
-                        <div className="mb-2 px-1">
-                            <p className="text-sm font-medium">Add Element</p>
-                            <p className="text-muted-foreground text-xs">
-                                Drag onto the canvas or click to place next.
-                            </p>
-                        </div>
-                        <div className="grid gap-1">
-                            {ELEMENT_PRESETS.map((preset) => (
-                                <button
-                                    key={preset.key}
-                                    type="button"
-                                    draggable
-                                    onDragStart={(event) =>
-                                        handlePresetDragStart(event, preset.properties)
-                                    }
-                                    onClick={() => handlePresetClick(preset.properties)}
-                                    className="hover:bg-background-onlook flex items-start justify-between rounded-md border border-transparent px-3 py-2 text-left transition-colors"
-                                >
-                                    <div className="flex flex-col">
-                                        <span className="text-foreground-primary text-sm">
-                                            {preset.label}
-                                        </span>
-                                        <span className="text-muted-foreground text-xs">
-                                            {preset.description}
-                                        </span>
-                                    </div>
-                                    <Icons.DragHandleDots className="text-foreground-secondary mt-0.5 h-4 w-4" />
-                                </button>
-                            ))}
-                        </div>
-                    </PopoverContent>
-                </Popover>
             </div>
             <RightClickMenu>
                 {filteredTree.roots.length === 0 ? (

@@ -35,7 +35,7 @@ export const RightPanel = observer(() => {
     const hasElementSelection = editorEngine.elements.selected.length > 0;
 
     useEffect(() => {
-        if (hasElementSelection) {
+        if (hasElementSelection && activeTab !== 'comments') {
             setActiveTab('style');
         }
     }, [hasElementSelection]);

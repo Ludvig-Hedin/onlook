@@ -165,7 +165,7 @@ const UserMessageComponent = ({ onEditMessage, message }: UserMessageProps) => {
 
     function renderButtons() {
         return (
-            <div className="bg-background-primary absolute top-2 right-2 z-10 flex gap-2 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+            <div className="flex gap-1 opacity-0 transition-opacity duration-200 group-hover:opacity-100 pr-1">
                 <Tooltip>
                     <TooltipTrigger asChild>
                         <Button
@@ -222,8 +222,8 @@ const UserMessageComponent = ({ onEditMessage, message }: UserMessageProps) => {
 
     return (
         <div className="group relative flex w-full flex-row justify-end px-2" key={message.id}>
-            <div className="bg-background-primary relative ml-8 flex w-[90%] flex-col rounded-lg rounded-br-none border-[0.5px] p-2 shadow-sm">
-                {!isEditing && renderButtons()}
+            <div className="flex w-[90%] ml-8 flex-col items-end gap-1">
+            <div className="bg-background-primary relative w-full flex flex-col rounded-lg border-[0.5px] p-2 shadow-sm">
                 <div className="relative h-6">
                     <div className="absolute top-1 right-0 left-0 flex w-full flex-row items-center justify-start overflow-auto pr-16">
                         <div className="text-micro text-foreground-secondary flex flex-row gap-3">
@@ -245,6 +245,8 @@ const UserMessageComponent = ({ onEditMessage, message }: UserMessageProps) => {
                         />
                     )}
                 </div>
+            </div>
+            {!isEditing && renderButtons()}
             </div>
             {gitCheckpoints.length > 0 && (
                 <div className="absolute top-1/2 left-2 -translate-y-1/2">

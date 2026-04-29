@@ -52,6 +52,66 @@ export class InsertManager {
                     },
                     textContent: null,
                 };
+            case InsertMode.INSERT_FLEX_DIV:
+                return {
+                    tagName: 'div',
+                    styles: {
+                        display: 'flex',
+                        gap: '8px',
+                        padding: '12px',
+                        width: '200px',
+                        height: '100px',
+                        backgroundColor: colors.blue[100],
+                    },
+                    textContent: null,
+                };
+            case InsertMode.INSERT_BUTTON:
+                return {
+                    tagName: 'button',
+                    styles: {
+                        padding: '8px 16px',
+                        backgroundColor: colors.blue[500],
+                        color: '#ffffff',
+                        borderRadius: '6px',
+                        fontSize: '14px',
+                        border: 'none',
+                        cursor: 'pointer',
+                    },
+                    textContent: 'Button',
+                };
+            case InsertMode.INSERT_HEADING:
+                return {
+                    tagName: 'h1',
+                    styles: {
+                        fontSize: '32px',
+                        lineHeight: '40px',
+                        fontWeight: '700',
+                        color: '#000000',
+                    },
+                    textContent: 'Heading',
+                };
+            case InsertMode.INSERT_LINK:
+                return {
+                    tagName: 'a',
+                    styles: {
+                        color: colors.blue[600],
+                        textDecoration: 'underline',
+                        fontSize: '16px',
+                    },
+                    textContent: 'Link',
+                };
+            case InsertMode.INSERT_INPUT:
+                return {
+                    tagName: 'input',
+                    styles: {
+                        padding: '8px 12px',
+                        border: '1px solid #d4d4d4',
+                        borderRadius: '6px',
+                        fontSize: '14px',
+                        width: '200px',
+                    },
+                    textContent: null,
+                };
             default:
                 throw new Error(`No element properties defined for mode: ${mode}`);
         }
@@ -174,35 +234,40 @@ export class InsertManager {
         const branchId = frameData.frame.branchId;
 
         const mode = this.editorEngine.state.insertMode;
+        if (!mode) {
+            console.error('Insert mode not found');
+            return;
+        }
         const domId = createDomId();
         const oid = createOid();
         const width = Math.max(Math.round(newRect.width), 30);
         const height = Math.max(Math.round(newRect.height), 30);
-        const styles: Record<string, string> =
-            mode === InsertMode.INSERT_TEXT
-                ? {
-                    width: `${width}px`,
-                    height: `${height}px`,
-                }
-                : {
-                    width: `${width}px`,
-                    height: `${height}px`,
-                    backgroundColor: colors.blue[100],
-                };
+        const defaultProperties = this.getDefaultProperties(mode);
+        const didDrag = newRect.width > 3 || newRect.height > 3;
+        const sizeStyles: Record<string, string> = didDrag
+            ? {
+                  width: `${width}px`,
+                  height: `${height}px`,
+              }
+            : {};
 
         const actionElement: ActionElement = {
             domId,
             oid,
             branchId,
-            tagName: mode === InsertMode.INSERT_TEXT ? 'p' : 'div',
+            tagName: defaultProperties.tagName,
             attributes: {
                 [EditorAttributes.DATA_ONLOOK_DOM_ID]: domId,
                 [EditorAttributes.DATA_ONLOOK_INSERTED]: 'true',
                 [EditorAttributes.DATA_ONLOOK_ID]: oid,
+                ...defaultProperties.attributes,
             },
             children: [],
-            textContent: null,
-            styles,
+            textContent: defaultProperties.textContent,
+            styles: {
+                ...defaultProperties.styles,
+                ...sizeStyles,
+            },
         };
 
         const targets: Array<ActionTarget> = [

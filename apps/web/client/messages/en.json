@@ -316,6 +316,7 @@
                 "name": "Layers",
                 "tabs": {
                     "layers": "Layers",
+                    "insert": "Insert",
                     "pages": "Pages",
                     "components": "Elements",
                     "images": "Images",
@@ -325,7 +326,8 @@
                     },
                     "brand": "Brand",
                     "branches": "Branches",
-                    "apps": "Apps"
+                    "apps": "Apps",
+                    "search": "Search"
                 }
             }
         },

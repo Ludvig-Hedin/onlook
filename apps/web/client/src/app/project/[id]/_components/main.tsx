@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { observer } from 'mobx-react-lite';
 
@@ -18,7 +18,9 @@ import { usePanelMeasurements } from '../_hooks/use-panel-measure';
 import { useStartProject } from '../_hooks/use-start-project';
 import { BottomBar } from './bottom-bar';
 import { Canvas } from './canvas';
+import { MobileLayout } from './mobile-layout';
 import { EditorBar } from './editor-bar';
+import { ElementPalette } from './element-palette';
 import { KeyboardShortcutsModal } from './keyboard-shortcuts-modal';
 import { LeftPanel } from './left-panel';
 import { RightPanel } from './right-panel';
@@ -34,6 +36,14 @@ export const Main = observer(() => {
         leftPanelRef,
         rightPanelRef,
     );
+    const [isMobile, setIsMobile] = useState<boolean | undefined>(undefined);
+
+    useEffect(() => {
+        const check = () => setIsMobile(window.innerWidth < 768);
+        check();
+        window.addEventListener('resize', check);
+        return () => window.removeEventListener('resize', check);
+    }, []);
 
     useEffect(() => {
         function handleGlobalWheel(event: WheelEvent) {
@@ -105,6 +115,22 @@ export const Main = observer(() => {
         );
     }
 
+    if (isMobile === undefined) {
+        return null;
+    }
+
+    if (isMobile) {
+        return (
+            <TooltipProvider>
+                <MobileLayout />
+                <SettingsModalWithProjects />
+                <SubscriptionModal />
+                <KeyboardShortcutsModal />
+                <ElementPalette />
+            </TooltipProvider>
+        );
+    }
+
     return (
         <TooltipProvider>
             <div className="relative flex h-screen w-screen flex-row overflow-hidden select-none">
@@ -153,6 +179,7 @@ export const Main = observer(() => {
             <SettingsModalWithProjects />
             <SubscriptionModal />
             <KeyboardShortcutsModal />
+            <ElementPalette />
         </TooltipProvider>
     );
 });

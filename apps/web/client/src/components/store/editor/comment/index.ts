@@ -1,5 +1,5 @@
 import { api } from '@/trpc/client';
-import { makeAutoObservable, observable } from 'mobx';
+import { makeAutoObservable, observable, runInAction } from 'mobx';
 import type { EditorEngine } from '../engine';
 
 export interface ProjectComment {
@@ -111,14 +111,16 @@ export class CommentManager {
     // ─── Polling ─────────────────────────────────────────────────────────────
 
     async loadComments(projectId: string) {
+        runInAction(() => { this.isLoading = true; });
         try {
-            this.isLoading = true;
             const result = await api.comment.comment.list.query({ projectId });
-            this.comments = result as unknown as ProjectComment[];
+            runInAction(() => {
+                this.comments = result as unknown as ProjectComment[];
+                this.isLoading = false;
+            });
         } catch (error) {
             console.error('Failed to load comments:', error);
-        } finally {
-            this.isLoading = false;
+            runInAction(() => { this.isLoading = false; });
         }
     }
 
@@ -177,10 +179,12 @@ export class CommentManager {
         try {
             const result = await api.comment.comment.create.mutate(input);
             await this.loadComments(input.projectId);
-            this.pendingPlacement = null;
             const newId = (result as any).id as string;
-            this.markAsSeen(newId); // own comments are immediately "seen"
-            this.activeCommentId = newId;
+            runInAction(() => {
+                this.pendingPlacement = null;
+                this.markAsSeen(newId); // own comments are immediately "seen"
+                this.activeCommentId = newId;
+            });
         } catch (error) {
             console.error('Failed to create comment:', error);
         }
@@ -201,13 +205,14 @@ export class CommentManager {
         try {
             await api.comment.comment.delete.mutate({ commentId });
             if (this.activeCommentId === commentId) {
-                this.activeCommentId = null;
+                runInAction(() => { this.activeCommentId = null; });
             }
             if (this.currentProjectId) {
                 await this.loadComments(this.currentProjectId);
             }
         } catch (error) {
             console.error('Failed to delete comment:', error);
+            throw error;
         }
     }
 
@@ -266,6 +271,6 @@ export class CommentManager {
         this.currentProjectId = null;
         this.isLoading = false;
         this.commentsVisible = true;
-        this.seenCommentIds = observable.set<string>();
+        this.seenCommentIds.clear();
     }
 }

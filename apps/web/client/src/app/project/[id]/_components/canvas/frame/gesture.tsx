@@ -151,6 +151,11 @@ export const GestureScreen = observer(({ frame, isResizing }: { frame: Frame, is
                 editorEngine.state.editorMode === EditorMode.DESIGN ||
                 editorEngine.state.editorMode === EditorMode.CODE ||
                 ((editorEngine.state.insertMode === InsertMode.INSERT_DIV ||
+                    editorEngine.state.insertMode === InsertMode.INSERT_FLEX_DIV ||
+                    editorEngine.state.insertMode === InsertMode.INSERT_BUTTON ||
+                    editorEngine.state.insertMode === InsertMode.INSERT_HEADING ||
+                    editorEngine.state.insertMode === InsertMode.INSERT_LINK ||
+                    editorEngine.state.insertMode === InsertMode.INSERT_INPUT ||
                     editorEngine.state.insertMode === InsertMode.INSERT_TEXT ||
                     editorEngine.state.insertMode === InsertMode.INSERT_IMAGE) &&
                     !editorEngine.insert.isDrawing)
@@ -233,6 +238,11 @@ export const GestureScreen = observer(({ frame, isResizing }: { frame: Frame, is
             await handleMouseEvent(e, MouseAction.MOUSE_DOWN);
         } else if (
             editorEngine.state.insertMode === InsertMode.INSERT_DIV ||
+            editorEngine.state.insertMode === InsertMode.INSERT_FLEX_DIV ||
+            editorEngine.state.insertMode === InsertMode.INSERT_BUTTON ||
+            editorEngine.state.insertMode === InsertMode.INSERT_HEADING ||
+            editorEngine.state.insertMode === InsertMode.INSERT_LINK ||
+            editorEngine.state.insertMode === InsertMode.INSERT_INPUT ||
             editorEngine.state.insertMode === InsertMode.INSERT_TEXT ||
             editorEngine.state.insertMode === InsertMode.INSERT_IMAGE
         ) {
@@ -301,7 +311,12 @@ export const GestureScreen = observer(({ frame, isResizing }: { frame: Frame, is
             editorEngine.state.editorMode === EditorMode.PREVIEW && !isResizing
                 ? 'hidden'
                 : 'visible',
-            editorEngine.state.insertMode === InsertMode.INSERT_DIV && 'cursor-crosshair',
+            (editorEngine.state.insertMode === InsertMode.INSERT_DIV ||
+                editorEngine.state.insertMode === InsertMode.INSERT_FLEX_DIV ||
+                editorEngine.state.insertMode === InsertMode.INSERT_BUTTON ||
+                editorEngine.state.insertMode === InsertMode.INSERT_HEADING ||
+                editorEngine.state.insertMode === InsertMode.INSERT_LINK ||
+                editorEngine.state.insertMode === InsertMode.INSERT_INPUT) && 'cursor-crosshair',
             editorEngine.state.insertMode === InsertMode.INSERT_TEXT && 'cursor-text',
             editorEngine.state.pendingInsertElement && 'cursor-crosshair',
         );

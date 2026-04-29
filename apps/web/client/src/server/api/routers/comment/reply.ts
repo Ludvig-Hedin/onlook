@@ -27,7 +27,10 @@ export const replyRouter = createTRPCRouter({
                     commentId: input.commentId,
                     content: input.content,
                     authorId: ctx.user.id,
-                    authorName: ctx.user.email,
+                    authorName:
+                        ctx.user.user_metadata?.name ??
+                        ctx.user.user_metadata?.full_name ??
+                        ctx.user.email,
                 })
                 .returning();
             if (!reply) throw new Error('Reply not created');

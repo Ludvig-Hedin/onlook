@@ -40,7 +40,10 @@ export const commentRouter = createTRPCRouter({
                     elementSelector: input.elementSelector ?? null,
                     content: input.content,
                     authorId: ctx.user.id,
-                    authorName: ctx.user.email,
+                    authorName:
+                        ctx.user.user_metadata?.name ??
+                        ctx.user.user_metadata?.full_name ??
+                        ctx.user.email,
                 })
                 .returning();
             if (!comment) throw new Error('Comment not created');

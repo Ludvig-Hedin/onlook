@@ -34,7 +34,7 @@ export const CommentPins = observer(() => {
                 const left = comment.canvasX * scale + position.x;
                 const top = comment.canvasY * scale + position.y;
                 const isActive = comment.id === activeCommentId;
-                const isResolved = comment.resolvedAt !== null;
+                const isResolved = comment.resolvedAt != null;
                 const isUnread = editorEngine.comment.isUnread(comment.id);
 
                 return (

@@ -7,6 +7,7 @@ import { Icons } from '@onlook/ui/icons';
 import { cn } from '@onlook/ui/utils';
 import { observer } from 'mobx-react-lite';
 import { useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
 
 function formatRelativeTime(date: Date | string): string {
     const d = new Date(date);
@@ -32,8 +33,12 @@ function getInitials(name: string): string {
 
 const POPOVER_WIDTH = 280;
 const POPOVER_MAX_HEIGHT = 384; // matches max-h-96
-const POPOVER_OFFSET_X = 16;
-const POPOVER_OFFSET_Y = -240;
+// Place the popover just to the right of the pin.
+// Pins are h-8 w-8 centered horizontally (-translate-x-1/2) and shifted up (-translate-y-full),
+// so their right edge is at pinX + 16px. We add an 8px gap.
+const POPOVER_OFFSET_X = 24;
+// Align the top of the popover with the top of the pin (pin is 32px tall, shifted up fully).
+const POPOVER_OFFSET_Y = -32;
 
 function clampToViewport(left: number, top: number): { left: number; top: number } {
     const margin = 8;
@@ -57,13 +62,27 @@ export const CommentPopover = observer(() => {
     const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
     const [editingText, setEditingText] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
     const popoverRef = useRef<HTMLDivElement>(null);
     const newCommentInputRef = useRef<HTMLTextAreaElement>(null);
 
+    // Fetch current user once per component lifetime. The component only unmounts
+    // when both pendingPlacement and activeCommentId are null, so this runs at
+    // most once per "comment session" rather than once per pin click.
     useEffect(() => {
+        let cancelled = false;
         createClient()
             .auth.getUser()
-            .then(({ data }) => setCurrentUserId(data.user?.id ?? null));
+            .then(({ data }) => {
+                if (!cancelled) setCurrentUserId(data.user?.id ?? null);
+            })
+            .catch((error) => {
+                if (!cancelled) {
+                    console.error('Failed to fetch current user:', error);
+                }
+            });
+        return () => { cancelled = true; };
     }, []);
 
     useEffect(() => {
@@ -71,6 +90,11 @@ export const CommentPopover = observer(() => {
             newCommentInputRef.current.focus();
         }
     }, [pendingPlacement]);
+
+    useEffect(() => {
+        setConfirmDeleteId(null);
+        setIsDeleting(false);
+    }, [activeCommentId, pendingPlacement]);
 
     // Close popover on Escape
     useEffect(() => {
@@ -81,6 +105,8 @@ export const CommentPopover = observer(() => {
                 setNewCommentText('');
                 setReplyText('');
                 setEditingCommentId(null);
+                setConfirmDeleteId(null);
+                setIsDeleting(false);
             }
         };
         document.addEventListener('keydown', handler);
@@ -160,43 +186,36 @@ export const CommentPopover = observer(() => {
             style={{ left, top, width: POPOVER_WIDTH }}
         >
             <div className="rounded-xl border border-border bg-background/95 shadow-xl backdrop-blur-xl overflow-hidden">
-                {/* New comment form */}
+                {/* New comment form — inline submit button */}
                 {pendingPlacement && !activeComment && (
-                    <div className="p-3 flex flex-col gap-2">
-                        <textarea
-                            ref={newCommentInputRef}
-                            value={newCommentText}
-                            onChange={(e) => setNewCommentText(e.target.value)}
-                            onKeyDown={(e) => {
-                                if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
-                                    e.preventDefault();
-                                    handleSubmitNew();
-                                }
-                            }}
-                            placeholder="Add a comment..."
-                            rows={3}
-                            className="w-full resize-none rounded-lg bg-background-secondary border border-border px-2.5 py-2 text-sm text-foreground-primary placeholder:text-foreground-tertiary focus:outline-none focus:ring-1 focus:ring-blue-500"
-                        />
-                        <div className="flex justify-end gap-1.5">
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                className="h-7 text-xs"
-                                onClick={() => {
-                                    editorEngine.comment.setPendingPlacement(null);
-                                    setNewCommentText('');
+                    <div className="p-2">
+                        <div className="flex items-end gap-1.5 rounded-lg border border-border bg-background-secondary focus-within:ring-1 focus-within:ring-blue-500 focus-within:border-blue-500 transition-all">
+                            <textarea
+                                ref={newCommentInputRef}
+                                value={newCommentText}
+                                onChange={(e) => setNewCommentText(e.target.value)}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+                                        e.preventDefault();
+                                        handleSubmitNew();
+                                    }
+                                    if (e.key === 'Escape') {
+                                        editorEngine.comment.setPendingPlacement(null);
+                                        setNewCommentText('');
+                                    }
                                 }}
-                            >
-                                Cancel
-                            </Button>
-                            <Button
-                                size="sm"
-                                className="h-7 text-xs bg-blue-600 hover:bg-blue-700 text-white"
+                                placeholder="Add a comment..."
+                                rows={2}
+                                className="flex-1 min-w-0 resize-none bg-transparent px-2.5 pt-2 pb-1.5 text-sm text-foreground-primary placeholder:text-foreground-tertiary focus:outline-none"
+                            />
+                            <button
                                 onClick={handleSubmitNew}
                                 disabled={!newCommentText.trim() || isSubmitting}
+                                className="mb-1.5 mr-1.5 flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-md bg-blue-600 text-white transition-all hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed"
+                                aria-label="Post comment"
                             >
-                                {isSubmitting ? 'Posting...' : 'Post'}
-                            </Button>
+                                <Icons.ArrowRight className="h-3.5 w-3.5" />
+                            </button>
                         </div>
                     </div>
                 )}
@@ -288,22 +307,49 @@ export const CommentPopover = observer(() => {
                                             >
                                                 Edit
                                             </button>
-                                            <button
-                                                onClick={() => {
-                                                    if (
-                                                        window.confirm(
-                                                            'Delete this comment? This cannot be undone.',
-                                                        )
-                                                    ) {
-                                                        editorEngine.comment.deleteComment(
-                                                            activeComment.id,
-                                                        );
-                                                    }
-                                                }}
-                                                className="rounded-md px-2 py-0.5 text-[10px] text-red-400 hover:text-red-300 bg-background-secondary transition-colors"
-                                            >
-                                                Delete
-                                            </button>
+                                            {confirmDeleteId === activeComment.id ? (
+                                                <span className="flex items-center gap-1">
+                                                    <button
+                                                        onClick={async () => {
+                                                            if (isDeleting) return;
+                                                            setIsDeleting(true);
+                                                            try {
+                                                                await editorEngine.comment.deleteComment(
+                                                                    activeComment.id,
+                                                                );
+                                                                setConfirmDeleteId(null);
+                                                            } catch (error) {
+                                                                console.error(
+                                                                    'Failed to delete comment:',
+                                                                    error,
+                                                                );
+                                                                toast.error(
+                                                                    'Failed to delete comment',
+                                                                );
+                                                            } finally {
+                                                                setIsDeleting(false);
+                                                            }
+                                                        }}
+                                                        disabled={isDeleting}
+                                                        className="rounded-md px-2 py-0.5 text-[10px] text-red-400 hover:text-red-300 bg-red-500/10 transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+                                                    >
+                                                        {isDeleting ? 'Deleting...' : 'Confirm'}
+                                                    </button>
+                                                    <button
+                                                        onClick={() => setConfirmDeleteId(null)}
+                                                        className="rounded-md px-2 py-0.5 text-[10px] text-foreground-tertiary hover:text-foreground-hover bg-background-secondary transition-colors"
+                                                    >
+                                                        Cancel
+                                                    </button>
+                                                </span>
+                                            ) : (
+                                                <button
+                                                    onClick={() => setConfirmDeleteId(activeComment.id)}
+                                                    className="rounded-md px-2 py-0.5 text-[10px] text-red-400 hover:text-red-300 bg-background-secondary transition-colors"
+                                                >
+                                                    Delete
+                                                </button>
+                                            )}
                                         </>
                                     )}
                             </div>

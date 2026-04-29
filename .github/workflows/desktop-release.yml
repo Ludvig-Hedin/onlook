@@ -1,0 +1,91 @@
+name: Desktop Release
+
+on:
+  push:
+    tags:
+      - 'desktop-v*'   # e.g. desktop-v0.1.0
+
+permissions:
+  contents: write   # needed to upload release assets
+
+jobs:
+  build-mac:
+    name: Build macOS
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install desktop dependencies
+        working-directory: apps/desktop
+        run: npm install
+
+      - name: Build macOS DMG (x64 + arm64)
+        working-directory: apps/desktop
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Code signing — leave blank if you don't have a certificate yet.
+          # CSC_LINK: ${{ secrets.MAC_CERT_P12_BASE64 }}
+          # CSC_KEY_PASSWORD: ${{ secrets.MAC_CERT_PASSWORD }}
+        run: npm run build:mac
+
+      - name: Upload DMG artifacts
+        uses: softprops/action-gh-release@v2
+        with:
+          files: apps/desktop/dist/Onlook.dmg
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+  build-win:
+    name: Build Windows
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install desktop dependencies
+        working-directory: apps/desktop
+        run: npm install
+
+      - name: Build Windows installer
+        working-directory: apps/desktop
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run build:win
+
+      - name: Upload EXE artifacts
+        uses: softprops/action-gh-release@v2
+        with:
+          files: apps/desktop/dist/Onlook-Setup.exe
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+  build-linux:
+    name: Build Linux
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install desktop dependencies
+        working-directory: apps/desktop
+        run: npm install
+
+      - name: Build Linux AppImage
+        working-directory: apps/desktop
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run build:linux
+
+      - name: Upload AppImage artifacts
+        uses: softprops/action-gh-release@v2
+        with:
+          files: apps/desktop/dist/Onlook.AppImage
+          token: ${{ secrets.GITHUB_TOKEN }}
