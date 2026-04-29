@@ -1,0 +1,59 @@
+{
+    "name": "@onlook/desktop",
+    "version": "0.0.1",
+    "description": "Onlook desktop app",
+    "main": "main.js",
+    "private": true,
+    "scripts": {
+        "start": "electron .",
+        "build:mac": "electron-builder --mac",
+        "build:win": "electron-builder --win",
+        "build:linux": "electron-builder --linux",
+        "build": "electron-builder --mac --win --linux"
+    },
+    "dependencies": {
+        "electron-updater": "^6.3.9"
+    },
+    "devDependencies": {
+        "electron": "^33.0.0",
+        "electron-builder": "^25.1.8"
+    },
+    "build": {
+        "appId": "com.onlook.desktop",
+        "productName": "Onlook",
+        "copyright": "Copyright © 2025-2026 Onlook",
+        "directories": {
+            "output": "dist"
+        },
+        "files": [
+            "main.js",
+            "preload.js",
+            "assets/**"
+        ],
+        "mac": {
+            "category": "public.app-category.developer-tools",
+            "icon": "assets/icon.icns",
+            "target": [
+                { "target": "dmg", "arch": ["x64", "arm64"] }
+            ]
+        },
+        "win": {
+            "icon": "assets/icon.ico",
+            "target": [
+                { "target": "nsis", "arch": ["x64"] }
+            ]
+        },
+        "linux": {
+            "icon": "assets/icon.png",
+            "target": [
+                { "target": "AppImage", "arch": ["x64"] }
+            ],
+            "category": "Development"
+        },
+        "publish": {
+            "provider": "github",
+            "owner": "onlook-dev",
+            "repo": "onlook"
+        }
+    }
+}
