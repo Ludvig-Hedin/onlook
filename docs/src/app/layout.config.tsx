@@ -1,6 +1,6 @@
-import { Icons } from '@onlook/ui/icons';
 import type { BaseLayoutProps } from 'fumadocs-ui/layouts/shared';
 import { APP_NAME } from '@/lib/site';
+import { Icons } from '@/components/icons';
 
 /**
  * Shared layout configurations

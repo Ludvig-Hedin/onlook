@@ -1,5 +1,5 @@
-import { Icons } from '@onlook/ui/icons';
 import Link from 'next/link';
+import { Icons } from '@/components/icons';
 
 export default function NotFound() {
     return (

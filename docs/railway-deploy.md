@@ -38,24 +38,23 @@ Optional variables can stay unset unless you actively use those features.
 
 ## Docs service on Railway
 
-For the docs service, do not install from `docs/` in isolation because the app depends on monorepo workspace packages like `@onlook/ui`.
+For the docs service, do not install from `docs/` in isolation because the app still relies on monorepo workspace packages such as `@onlook/ui` and `@onlook/eslint`.
 
-Use one of these approaches:
+Recommended Railway setup:
 
-1. Preferred: keep the service root at the repository root, then run the docs service from the monorepo so Bun can resolve workspace packages.
-2. If you keep the Railway service root at `docs/`, change the install step to run from the repository root first, then build the docs package.
+1. Set the service root directory to the repository root if Railway allows it.
+2. If you keep the service root at `docs/`, change the build command to install from the monorepo root first.
 
 Recommended commands for the docs service:
 
 ```bash
-bun install
-bun --filter @onlook/docs build
+cd .. && bun install --frozen-lockfile && bun --filter @onlook/docs build
 ```
 
 Start command:
 
 ```bash
-bun --filter @onlook/docs start
+cd .. && bun --filter @onlook/docs start
 ```
 
 Docs service env vars:
