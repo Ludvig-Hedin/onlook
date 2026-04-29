@@ -1,6 +1,6 @@
 # Desktop Releases Guide
 
-The Onlook desktop app is an Electron wrapper around [onlook.com](https://onlook.com).  
+The Weblab desktop app is an Electron wrapper around [onlook.com](https://onlook.com).  
 This doc covers three paths: building locally, sharing with friends, and publishing an official release.
 
 ---
@@ -30,18 +30,18 @@ The build scripts create the workspace `node_modules` link automatically before 
 cd apps/desktop
 
 # Build for your current OS only
-bun run build:mac     # → dist/Onlook.dmg  (macOS)
-bun run build:win     # → dist/Onlook Setup.exe  (Windows)
-bun run build:linux   # → dist/Onlook.AppImage  (Linux)
+bun run build:mac     # → dist/Weblab.dmg  (macOS)
+bun run build:win     # → dist/Weblab Setup.exe  (Windows)
+bun run build:linux   # → dist/Weblab.AppImage  (Linux)
 ```
 
 The output files land in `apps/desktop/dist/`.
 
-> **Sharing with friends:** just send them the file directly — e.g. `Onlook.dmg` via AirDrop, Google Drive, or iMessage. They double-click it and drag Onlook to Applications. Done.
+> **Sharing with friends:** just send them the file directly — e.g. `Weblab.dmg` via AirDrop, Google Drive, or iMessage. They double-click it and drag Weblab to Applications. Done.
 
 ### macOS Gatekeeper warning
 
-Because the app isn't notarized yet, macOS will show *"Onlook can't be opened because it is from an unidentified developer."*
+Because the app isn't notarized yet, macOS will show *"Weblab can't be opened because it is from an unidentified developer."*
 
 Tell your friends to do this **once** to bypass it:
 
@@ -51,7 +51,7 @@ Right-click (or Control-click) the app → Open → Open anyway
 
 Or from Terminal after mounting the DMG:
 ```bash
-xattr -cr /Applications/Onlook.app
+xattr -cr /Applications/Weblab.app
 ```
 
 ---
@@ -62,9 +62,9 @@ The download button in the hero points to:
 
 | Platform | URL |
 |----------|-----|
-| macOS    | `github.com/onlook-dev/onlook/releases/latest/download/Onlook.dmg` |
-| Windows  | `github.com/onlook-dev/onlook/releases/latest/download/Onlook-Setup.exe` |
-| Linux    | `github.com/onlook-dev/onlook/releases/latest/download/Onlook.AppImage` |
+| macOS    | `github.com/weblab/weblab/releases/latest/download/Weblab.dmg` |
+| Windows  | `github.com/weblab/weblab/releases/latest/download/Weblab-Setup.exe` |
+| Linux    | `github.com/weblab/weblab/releases/latest/download/Weblab.AppImage` |
 
 These URLs resolve automatically once you push a tagged release with those filenames attached.
 
@@ -130,8 +130,8 @@ Then uncomment the two `CSC_*` lines in `desktop-release.yml`.
 
 | Platform | Output filename              |
 |----------|------------------------------|
-| macOS    | `Onlook-{version}-arm64.dmg` + `Onlook-{version}.dmg` |
-| Windows  | `Onlook Setup {version}.exe` |
-| Linux    | `Onlook-{version}.AppImage`  |
+| macOS    | `Weblab.dmg` (universal, covers both Intel and Apple Silicon) |
+| Windows  | `Weblab-Setup.exe` |
+| Linux    | `Weblab.AppImage` |
 
 > **Note:** The download URLs in `constants/index.ts` point to the *latest* release, not a specific version, so they stay valid across releases without any code changes.

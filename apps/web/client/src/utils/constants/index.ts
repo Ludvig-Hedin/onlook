@@ -47,10 +47,10 @@ export const ExternalRoutes = {
     SUBSTACK: 'https://onlook.substack.com/',
     DISCORD: 'https://discord.gg/ZZzadNQtns',
     BOOK_DEMO: 'https://meetings.hubspot.com/daniel-onlook/onboarding-to-onlook-with-daniel',
-    DOWNLOAD_MAC: 'https://github.com/onlook-dev/onlook/releases/latest/download/Onlook.dmg',
-    DOWNLOAD_WIN: 'https://github.com/onlook-dev/onlook/releases/latest/download/Onlook-Setup.exe',
-    DOWNLOAD_LINUX: 'https://github.com/onlook-dev/onlook/releases/latest/download/Onlook.AppImage',
-    DOWNLOAD_PAGE: 'https://github.com/onlook-dev/onlook/releases/latest',
+    DOWNLOAD_MAC: 'https://github.com/weblab/weblab/releases/latest/download/Weblab.dmg',
+    DOWNLOAD_WIN: 'https://github.com/weblab/weblab/releases/latest/download/Weblab-Setup.exe',
+    DOWNLOAD_LINUX: 'https://github.com/weblab/weblab/releases/latest/download/Weblab.AppImage',
+    DOWNLOAD_PAGE: 'https://github.com/weblab/weblab/releases/latest',
 };
 
 export const Git = {
