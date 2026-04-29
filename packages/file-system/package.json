@@ -9,7 +9,7 @@
     "types": "src/index.ts",
     "repository": {
         "type": "git",
-        "url": "https://github.com/onlook-dev/onlook.git"
+        "url": "https://github.com/Ludvig-Hedin/Weblab.git"
     },
     "scripts": {
         "clean": "rm -rf node_modules",

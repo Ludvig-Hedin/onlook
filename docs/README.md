@@ -45,6 +45,7 @@ The documentation is organized into the following sections:
 ### Recent Engineering Notes
 
 - Comment collaboration endpoints now require project membership, and comment replies are returned in creation order to keep threads stable after refreshes.
+- Repository metadata and package manifests now point to the renamed `Weblab` GitHub repo.
 
 ## Learn More
 

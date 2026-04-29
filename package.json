@@ -44,10 +44,10 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/onlook-dev/onlook.git"
+        "url": "git+https://github.com/Ludvig-Hedin/Weblab.git"
     },
     "bugs": {
-        "url": "https://github.com/onlook-dev/onlook/issues"
+        "url": "https://github.com/Ludvig-Hedin/Weblab/issues"
     },
     "devDependencies": {
         "@onlook/eslint": "*"
