@@ -1,10 +1,10 @@
 import { useEditorEngine } from '@/components/store/editor';
 import {
     getNestedPagePath,
-    getParentPagePath,
     isFolderNode,
     isPageNode,
 } from '@/components/store/editor/pages/helper';
+import { RouterType } from '@onlook/models';
 import type { PageNode } from '@onlook/models/pages';
 import { Button } from '@onlook/ui/button';
 import {
@@ -82,6 +82,9 @@ export const PagesTab = observer(() => {
 
         return filterNodes(editorEngine.pages.tree);
     }, [editorEngine.pages.tree, searchQuery]);
+
+    const supportsAppRouterPageStructure =
+        editorEngine.activeSandbox.routerConfig?.type === RouterType.APP;
 
     const handleKeyDown = async (e: React.KeyboardEvent) => {
         if (e.key === 'Escape') {
@@ -168,6 +171,10 @@ export const PagesTab = observer(() => {
                 parentNode: NodeApi<PageNode> | null;
                 index: number;
             }) => {
+                if (!supportsAppRouterPageStructure) {
+                    return;
+                }
+
                 const dragNode = dragNodes[0];
                 if (!dragNode) {
                     return;
@@ -207,6 +214,10 @@ export const PagesTab = observer(() => {
                     return true;
                 }
 
+                if (!supportsAppRouterPageStructure) {
+                    return true;
+                }
+
                 if (parentNode && isPageNode(parentNode.data)) {
                     return true;
                 }
@@ -237,10 +248,21 @@ export const PagesTab = observer(() => {
             ),
             animationDuration: 200,
         }),
-        [filteredPages, dimensions.height, dimensions.width, highlightedIndex, editorEngine.pages],
+        [
+            filteredPages,
+            dimensions.height,
+            dimensions.width,
+            highlightedIndex,
+            editorEngine.pages,
+            supportsAppRouterPageStructure,
+        ],
     );
 
     const openCreateModal = (itemType: 'page' | 'folder') => {
+        if (itemType === 'folder' && !supportsAppRouterPageStructure) {
+            return;
+        }
+
         setModalState({
             open: true,
             mode: 'create',
@@ -298,10 +320,12 @@ export const PagesTab = observer(() => {
                             <Icons.FilePlus className="mr-2 h-4 w-4" />
                             New Page
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => openCreateModal('folder')}>
-                            <Icons.DirectoryPlus className="mr-2 h-4 w-4" />
-                            New Folder
-                        </DropdownMenuItem>
+                        {supportsAppRouterPageStructure && (
+                            <DropdownMenuItem onClick={() => openCreateModal('folder')}>
+                                <Icons.DirectoryPlus className="mr-2 h-4 w-4" />
+                                New Folder
+                            </DropdownMenuItem>
+                        )}
                     </DropdownMenuContent>
                 </DropdownMenu>
             </div>
@@ -325,6 +349,7 @@ export const PagesTab = observer(() => {
                 onOpenChange={(open) => setModalState((prev) => ({ ...prev, open }))}
                 baseRoute={modalState.baseRoute}
                 initialName={modalState.initialName}
+                supportsFolderOperations={supportsAppRouterPageStructure}
             />
         </div>
     );

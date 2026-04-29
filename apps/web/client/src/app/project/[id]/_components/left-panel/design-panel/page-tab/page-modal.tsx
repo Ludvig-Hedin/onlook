@@ -4,9 +4,9 @@ import {
     getNestedPagePath,
     getParentPagePath,
     normalizePagePath,
-    normalizeRoute,
     validateNextJsRoute,
 } from '@/components/store/editor/pages/helper';
+import { RouterType } from '@onlook/models';
 import { Button } from '@onlook/ui/button';
 import {
     Dialog,
@@ -28,6 +28,7 @@ interface PageModalProps {
     itemType?: 'page' | 'folder';
     baseRoute?: string;
     initialName?: string;
+    supportsFolderOperations?: boolean;
 }
 
 export function PageModal({
@@ -37,6 +38,7 @@ export function PageModal({
     itemType = 'page',
     baseRoute = '/',
     initialName = '',
+    supportsFolderOperations,
 }: PageModalProps) {
     const editorEngine = useEditorEngine();
     const [pageName, setPageName] = useState('');
@@ -51,6 +53,9 @@ export function PageModal({
     const [isComposing, setIsComposing] = useState(false);
 
     const itemLabel = itemType === 'folder' ? 'Folder' : 'Page';
+    const canManageFolders =
+        supportsFolderOperations ??
+        editorEngine.activeSandbox.routerConfig?.type === RouterType.APP;
     const title = mode === 'create' ? `Create a New ${itemLabel}` : `Rename ${itemLabel}`;
     const buttonText = mode === 'create' ? `Create ${itemLabel}` : `Rename ${itemLabel}`;
     const loadingText = mode === 'create' ? 'Creating...' : 'Renaming...';
@@ -65,6 +70,11 @@ export function PageModal({
     useEffect(() => {
         if (!pageName) {
             setWarning('');
+            return;
+        }
+
+        if (itemType === 'folder' && !canManageFolders) {
+            setWarning('Folders are only supported for App Router projects');
             return;
         }
 
@@ -83,9 +93,14 @@ export function PageModal({
         }
 
         setWarning('');
-    }, [pageName, fullPath, editorEngine.pages.tree, mode, baseRoute, itemType]);
+    }, [pageName, fullPath, editorEngine.pages.tree, mode, baseRoute, itemType, canManageFolders]);
 
     const handleSubmit = async () => {
+        if (itemType === 'folder' && !canManageFolders) {
+            setWarning('Folders are only supported for App Router projects');
+            return;
+        }
+
         try {
             setIsLoading(true);
 

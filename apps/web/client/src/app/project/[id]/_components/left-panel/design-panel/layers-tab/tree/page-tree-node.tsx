@@ -14,6 +14,7 @@ import { toast } from '@onlook/ui/sonner';
 import { cn } from '@onlook/ui/utils';
 
 import { useEditorEngine } from '@/components/store/editor';
+import { RouterType } from '@onlook/models';
 import { useStateManager } from '@/components/store/state';
 import { getParentPagePath, isFolderNode, isPageNode } from '@/components/store/editor/pages/helper';
 import { PageModal } from '../../page-tab/page-modal';
@@ -31,6 +32,8 @@ interface PageTreeNodeProps {
 export const PageTreeNode: React.FC<PageTreeNodeProps> = observer(({ node, style }) => {
     const editorEngine = useEditorEngine();
     const stateManager = useStateManager();
+    const supportsFolderOperations =
+        editorEngine.activeSandbox.routerConfig?.type === RouterType.APP;
     const [modalState, setModalState] = useState<{
         open: boolean;
         mode: 'create' | 'rename';
@@ -85,6 +88,10 @@ export const PageTreeNode: React.FC<PageTreeNodeProps> = observer(({ node, style
     };
 
     const handleCreateFolder = () => {
+        if (!supportsFolderOperations) {
+            return;
+        }
+
         setModalState({
             open: true,
             mode: 'create',
@@ -172,11 +179,6 @@ export const PageTreeNode: React.FC<PageTreeNodeProps> = observer(({ node, style
             icon: <Icons.File className="mr-2 h-4 w-4" />,
         },
         {
-            label: 'Create New Folder',
-            action: handleCreateFolder,
-            icon: <Icons.DirectoryPlus className="mr-2 h-4 w-4" />,
-        },
-        {
             label: 'Duplicate Page',
             action: handleDuplicate,
             icon: <Icons.Copy className="mr-2 h-4 w-4" />,
@@ -196,6 +198,13 @@ export const PageTreeNode: React.FC<PageTreeNodeProps> = observer(({ node, style
             disabled: node.data.isRoot,
         },
     ];
+    if (supportsFolderOperations) {
+        menuItems.splice(1, 0, {
+            label: 'Create New Folder',
+            action: handleCreateFolder,
+            icon: <Icons.DirectoryPlus className="mr-2 h-4 w-4" />,
+        });
+    }
 
     return (
         <>
@@ -269,6 +278,7 @@ export const PageTreeNode: React.FC<PageTreeNodeProps> = observer(({ node, style
                 itemType={modalState.itemType}
                 baseRoute={modalState.mode === 'create' ? createBaseRoute : node.data.path}
                 initialName={modalState.mode === 'rename' ? getBaseName(node.data.path) : ''}
+                supportsFolderOperations={supportsFolderOperations}
             />
         </>
     );
