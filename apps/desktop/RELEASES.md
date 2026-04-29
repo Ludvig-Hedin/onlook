@@ -16,8 +16,10 @@ Install desktop dependencies once:
 
 ```bash
 cd apps/desktop
-npm install
+bun install
 ```
+
+The build scripts create the workspace `node_modules` link automatically before packaging, so you can run the Bun build commands directly after installing.
 
 ---
 
@@ -28,9 +30,9 @@ npm install
 cd apps/desktop
 
 # Build for your current OS only
-npm run build:mac     # → dist/Onlook.dmg  (macOS)
-npm run build:win     # → dist/Onlook Setup.exe  (Windows)
-npm run build:linux   # → dist/Onlook.AppImage  (Linux)
+bun run build:mac     # → dist/Onlook.dmg  (macOS)
+bun run build:win     # → dist/Onlook Setup.exe  (Windows)
+bun run build:linux   # → dist/Onlook.AppImage  (Linux)
 ```
 
 The output files land in `apps/desktop/dist/`.
@@ -80,7 +82,7 @@ git push origin desktop-v0.1.0
 
 GitHub Actions will:
 1. Spin up runners for macOS, Windows, and Linux in parallel
-2. `npm run build:*` on each
+2. `bun run build:*` on each
 3. Create a GitHub Release named `desktop-v0.1.0`
 4. Attach the `.dmg`, `.exe`, and `.AppImage` as release assets
 

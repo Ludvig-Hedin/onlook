@@ -21,7 +21,7 @@ jobs:
 
       - name: Install desktop dependencies
         working-directory: apps/desktop
-        run: npm install
+        run: bun install
 
       - name: Build macOS DMG (x64 + arm64)
         working-directory: apps/desktop
@@ -30,7 +30,7 @@ jobs:
           # Code signing — leave blank if you don't have a certificate yet.
           # CSC_LINK: ${{ secrets.MAC_CERT_P12_BASE64 }}
           # CSC_KEY_PASSWORD: ${{ secrets.MAC_CERT_PASSWORD }}
-        run: npm run build:mac
+        run: bun run build:mac
 
       - name: Upload DMG artifacts
         uses: softprops/action-gh-release@v2
@@ -50,13 +50,13 @@ jobs:
 
       - name: Install desktop dependencies
         working-directory: apps/desktop
-        run: npm install
+        run: bun install
 
       - name: Build Windows installer
         working-directory: apps/desktop
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npm run build:win
+        run: bun run build:win
 
       - name: Upload EXE artifacts
         uses: softprops/action-gh-release@v2
@@ -76,13 +76,13 @@ jobs:
 
       - name: Install desktop dependencies
         working-directory: apps/desktop
-        run: npm install
+        run: bun install
 
       - name: Build Linux AppImage
         working-directory: apps/desktop
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npm run build:linux
+        run: bun run build:linux
 
       - name: Upload AppImage artifacts
         uses: softprops/action-gh-release@v2

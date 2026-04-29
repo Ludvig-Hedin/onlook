@@ -2,14 +2,20 @@
     "name": "@onlook/desktop",
     "version": "0.0.1",
     "description": "Onlook desktop app",
+    "author": {
+        "name": "Onlook",
+        "email": "contact@onlook.com"
+    },
     "main": "main.js",
     "private": true,
+    "packageManager": "bun@1.3.1",
     "scripts": {
         "start": "electron .",
-        "build:mac": "electron-builder --mac",
-        "build:win": "electron-builder --win",
-        "build:linux": "electron-builder --linux",
-        "build": "electron-builder --mac --win --linux"
+        "link:node_modules": "node -e \"const fs=require('fs');const path=require('path');const link=path.join(process.cwd(),'node_modules');const target=path.resolve(process.cwd(),'../../node_modules');try{fs.rmSync(link,{recursive:true,force:true});}catch{}fs.symlinkSync(target,link,process.platform==='win32'?'junction':'dir');\"",
+        "build:mac": "bun run link:node_modules && electron-builder --mac",
+        "build:win": "bun run link:node_modules && electron-builder --win",
+        "build:linux": "bun run link:node_modules && electron-builder --linux",
+        "build": "bun run link:node_modules && electron-builder --mac --win --linux"
     },
     "dependencies": {
         "electron-updater": "^6.3.9"
@@ -53,6 +59,7 @@
             "category": "Development",
             "artifactName": "Onlook.AppImage"
         },
+        "npmRebuild": false,
         "publish": {
             "provider": "github",
             "owner": "onlook-dev",
