@@ -1,6 +1,6 @@
-# Onlook Documentation
+# Weblab Documentation
 
-This is a Next.js application for the Onlook documentation.
+This is a Next.js application for the Weblab documentation.
 
 Run development server:
 
@@ -34,8 +34,8 @@ In the project, you can see:
 The documentation is organized into the following sections:
 
 - **Getting Started**: Quick introduction and installation guides
-- **User Guide**: Comprehensive guide for using Onlook
-- **Features**: Detailed description of Onlook's features
+- **User Guide**: Comprehensive guide for using Weblab
+- **Features**: Detailed description of Weblab's features
 - **Tutorials**: Step-by-step guides for common tasks
 - **Developer Documentation**: Technical documentation for contributors
 - **Editor Updates**: Notes for shipped editor changes such as the [Left Panel Refresh](./left-panel-refresh.md)

@@ -17,13 +17,13 @@ const geist = Geist({
 export const metadata = {
     metadataBase: new URL('https://docs.onlook.dev'),
     title: {
-        default: 'Onlook Docs',
-        template: '%s – Onlook Docs',
+        default: 'Weblab Docs',
+        template: '%s – Weblab Docs',
     },
     description:
-        'Official documentation for Onlook – an open-source "Cursor for Designers" that lets you visually edit React & Tailwind projects.',
+        'Official documentation for Weblab – an open-source "Cursor for Designers" that lets you visually edit React & Tailwind projects.',
     openGraph: {
-        siteName: 'Onlook Docs',
+        siteName: 'Weblab Docs',
         type: 'website',
     },
     twitter: {
@@ -64,4 +64,3 @@ export default function Layout({ children }: { children: ReactNode }) {
         </html>
     );
 }
-

@@ -147,7 +147,7 @@ const CommitModal = observer(({ open, onOpenChange, initialAction }: CommitModal
                     return;
                 }
                 await gitManager.ensureGitConfig();
-                commitResult = await gitManager.commit(message ?? 'New Onlook backup');
+                commitResult = await gitManager.commit(message ?? 'New Weblab backup');
             }
 
             if (!commitResult.success) {
@@ -174,7 +174,7 @@ const CommitModal = observer(({ open, onOpenChange, initialAction }: CommitModal
                     headBranch: prBranchName,
                     baseBranch,
                     title: message ?? `Update ${prBranchName}`,
-                    body: `Created from Onlook on branch \`${prBranchName}\`.`,
+                    body: `Created from Weblab on branch \`${prBranchName}\`.`,
                 });
 
                 if (prResult.existing) {

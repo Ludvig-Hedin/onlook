@@ -1,15 +1,15 @@
 ---
 title: External Services
-description: External services for Onlook
+description: External services for Weblab
 ---
 
 # External Services
 
-Onlook requires several external services to provide its features. Each of these services is self-hostable under Apache 2.0 or equivalently permissive licenses.
+Weblab requires several external services to provide its features. Each of these services is self-hostable under Apache 2.0 or equivalently permissive licenses.
 
 ## Self-hosting External Services
 
-For assistance with self-hosting these services, please contact us at [founders@onlook.com](mailto:founders@onlook.com).
+For assistance with self-hosting these services, please contact us at [founders@weblab.build](mailto:founders@weblab.build).
 
 ### 1. Supabase
 - For scalable deployments, follow the official [Supabase self-hosting guide](https://supabase.com/docs/guides/self-hosting/docker) to deploy with Docker. 
@@ -21,7 +21,7 @@ For assistance with self-hosting these services, please contact us at [founders@
 
 ### 3. AI Providers
 To configure custom AI providers:
-1. Update the providers in [`packages/ai/src/chat/providers.ts`](https://github.com/onlook-dev/onlook/blob/main/packages/ai/src/chat/providers.ts). We already support Anthropic and OpenRouter as examples. You can follow the same format to add a new provider.
+1. Update the providers in [`packages/ai/src/chat/providers.ts`](https://github.com/weblab.build/blob/main/packages/ai/src/chat/providers.ts). We already support Anthropic and OpenRouter as examples. You can follow the same format to add a new provider.
 2. Update the usages by searching for [`initModel`](https://github.com/search?q=repo%3Aonlook-dev%2Fonlook+%22await+initModel%22&type=code)
 3. Update your API keys in the `apps/web/client/.env` file to the provider's expected API keys.
 

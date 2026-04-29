@@ -13,7 +13,7 @@ export const baseOptions: BaseLayoutProps = {
         title: (
             <div className="flex items-center gap-2">
                 <Icons.OnlookLogo className="w-4 h-4" />
-                <span >Onlook Docs</span>
+                <span>Weblab Docs</span>
             </div>
         ),
     },
