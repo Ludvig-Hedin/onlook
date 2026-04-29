@@ -1,5 +1,6 @@
 import { Icons } from '@onlook/ui/icons';
 import type { BaseLayoutProps } from 'fumadocs-ui/layouts/shared';
+import { APP_NAME } from '@/lib/site';
 
 /**
  * Shared layout configurations
@@ -13,7 +14,7 @@ export const baseOptions: BaseLayoutProps = {
         title: (
             <div className="flex items-center gap-2">
                 <Icons.OnlookLogo className="w-4 h-4" />
-                <span>Weblab Docs</span>
+                <span>{APP_NAME} Docs</span>
             </div>
         ),
     },

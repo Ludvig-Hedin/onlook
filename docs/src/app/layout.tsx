@@ -8,6 +8,7 @@ import { Geist } from 'next/font/google';
 import Script from 'next/script';
 import type { ReactNode } from 'react';
 import RB2BLoader from '@/components/rb2b-loader';
+import { APP_DOMAIN, APP_NAME } from '@/lib/site';
 
 const geist = Geist({
     subsets: ['latin'],
@@ -15,20 +16,20 @@ const geist = Geist({
 });
 
 export const metadata = {
-    metadataBase: new URL('https://docs.onlook.dev'),
+    metadataBase: new URL(`https://${APP_DOMAIN}`),
     title: {
-        default: 'Weblab Docs',
-        template: '%s – Weblab Docs',
+        default: `${APP_NAME} Docs`,
+        template: `%s – ${APP_NAME} Docs`,
     },
     description:
-        'Official documentation for Weblab – an open-source "Cursor for Designers" that lets you visually edit React & Tailwind projects.',
+        `Official documentation for ${APP_NAME} – an open-source "Cursor for Designers" that lets you visually edit React & Tailwind projects.`,
     openGraph: {
-        siteName: 'Weblab Docs',
+        siteName: `${APP_NAME} Docs`,
         type: 'website',
     },
     twitter: {
         card: 'summary_large_image',
-        site: '@onlookdev',
+        site: '@weblabdev',
     },
     robots: {
         index: true,
@@ -51,7 +52,7 @@ export default function Layout({ children }: { children: ReactNode }) {
             <body className="flex flex-col min-h-screen">
                 {isProduction && (
                     <>
-                        <Script src="https://z.onlook.com/cdn-cgi/zaraz/i.js" strategy="lazyOnload" />
+                        <Script src="https://z.weblab.build/cdn-cgi/zaraz/i.js" strategy="lazyOnload" />
                         <RB2BLoader />
                     </>
                 )}
