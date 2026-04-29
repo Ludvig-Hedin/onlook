@@ -1,13 +1,34 @@
-import type { PageMetadata, PageNode } from '@onlook/models/pages';
+import type { PageEditorSettings, PageMetadata, PageNode } from '@onlook/models/pages';
 import { makeAutoObservable } from 'mobx';
 import type { EditorEngine } from '../engine';
 import type { FrameData } from '../frames';
 import {
+    applyPageSettingsToNodes,
+    deletePageSettingsByPrefixInSandbox,
+    deletePageSettingsInSandbox,
+    getPageSettingsMap,
+    movePageSettingsByPrefixInSandbox,
+    updatePageSettingsInSandbox,
+} from './editor-settings';
+import {
+    createFolderInSandbox,
     createPageInSandbox,
+    deleteFolderInSandbox,
     deletePageInSandbox,
     doesRouteExist,
     duplicatePageInSandbox,
+    findFolderNodeByPath,
+    findPageNodeByPath,
+    getFolderNodes,
+    getNestedPagePath,
+    getPageNodes,
+    getParentPagePath,
+    isPageNode,
+    moveFolderInSandbox,
+    movePageInSandbox,
     normalizeRoute,
+    normalizePagePath,
+    renameFolderInSandbox,
     renamePageInSandbox,
     scanPagesFromSandbox,
     updatePageMetadataInSandbox,
@@ -34,7 +55,8 @@ export class PagesManager {
             }
             this._isScanning = true;
             const realPages = await scanPagesFromSandbox(this.editorEngine.activeSandbox);
-            this.setPages(realPages);
+            const settingsMap = await getPageSettingsMap(this.editorEngine.activeSandbox);
+            this.setPages(applyPageSettingsToNodes(realPages, settingsMap));
             return;
         } catch (error) {
             console.error('Failed to scan pages from sandbox:', error);
@@ -51,6 +73,14 @@ export class PagesManager {
 
     get tree() {
         return this.pages;
+    }
+
+    get flatPages() {
+        return getPageNodes(this.pages);
+    }
+
+    get flatFolders() {
+        return getFolderNodes(this.pages);
     }
 
     get activeRoute(): string | undefined {
@@ -134,14 +164,13 @@ export class PagesManager {
         }
     }
 
-
     public async createPage(baseRoute: string, pageName: string): Promise<void> {
         const { valid, error } = validateNextJsRoute(pageName);
         if (!valid) {
             throw new Error(error);
         }
 
-        const normalizedPath = normalizeRoute(`${baseRoute}/${pageName}`);
+        const normalizedPath = getNestedPagePath(baseRoute, pageName);
 
         if (doesRouteExist(this.pages, normalizedPath)) {
             throw new Error('This page already exists');
@@ -158,22 +187,87 @@ export class PagesManager {
         }
     }
 
+    public async createFolder(baseRoute: string, folderName: string): Promise<void> {
+        const { valid, error } = validateNextJsRoute(folderName);
+        if (!valid) {
+            throw new Error(error);
+        }
+
+        const normalizedPath = getNestedPagePath(baseRoute, folderName);
+
+        if (doesRouteExist(this.pages, normalizedPath, 'folder')) {
+            throw new Error('This folder already exists');
+        }
+
+        try {
+            await createFolderInSandbox(this.editorEngine.activeSandbox, normalizedPath);
+            await this.scanPages();
+            this.editorEngine.posthog.capture('page_folder_create');
+        } catch (error) {
+            console.error('Failed to create folder:', error);
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            throw new Error(errorMessage);
+        }
+    }
+
     public async renamePage(oldPath: string, newName: string): Promise<void> {
         const { valid, error } = validateNextJsRoute(newName);
         if (!valid) {
             throw new Error(error);
         }
 
-        if (doesRouteExist(this.pages, `/${newName}`)) {
+        const normalizedOldPath = normalizePagePath(oldPath);
+        const nextPath = getNestedPagePath(getParentPagePath(oldPath), newName);
+
+        if (doesRouteExist(this.pages, nextPath)) {
             throw new Error('A page with this name already exists');
         }
 
         try {
-            await renamePageInSandbox(this.editorEngine.activeSandbox, oldPath, newName);
+            const indexPageFolder = this.getIndexPageFolder(normalizedOldPath);
+            if (indexPageFolder) {
+                await renameFolderInSandbox(this.editorEngine.activeSandbox, oldPath, newName);
+            } else {
+                await renamePageInSandbox(this.editorEngine.activeSandbox, oldPath, newName);
+            }
+            await movePageSettingsByPrefixInSandbox(
+                this.editorEngine.activeSandbox,
+                normalizedOldPath,
+                nextPath,
+            );
+            this.replacePathPrefixInState(normalizedOldPath, nextPath);
             await this.scanPages();
             this.editorEngine.posthog.capture('page_rename');
         } catch (error) {
             console.error('Failed to rename page:', error);
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            throw new Error(errorMessage);
+        }
+    }
+
+    public async renameFolder(oldPath: string, newName: string): Promise<void> {
+        const { valid, error } = validateNextJsRoute(newName);
+        if (!valid) {
+            throw new Error(error);
+        }
+
+        const nextPath = getNestedPagePath(getParentPagePath(oldPath), newName);
+        if (doesRouteExist(this.pages, nextPath, 'folder')) {
+            throw new Error('A folder with this name already exists');
+        }
+
+        try {
+            await renameFolderInSandbox(this.editorEngine.activeSandbox, oldPath, newName);
+            await movePageSettingsByPrefixInSandbox(
+                this.editorEngine.activeSandbox,
+                oldPath,
+                nextPath,
+            );
+            this.replacePathPrefixInState(oldPath, nextPath);
+            await this.scanPages();
+            this.editorEngine.posthog.capture('page_folder_rename');
+        } catch (error) {
+            console.error('Failed to rename folder:', error);
             const errorMessage = error instanceof Error ? error.message : String(error);
             throw new Error(errorMessage);
         }
@@ -195,14 +289,15 @@ export class PagesManager {
         }
     }
 
-    public async deletePage(pageName: string, isDir: boolean): Promise<void> {
-        const normalizedPath = normalizeRoute(`${pageName}`);
+    public async deletePage(pageName: string, isDir = false): Promise<void> {
+        const normalizedPath = normalizePagePath(pageName);
         if (normalizedPath === '' || normalizedPath === '/') {
             throw new Error('Cannot delete root page');
         }
 
         try {
             await deletePageInSandbox(this.editorEngine.activeSandbox, normalizedPath, isDir);
+            await deletePageSettingsInSandbox(this.editorEngine.activeSandbox, normalizedPath);
             await this.scanPages();
             this.editorEngine.posthog.capture('page_delete');
         } catch (error) {
@@ -210,6 +305,198 @@ export class PagesManager {
             const errorMessage = error instanceof Error ? error.message : String(error);
             throw new Error(errorMessage);
         }
+    }
+
+    public async deleteFolder(folderPath: string): Promise<void> {
+        const normalizedPath = normalizePagePath(folderPath);
+        if (normalizedPath === '/') {
+            throw new Error('Cannot delete root folder');
+        }
+
+        try {
+            await deleteFolderInSandbox(this.editorEngine.activeSandbox, normalizedPath);
+            await deletePageSettingsByPrefixInSandbox(
+                this.editorEngine.activeSandbox,
+                normalizedPath,
+            );
+            await this.scanPages();
+            this.editorEngine.posthog.capture('page_folder_delete');
+        } catch (error) {
+            console.error('Failed to delete folder:', error);
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            throw new Error(errorMessage);
+        }
+    }
+
+    public async movePageToPath(sourcePath: string, targetPath: string): Promise<string> {
+        const normalizedSourcePath = normalizePagePath(sourcePath);
+        const normalizedTargetPath = normalizePagePath(targetPath);
+
+        if (normalizedSourcePath === normalizedTargetPath) {
+            return normalizedTargetPath;
+        }
+
+        const page = findPageNodeByPath(this.pages, normalizedSourcePath);
+        if (!page) {
+            throw new Error('Source page not found');
+        }
+
+        if (page.isRoot) {
+            throw new Error('Home cannot be moved');
+        }
+
+        if (doesRouteExist(this.pages, normalizedTargetPath)) {
+            throw new Error('A page with this path already exists');
+        }
+
+        const indexPageFolder = this.getIndexPageFolder(normalizedSourcePath);
+        if (indexPageFolder) {
+            await moveFolderInSandbox(
+                this.editorEngine.activeSandbox,
+                normalizedSourcePath,
+                normalizedTargetPath,
+            );
+        } else {
+            await movePageInSandbox(
+                this.editorEngine.activeSandbox,
+                normalizedSourcePath,
+                normalizedTargetPath,
+            );
+        }
+        await movePageSettingsByPrefixInSandbox(
+            this.editorEngine.activeSandbox,
+            normalizedSourcePath,
+            normalizedTargetPath,
+        );
+        this.replacePathPrefixInState(normalizedSourcePath, normalizedTargetPath);
+        await this.scanPages();
+        this.editorEngine.posthog.capture('page_move');
+
+        return normalizedTargetPath;
+    }
+
+    public async moveFolderToPath(sourcePath: string, targetPath: string): Promise<string> {
+        const normalizedSourcePath = normalizePagePath(sourcePath);
+        const normalizedTargetPath = normalizePagePath(targetPath);
+
+        if (normalizedSourcePath === normalizedTargetPath) {
+            return normalizedTargetPath;
+        }
+
+        if (
+            normalizedTargetPath.startsWith(`${normalizedSourcePath}/`) ||
+            normalizedTargetPath === normalizedSourcePath
+        ) {
+            throw new Error('Cannot move a folder inside itself');
+        }
+
+        const folder = findFolderNodeByPath(this.pages, normalizedSourcePath);
+        if (!folder) {
+            throw new Error('Source folder not found');
+        }
+
+        if (doesRouteExist(this.pages, normalizedTargetPath, 'folder')) {
+            throw new Error('A folder with this path already exists');
+        }
+
+        await moveFolderInSandbox(
+            this.editorEngine.activeSandbox,
+            normalizedSourcePath,
+            normalizedTargetPath,
+        );
+        await movePageSettingsByPrefixInSandbox(
+            this.editorEngine.activeSandbox,
+            normalizedSourcePath,
+            normalizedTargetPath,
+        );
+        this.replacePathPrefixInState(normalizedSourcePath, normalizedTargetPath);
+        await this.scanPages();
+        this.editorEngine.posthog.capture('page_folder_move');
+
+        return normalizedTargetPath;
+    }
+
+    public async updatePageEditorSettings(
+        pagePath: string,
+        settings: PageEditorSettings,
+    ): Promise<void> {
+        const normalizedPath = normalizePagePath(pagePath);
+        if (!doesRouteExist(this.pages, normalizedPath)) {
+            throw new Error('Page not found');
+        }
+
+        await updatePageSettingsInSandbox(this.editorEngine.activeSandbox, normalizedPath, settings);
+        await this.scanPages();
+    }
+
+    public async savePageConfiguration(
+        pagePath: string,
+        data: {
+            nextPath?: string;
+            metadata: PageMetadata;
+            settings: PageEditorSettings;
+        },
+    ): Promise<string> {
+        const normalizedCurrentPath = normalizePagePath(pagePath);
+        const normalizedNextPath = normalizePagePath(data.nextPath ?? pagePath);
+        const page = findPageNodeByPath(this.pages, normalizedCurrentPath);
+
+        if (!page) {
+            throw new Error('Page not found');
+        }
+
+        if (page.isRoot && normalizedNextPath !== '/') {
+            throw new Error('Home cannot be moved');
+        }
+
+        if (!page.isRoot) {
+            const nextSlug = normalizedNextPath.split('/').filter(Boolean).pop() ?? '';
+            const slugValidation = validateNextJsRoute(nextSlug);
+            if (!slugValidation.valid) {
+                throw new Error(slugValidation.error);
+            }
+        }
+
+        if (!page.isRoot && normalizedCurrentPath !== normalizedNextPath) {
+            if (doesRouteExist(this.pages, normalizedNextPath)) {
+                throw new Error('A page with this path already exists');
+            }
+
+            const indexPageFolder = this.getIndexPageFolder(normalizedCurrentPath);
+            if (indexPageFolder) {
+                await moveFolderInSandbox(
+                    this.editorEngine.activeSandbox,
+                    normalizedCurrentPath,
+                    normalizedNextPath,
+                );
+            } else {
+                await movePageInSandbox(
+                    this.editorEngine.activeSandbox,
+                    normalizedCurrentPath,
+                    normalizedNextPath,
+                );
+            }
+            await movePageSettingsByPrefixInSandbox(
+                this.editorEngine.activeSandbox,
+                normalizedCurrentPath,
+                normalizedNextPath,
+            );
+            this.replacePathPrefixInState(normalizedCurrentPath, normalizedNextPath);
+        }
+
+        await updatePageMetadataInSandbox(
+            this.editorEngine.activeSandbox,
+            normalizedNextPath,
+            data.metadata,
+        );
+        await updatePageSettingsInSandbox(
+            this.editorEngine.activeSandbox,
+            normalizedNextPath,
+            data.settings,
+        );
+        await this.scanPages();
+
+        return normalizedNextPath;
     }
 
     public async updateMetadataPage(pagePath: string, metadata: PageMetadata) {
@@ -258,6 +545,55 @@ export class PagesManager {
 
     public setCurrentPath(path: string) {
         this.currentPath = path;
+    }
+
+    public getPageByPath(path: string): PageNode | null {
+        return findPageNodeByPath(this.pages, path);
+    }
+
+    public getFolderByPath(path: string): PageNode | null {
+        return findFolderNodeByPath(this.pages, path);
+    }
+
+    private getIndexPageFolder(path: string): PageNode | null {
+        const folder = findFolderNodeByPath(this.pages, path);
+        if (!folder?.children?.length) {
+            return null;
+        }
+
+        const hasIndexPage = folder.children.some(
+            (child) => isPageNode(child) && normalizePagePath(child.path) === normalizePagePath(path),
+        );
+        const hasNestedRouteChildren = folder.children.some(
+            (child) => normalizePagePath(child.path) !== normalizePagePath(path),
+        );
+
+        return hasIndexPage && hasNestedRouteChildren ? folder : null;
+    }
+
+    private replacePathPrefixInState(oldPathPrefix: string, newPathPrefix: string) {
+        const normalizedOldPrefix = normalizePagePath(oldPathPrefix);
+        const normalizedNewPrefix = normalizePagePath(newPathPrefix);
+        const replacePath = (value: string): string => {
+            const normalizedValue = normalizePagePath(value);
+            if (normalizedValue === normalizedOldPrefix) {
+                return normalizedNewPrefix;
+            }
+            if (normalizedOldPrefix !== '/' && normalizedValue.startsWith(`${normalizedOldPrefix}/`)) {
+                return normalizePagePath(
+                    `${normalizedNewPrefix}${normalizedValue.slice(normalizedOldPrefix.length)}`,
+                );
+            }
+            return value;
+        };
+
+        Object.entries(this.activeRoutesByFrameId).forEach(([frameId, route]) => {
+            this.activeRoutesByFrameId[frameId] = replacePath(route);
+        });
+        this.currentPath = replacePath(this.currentPath);
+        if (this.groupedRoutes) {
+            this.groupedRoutes = replacePath(this.groupedRoutes);
+        }
     }
 
     public handleFrameUrlChange(frameId: string) {

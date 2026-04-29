@@ -478,6 +478,7 @@ export class InsertManager {
                 [EditorAttributes.DATA_ONLOOK_ID]: oid,
                 [EditorAttributes.DATA_ONLOOK_DOM_ID]: domId,
                 [EditorAttributes.DATA_ONLOOK_INSERTED]: 'true',
+                ...properties.attributes,
             },
             textContent: properties.textContent || null,
         };

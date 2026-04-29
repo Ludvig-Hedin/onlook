@@ -1,6 +1,9 @@
 import { useEditorEngine } from '@/components/store/editor';
 import {
     doesRouteExist,
+    getNestedPagePath,
+    getParentPagePath,
+    normalizePagePath,
     normalizeRoute,
     validateNextJsRoute,
 } from '@/components/store/editor/pages/helper';
@@ -22,6 +25,7 @@ interface PageModalProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     mode: 'create' | 'rename';
+    itemType?: 'page' | 'folder';
     baseRoute?: string;
     initialName?: string;
 }
@@ -30,6 +34,7 @@ export function PageModal({
     open,
     onOpenChange,
     mode = 'create',
+    itemType = 'page',
     baseRoute = '/',
     initialName = '',
 }: PageModalProps) {
@@ -39,15 +44,15 @@ export function PageModal({
     const [isLoading, setIsLoading] = useState(false);
     const fullPath = useMemo(() => {
         if (mode === 'rename') {
-            const parentPath = baseRoute.split('/').slice(0, -1).join('/');
-            return normalizeRoute(parentPath ? `${parentPath}/${pageName}` : pageName);
+            return getNestedPagePath(getParentPagePath(baseRoute), pageName);
         }
-        return normalizeRoute(`${baseRoute}/${pageName}`);
+        return getNestedPagePath(baseRoute, pageName);
     }, [baseRoute, pageName, mode]);
     const [isComposing, setIsComposing] = useState(false);
 
-    const title = mode === 'create' ? 'Create a New Page' : 'Rename Page';
-    const buttonText = mode === 'create' ? 'Create Page' : 'Rename Page';
+    const itemLabel = itemType === 'folder' ? 'Folder' : 'Page';
+    const title = mode === 'create' ? `Create a New ${itemLabel}` : `Rename ${itemLabel}`;
+    const buttonText = mode === 'create' ? `Create ${itemLabel}` : `Rename ${itemLabel}`;
     const loadingText = mode === 'create' ? 'Creating...' : 'Renaming...';
 
     // Reset page name when modal opens
@@ -69,24 +74,37 @@ export function PageModal({
             return;
         }
 
-        if (doesRouteExist(editorEngine.pages.tree, fullPath)) {
-            setWarning('This page already exists');
+        const currentPath = mode === 'rename' ? normalizePagePath(baseRoute) : null;
+        const normalizedTargetPath = normalizePagePath(fullPath);
+
+        if (currentPath !== normalizedTargetPath && doesRouteExist(editorEngine.pages.tree, fullPath, itemType)) {
+            setWarning(`This ${itemType} already exists`);
             return;
         }
 
         setWarning('');
-    }, [pageName, fullPath, editorEngine.pages.tree]);
+    }, [pageName, fullPath, editorEngine.pages.tree, mode, baseRoute, itemType]);
 
     const handleSubmit = async () => {
         try {
             setIsLoading(true);
 
-            if (mode === 'create') {
-                await editorEngine.pages.createPage(baseRoute, pageName);
-                toast('Page created!');
+            if (itemType === 'folder') {
+                if (mode === 'create') {
+                    await editorEngine.pages.createFolder(baseRoute, pageName);
+                    toast('Folder created!');
+                } else {
+                    await editorEngine.pages.renameFolder(baseRoute, pageName);
+                    toast('Folder renamed!');
+                }
             } else {
-                await editorEngine.pages.renamePage(baseRoute, pageName);
-                toast('Page renamed!');
+                if (mode === 'create') {
+                    await editorEngine.pages.createPage(baseRoute, pageName);
+                    toast('Page created!');
+                } else {
+                    await editorEngine.pages.renamePage(baseRoute, pageName);
+                    toast('Page renamed!');
+                }
             }
 
             setPageName('');
@@ -105,7 +123,9 @@ export function PageModal({
                 <DialogHeader>
                     <DialogTitle>{title}</DialogTitle>
                     <DialogDescription>
-                        This page will be /{fullPath} on your site
+                        {itemType === 'folder'
+                            ? `This folder will prefix routes as ${fullPath}`
+                            : `This page will be ${fullPath} on your site`}
                     </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
@@ -119,7 +139,11 @@ export function PageModal({
                             className={cn(
                                 warning && 'border-yellow-300 focus-visible:ring-yellow-300',
                             )}
-                            placeholder="about-us or [blog] for a dynamic page"
+                            placeholder={
+                                itemType === 'folder'
+                                    ? 'marketing or blog'
+                                    : 'about-us or [blog] for a dynamic page'
+                            }
                             disabled={isLoading}
                             onKeyDown={(e) => {
                                 if (e.key === 'Enter' && !isComposing) {

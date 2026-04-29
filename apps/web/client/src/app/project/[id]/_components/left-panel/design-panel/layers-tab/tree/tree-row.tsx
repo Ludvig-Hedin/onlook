@@ -1,5 +1,6 @@
-import type { LayerNode } from '@onlook/models/element';
 import type { NodeApi } from 'react-arborist';
+
+import type { LayerNode } from '@onlook/models/element';
 
 interface TreeRowProps {
     node: NodeApi<LayerNode>;
@@ -8,9 +9,17 @@ interface TreeRowProps {
     children: React.ReactNode;
 }
 
-export const TreeRow = ({ innerRef, attrs, children }: TreeRowProps) => {
+export const TreeRow = ({ node, innerRef, attrs, children }: TreeRowProps) => {
     return (
-        <div ref={innerRef} {...attrs} className="outline-none">
+        <div
+            ref={innerRef}
+            {...attrs}
+            className={
+                node.isFocused
+                    ? 'ring-foreground-primary/40 rounded-sm ring-1 outline-none ring-inset'
+                    : 'outline-none'
+            }
+        >
             {children}
         </div>
     );

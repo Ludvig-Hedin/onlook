@@ -1,4 +1,5 @@
 import { useEditorEngine } from '@/components/store/editor';
+import { isFolderNode, isPageNode } from '@/components/store/editor/pages/helper';
 import { LeftPanelTabValue, type Frame, type PageNode } from '@onlook/models';
 import { Button } from '@onlook/ui/button';
 import {
@@ -36,7 +37,9 @@ export const PageSelector = observer(({ frame, className, tooltipSide = "top", s
     // Flatten the page tree to get all pages for finding current page
     const flattenPages = (pages: PageNode[]): PageNode[] => {
         return pages.reduce<PageNode[]>((acc, page) => {
-            acc.push(page);
+            if (isPageNode(page)) {
+                acc.push(page);
+            }
             if (page.children) {
                 acc.push(...flattenPages(page.children));
             }
@@ -65,6 +68,29 @@ export const PageSelector = observer(({ frame, className, tooltipSide = "top", s
             const isCurrentPage = currentPage?.id === page.id;
             const hasChildren = page.children && page.children.length > 0;
 
+            if (isFolderNode(page)) {
+                items.push(
+                    <DropdownMenuItem
+                        key={page.id}
+                        disabled
+                        className="cursor-default opacity-80"
+                    >
+                        <div
+                            className="flex items-center w-full"
+                            style={{ paddingLeft: `${depth * 16}px` }}
+                        >
+                            <Icons.Directory className="w-4 h-4 mr-2" />
+                            <span className="truncate">{page.name}</span>
+                        </div>
+                    </DropdownMenuItem>,
+                );
+
+                if (page.children && page.children.length > 0) {
+                    items.push(...renderPageItems(page.children, depth + 1));
+                }
+                continue;
+            }
+
             items.push(
                 <DropdownMenuItem
                     key={page.id}
@@ -75,11 +101,7 @@ export const PageSelector = observer(({ frame, className, tooltipSide = "top", s
                     )}
                 >
                     <div className="flex items-center w-full" style={{ paddingLeft: `${depth * 16}px` }}>
-                        {hasChildren ? (
-                            <Icons.Directory className="w-4 h-4 mr-2" />
-                        ) : (
-                            <Icons.File className="w-4 h-4 mr-2" />
-                        )}
+                        <Icons.File className="w-4 h-4 mr-2" />
                         <span className="truncate">{page.name}</span>
                         {isCurrentPage && (
                             <Icons.Check className="ml-auto h-3 w-3" />
@@ -89,8 +111,8 @@ export const PageSelector = observer(({ frame, className, tooltipSide = "top", s
             );
 
             // Render children recursively
-            if (page.children && page.children.length > 0) {
-                items.push(...renderPageItems(page.children, depth + 1));
+            if (hasChildren) {
+                items.push(...renderPageItems(page.children ?? [], depth + 1));
             }
         }
 
@@ -104,6 +126,9 @@ export const PageSelector = observer(({ frame, className, tooltipSide = "top", s
         // Temp page while scanning
         return [{
             id: 'temp-current',
+            kind: 'page',
+            slug: inferredCurrentPage.path === '/' ? '' : inferredCurrentPage.path.split('/').filter(Boolean).pop() ?? '',
+            defaultName: inferredCurrentPage.name,
             name: inferredCurrentPage.name,
             path: inferredCurrentPage.path,
             children: [],

@@ -29,6 +29,7 @@ export interface DropElementProperties {
     tagName: string;
     styles: Record<string, string>;
     textContent: string | null;
+    attributes?: Record<string, string>;
 }
 
 export interface RectDimensions {

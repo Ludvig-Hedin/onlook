@@ -14,9 +14,12 @@ export interface LayerNode {
     frameId: string;
     instanceId: string | null;
     oid: string | null;
+    htmlId: string | null;
     textContent: string;
     tagName: string;
     isVisible: boolean;
+    hasCustomAttributes: boolean;
+    isInteractive: boolean;
     dynamicType: DynamicType | null;
     coreElementType: CoreElementType | null;
     component: string | null;

@@ -1,7 +1,9 @@
 import { Hotkey } from '@/components/hotkey';
 import { IDE } from '@/components/ide';
 import { useEditorEngine } from '@/components/store/editor';
-import { DEFAULT_IDE, type DomElement } from '@onlook/models';
+import { EditorAttributes } from '@onlook/constants';
+import { DEFAULT_IDE, EditorMode, type DomElement } from '@onlook/models';
+import { useRef } from 'react';
 import {
     ContextMenu,
     ContextMenuContent,
@@ -31,6 +33,20 @@ interface MenuItem {
 export const RightClickMenu = observer(({ children }: RightClickMenuProps) => {
     const editorEngine = useEditorEngine();
     const ide = IDE.fromType(DEFAULT_IDE);
+    const rightClickCanvas = useRef({ x: 0, y: 0 });
+
+    const captureRightClickPosition = (e: React.MouseEvent) => {
+        const canvasTransformDiv = document.getElementById(EditorAttributes.CANVAS_CONTAINER_ID);
+        const containerDiv = canvasTransformDiv?.parentElement;
+        if (!containerDiv) return;
+        const rect = containerDiv.getBoundingClientRect();
+        const canvasPosition = editorEngine.canvas.position;
+        const canvasScale = editorEngine.canvas.scale;
+        rightClickCanvas.current = {
+            x: (e.clientX - rect.left - canvasPosition.x) / canvasScale,
+            y: (e.clientY - rect.top - canvasPosition.y) / canvasScale,
+        };
+    };
 
     const TOOL_ITEMS: MenuItem[] = [
         {
@@ -128,9 +144,20 @@ export const RightClickMenu = observer(({ children }: RightClickMenuProps) => {
         },
     ];
 
+    const COMMENT_ITEMS: MenuItem[] = [
+        {
+            label: 'Add Comment',
+            action: () => {
+                editorEngine.state.setEditorMode(EditorMode.COMMENT);
+                editorEngine.comment.setPendingPlacement(rightClickCanvas.current);
+            },
+            icon: <Icons.ChatBubble className="mr-2 h-4 w-4" />,
+        },
+    ];
+
     const getMenuItems = (): MenuItem[][] => {
         if (!editorEngine.elements.selected.length) {
-            return [WINDOW_ITEMS];
+            return [WINDOW_ITEMS, COMMENT_ITEMS];
         }
 
         const element: DomElement | undefined = editorEngine.elements.selected[0];
@@ -156,14 +183,14 @@ export const RightClickMenu = observer(({ children }: RightClickMenuProps) => {
             ...TOOL_ITEMS,
         ].filter((item): item is MenuItem => item !== false);
 
-        return [updatedToolItems, GROUP_ITEMS, EDITING_ITEMS];
+        return [updatedToolItems, GROUP_ITEMS, EDITING_ITEMS, COMMENT_ITEMS];
     };
 
     const menuItems: MenuItem[][] = getMenuItems();
 
     return (
         <ContextMenu>
-            <ContextMenuTrigger>{children}</ContextMenuTrigger>
+            <ContextMenuTrigger onContextMenu={captureRightClickPosition}>{children}</ContextMenuTrigger>
             <ContextMenuContent className="w-64 bg-background/95 backdrop-blur-lg">
                 {menuItems.map((group, groupIndex) => (
                     <div key={groupIndex}>

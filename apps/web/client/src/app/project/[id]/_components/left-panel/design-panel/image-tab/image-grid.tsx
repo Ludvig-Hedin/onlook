@@ -26,7 +26,7 @@ export const ImageGrid = ({ images, projectId, branchId, search, onUpload, onRen
     return (
         <div className={cn(
             "flex-1 overflow-auto",
-            isDragging && 'cursor-copy bg-teal-500/40', 'h-full')
+            isDragging && 'cursor-copy bg-blue-500/40', 'h-full')
         }
             onDragEnter={handleDragEnter}
             onDragLeave={handleDragLeave}

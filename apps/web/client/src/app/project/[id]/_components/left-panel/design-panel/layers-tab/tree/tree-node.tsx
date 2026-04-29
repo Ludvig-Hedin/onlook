@@ -57,6 +57,25 @@ const VisibilityButton = memo(
     ),
 );
 
+const LayerBadge = memo(
+    ({
+        children,
+        className,
+    }: {
+        children: React.ReactNode;
+        className?: string;
+    }) => (
+        <span
+            className={cn(
+                'flex h-4 min-w-4 items-center justify-center rounded border px-1 text-[10px] font-semibold leading-none',
+                className,
+            )}
+        >
+            {children}
+        </span>
+    ),
+);
+
 export const TreeNode = memo(
     observer(
         ({
@@ -79,6 +98,8 @@ export const TreeNode = memo(
                 isWindow &&
                 editorEngine.elements.selected.length === 0 &&
                 editorEngine.frames.selected.some((el) => el.frame.id === node.data.frameId);
+            const showBadges =
+                node.data.htmlId || node.data.hasCustomAttributes || node.data.isInteractive;
 
             const { hovered, selected, isParentSelected } = useMemo(
                 () => ({
@@ -275,14 +296,12 @@ export const TreeNode = memo(
                                                 node.toggle();
                                             }}
                                         >
-                                            {hovered && (
-                                                <motion.div
-                                                    initial={false}
-                                                    animate={{ rotate: node.isOpen ? 90 : 0 }}
-                                                >
-                                                    <Icons.ChevronRight className="h-2.5 w-2.5" />
-                                                </motion.div>
-                                            )}
+                                            <motion.div
+                                                initial={false}
+                                                animate={{ rotate: node.isOpen ? 90 : 0 }}
+                                            >
+                                                <Icons.ChevronRight className="h-2.5 w-2.5 opacity-80" />
+                                            </motion.div>
                                         </div>
                                     )}
                                 </span>
@@ -302,6 +321,16 @@ export const TreeNode = memo(
                                         iconClass={cn('mr-2 ml-1 h-3 w-3 flex-none', {
                                             'dark:fill-primary fill-white':
                                                 !node.data.instanceId && selected,
+                                            '[&_path]:!fill-[#109BFF] [&_.letter]:!fill-[#109BFF]/50 [&_.level]:!fill-[#109BFF]':
+                                                node.data.isInteractive &&
+                                                !node.data.instanceId &&
+                                                !selected &&
+                                                !isComponentAncestor(node),
+                                            'dark:[&_path]:!fill-[#6EC8FF] dark:[&_.letter]:!fill-[#6EC8FF]/60 dark:[&_.level]:!fill-[#6EC8FF]':
+                                                node.data.isInteractive &&
+                                                !node.data.instanceId &&
+                                                !selected &&
+                                                !isComponentAncestor(node),
                                             '[&_path]:!dark:fill-purple-300 [&_path]:!fill-purple-400':
                                                 isComponentAncestor(node) &&
                                                 !node.data.instanceId &&
@@ -345,11 +374,48 @@ export const TreeNode = memo(
                                                   : 'text-purple-500 dark:text-purple-300'
                                             : '',
                                         !node.data.isVisible && 'opacity-80',
-                                        selected && 'mr-5',
+                                        selected && (showBadges ? 'mr-8' : 'mr-5'),
                                     )}
                                 >
                                     {getNodeName()}
                                 </span>
+                                {showBadges && (
+                                    <div className={cn('ml-auto mr-1 flex items-center gap-1', selected && 'pr-5')}>
+                                        {node.data.htmlId && (
+                                            <LayerBadge
+                                                className={cn(
+                                                    selected
+                                                        ? 'border-white/30 bg-white/10 text-white'
+                                                        : 'border-border text-foreground-secondary',
+                                                )}
+                                            >
+                                                #
+                                            </LayerBadge>
+                                        )}
+                                        {node.data.hasCustomAttributes && (
+                                            <LayerBadge
+                                                className={cn(
+                                                    selected
+                                                        ? 'border-white/30 bg-white/10 text-white'
+                                                        : 'border-border text-foreground-secondary',
+                                                )}
+                                            >
+                                                []
+                                            </LayerBadge>
+                                        )}
+                                        {node.data.isInteractive && (
+                                            <LayerBadge
+                                                className={cn(
+                                                    selected
+                                                        ? 'border-white/30 bg-white/10 text-white'
+                                                        : 'border-[#109BFF]/30 bg-[#109BFF]/10 text-[#109BFF]',
+                                                )}
+                                            >
+                                                B
+                                            </LayerBadge>
+                                        )}
+                                    </div>
+                                )}
                                 {selected && (
                                     <VisibilityButton
                                         isVisible={node.data.isVisible}

@@ -2,11 +2,32 @@ import type { OGImage, OpenGraph } from './opengraph';
 
 export type { OGImage };
 
+export type PageNodeKind = 'page' | 'folder';
+
+export type PageEditorIcon =
+    | 'file'
+    | 'globe'
+    | 'image'
+    | 'section'
+    | 'button'
+    | 'text';
+
+export interface PageEditorSettings {
+    displayName?: string;
+    editorIcon?: PageEditorIcon | null;
+    draft?: boolean;
+    published?: boolean;
+}
+
 export interface PageNode {
     id: string;
+    kind: PageNodeKind;
     path: string;
+    slug: string;
+    defaultName: string;
     name: string;
     metadata?: PageMetadata;
+    settings?: PageEditorSettings;
     children?: PageNode[];
     isActive: boolean;
     isRoot?: boolean;
@@ -25,6 +46,7 @@ export interface PageMetadata {
     metadataBase?: null | URL;
     icons?: null | Icons;
     openGraph?: null | OpenGraph;
+    robots?: null | Robots;
 }
 
 type IconURL = string | URL;
@@ -55,3 +77,8 @@ type Icons = {
     /** rel inferred from descriptor, defaults to "icon" */
     other?: IconDescriptor | IconDescriptor[];
 };
+
+export interface Robots {
+    index?: boolean;
+    follow?: boolean;
+}

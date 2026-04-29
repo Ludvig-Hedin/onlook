@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { motion } from 'motion/react';
 
@@ -14,6 +14,8 @@ import { toast } from '@onlook/ui/sonner';
 import { cn } from '@onlook/ui/utils';
 
 import { useEditorEngine } from '@/components/store/editor';
+import { useStateManager } from '@/components/store/state';
+import { getParentPagePath, isFolderNode, isPageNode } from '@/components/store/editor/pages/helper';
 import { PageModal } from '../../page-tab/page-modal';
 
 interface PageTreeNodeProps {
@@ -28,8 +30,16 @@ interface PageTreeNodeProps {
 
 export const PageTreeNode: React.FC<PageTreeNodeProps> = observer(({ node, style }) => {
     const editorEngine = useEditorEngine();
-    const [showModal, setShowModal] = useState(false);
-    const [modalMode, setModalMode] = useState<'create' | 'rename'>('create');
+    const stateManager = useStateManager();
+    const [modalState, setModalState] = useState<{
+        open: boolean;
+        mode: 'create' | 'rename';
+        itemType: 'page' | 'folder';
+    }>({
+        open: false,
+        mode: 'create',
+        itemType: 'page',
+    });
 
     const hasChildren = node.data.children && node.data.children.length > 0;
     const isActive = editorEngine.pages.isNodeActive(node.data);
@@ -43,33 +53,53 @@ export const PageTreeNode: React.FC<PageTreeNodeProps> = observer(({ node, style
             node.toggle();
         }
 
+        editorEngine.pages.setCurrentPath(node.data.path);
+        node.select();
+
+        if (!isPageNode(node.data)) {
+            return;
+        }
+
         const webviewId = editorEngine.frames.selected[0]?.frame.id;
         if (webviewId) {
             editorEngine.pages.setActivePath(webviewId, node.data.path);
         }
 
-        editorEngine.pages.setCurrentPath(node.data.path);
-        node.select();
-
         await editorEngine.pages.navigateTo(node.data.path);
     };
 
     const handleRename = () => {
-        setModalMode('rename');
-        setShowModal(true);
+        setModalState({
+            open: true,
+            mode: 'rename',
+            itemType: node.data.kind,
+        });
     };
 
-    const handleCreate = () => {
-        setModalMode('create');
-        setShowModal(true);
+    const handleCreatePage = () => {
+        setModalState({
+            open: true,
+            mode: 'create',
+            itemType: 'page',
+        });
+    };
+
+    const handleCreateFolder = () => {
+        setModalState({
+            open: true,
+            mode: 'create',
+            itemType: 'folder',
+        });
     };
 
     const handleDelete = async () => {
         try {
-            await editorEngine.pages.deletePage(
-                node.data.path,
-                node.data.children && node.data.children?.length > 0 ? true : false,
-            );
+            if (isFolderNode(node.data)) {
+                await editorEngine.pages.deleteFolder(node.data.path);
+                return;
+            }
+
+            await editorEngine.pages.deletePage(node.data.path);
         } catch (error) {
             console.error('Failed to delete page:', error);
             toast.error('Failed to delete page', {
@@ -79,6 +109,9 @@ export const PageTreeNode: React.FC<PageTreeNodeProps> = observer(({ node, style
     };
 
     const handleDuplicate = async () => {
+        if (!isPageNode(node.data)) {
+            return;
+        }
         try {
             await editorEngine.pages.duplicatePage(node.data.path, node.data.path);
 
@@ -91,17 +124,63 @@ export const PageTreeNode: React.FC<PageTreeNodeProps> = observer(({ node, style
         }
     };
 
+    const openPageSettings = (event: React.MouseEvent) => {
+        event.stopPropagation();
+        if (!isPageNode(node.data)) {
+            return;
+        }
+
+        stateManager.settingsTab = node.data.path;
+        stateManager.isSettingsModalOpen = true;
+    };
+
+    const icon = useMemo(() => {
+        if (node.data.isRoot) {
+            return (
+                <svg viewBox="0 0 16 16" className="mr-2 h-4 w-4 flex-none" fill="currentColor">
+                    <path d="M8 1.5 1.5 6.7v7.8h4.2V10h4.6v4.5h4.2V6.7z" />
+                </svg>
+            );
+        }
+
+        if (isFolderNode(node.data)) {
+            return <Icons.Directory className="mr-2 h-4 w-4 flex-none" />;
+        }
+
+        switch (node.data.settings?.editorIcon) {
+            case 'globe':
+                return <Icons.Globe className="mr-2 h-4 w-4 flex-none" />;
+            case 'image':
+                return <Icons.Image className="mr-2 h-4 w-4 flex-none" />;
+            case 'button':
+                return <Icons.Button className="mr-2 h-4 w-4 flex-none" />;
+            default:
+                return <Icons.File className="mr-2 h-4 w-4 flex-none" />;
+        }
+    }, [node.data]);
+
+    const createBaseRoute = isFolderNode(node.data)
+        ? node.data.path
+        : editorEngine.pages.getFolderByPath(node.data.path)?.path === node.data.path
+          ? node.data.path
+          : getParentPagePath(node.data.path);
+
     const menuItems = [
         {
             label: 'Create New Page',
-            action: handleCreate,
+            action: handleCreatePage,
             icon: <Icons.File className="mr-2 h-4 w-4" />,
+        },
+        {
+            label: 'Create New Folder',
+            action: handleCreateFolder,
+            icon: <Icons.DirectoryPlus className="mr-2 h-4 w-4" />,
         },
         {
             label: 'Duplicate Page',
             action: handleDuplicate,
             icon: <Icons.Copy className="mr-2 h-4 w-4" />,
-            disabled: node.data.isRoot,
+            disabled: node.data.isRoot || isFolderNode(node.data),
         },
         {
             label: 'Rename',
@@ -125,7 +204,7 @@ export const PageTreeNode: React.FC<PageTreeNodeProps> = observer(({ node, style
                     <div
                         style={style}
                         className={cn(
-                            'hover:bg-background-hover flex h-6 cursor-pointer items-center rounded',
+                            'hover:bg-background-hover group flex h-6 cursor-pointer items-center rounded pr-1',
                             isActive && 'bg-[#109BFF] text-white hover:bg-[#109BFF]/90',
                         )}
                         onClick={handleClick}
@@ -142,13 +221,22 @@ export const PageTreeNode: React.FC<PageTreeNodeProps> = observer(({ node, style
                                 </div>
                             )}
                         </span>
-                        {!node.data.isRoot &&
-                            (hasChildren ? (
-                                <Icons.Directory className="mr-2 h-4 w-4" />
-                            ) : (
-                                <Icons.File className="mr-2 h-4 w-4" />
-                            ))}
-                        <span>{node.data.name}</span>
+                        {icon}
+                        <span className="truncate">{node.data.name}</span>
+                        {isPageNode(node.data) && (
+                            <button
+                                type="button"
+                                onClick={openPageSettings}
+                                className={cn(
+                                    'ml-auto flex h-5 w-5 items-center justify-center rounded opacity-0 transition-opacity',
+                                    'group-hover:opacity-100 hover:bg-black/10 dark:hover:bg-white/10',
+                                    isActive && 'hover:bg-white/15',
+                                )}
+                                aria-label="Open page settings"
+                            >
+                                <Icons.Gear className="h-3 w-3" />
+                            </button>
+                        )}
                     </div>
                 </ContextMenuTrigger>
                 <ContextMenuContent>
@@ -175,11 +263,12 @@ export const PageTreeNode: React.FC<PageTreeNodeProps> = observer(({ node, style
             </ContextMenu>
 
             <PageModal
-                open={showModal}
-                onOpenChange={setShowModal}
-                mode={modalMode}
-                baseRoute={node.data.path}
-                initialName={modalMode === 'rename' ? getBaseName(node.data.path) : ''}
+                open={modalState.open}
+                onOpenChange={(open) => setModalState((prev) => ({ ...prev, open }))}
+                mode={modalState.mode}
+                itemType={modalState.itemType}
+                baseRoute={modalState.mode === 'create' ? createBaseRoute : node.data.path}
+                initialName={modalState.mode === 'rename' ? getBaseName(node.data.path) : ''}
             />
         </>
     );

@@ -16,7 +16,7 @@ export const SiteTab = observer(() => {
     const baseUrl = domains?.published?.url ?? domains?.preview?.url;
 
     const homePage = useMemo(() => {
-        return editorEngine.pages.tree.find((page) => page.path === '/');
+        return editorEngine.pages.getPageByPath('/');
     }, [editorEngine.pages.tree]);
 
     const {

@@ -50,24 +50,18 @@ export const SettingsModalWithProjects = observer(() => {
     const pagesManager = editorEngine.pages;
 
     const flattenPages = useMemo(() => {
-        return pagesManager.tree.reduce((acc, page) => {
-            const flattenNode = (node: typeof page) => {
-                if (node.children?.length) {
-                    node.children.forEach((child) => flattenNode(child));
-                } else {
-                    acc.push(node);
-                }
-            };
-            flattenNode(page);
-            return acc;
-        }, [] as PageNode[]);
-    }, [pagesManager.tree]);
+        return pagesManager.flatPages;
+    }, [pagesManager.flatPages]);
 
     const globalTabs: SettingTab[] = [
         {
             label: SettingsTabValue.PREFERENCES,
             icon: <Icons.Person className="mr-2 h-4 w-4" />,
-            component: <PreferencesTab />,
+            component: (
+                <PreferencesTab
+                    onOpenShortcuts={() => editorEngine.state.setHotkeysOpen(true)}
+                />
+            ),
         },
         {
             label: SettingsTabValue.SUBSCRIPTION,
@@ -100,10 +94,15 @@ export const SettingsModalWithProjects = observer(() => {
     ];
 
     const pagesTabs: SettingTab[] = flattenPages
-        .filter((page) => page.path !== '/')
         .map((page) => ({
             label: page.path,
-            icon: <Icons.File className="mr-2 h-4 min-w-4" />,
+            icon: page.isRoot ? (
+                <svg viewBox="0 0 16 16" className="mr-2 h-4 min-w-4" fill="currentColor">
+                    <path d="M8 1.5 1.5 6.7v7.8h4.2V10h4.6v4.5h4.2V6.7z" />
+                </svg>
+            ) : (
+                <Icons.File className="mr-2 h-4 min-w-4" />
+            ),
             component: <PageTab metadata={page.metadata} path={page.path} />,
         }));
 
@@ -114,8 +113,8 @@ export const SettingsModalWithProjects = observer(() => {
         if (!stateManager.isSettingsModalOpen) {
             return;
         }
-        editorEngine.pages.scanPages();
-    }, [stateManager.isSettingsModalOpen]);
+        void editorEngine.pages.scanPages();
+    }, [editorEngine.pages, stateManager.isSettingsModalOpen]);
 
     return (
         <AnimatePresence>
@@ -212,7 +211,14 @@ export const SettingsModalWithProjects = observer(() => {
                                                             }
                                                         >
                                                             {tab.icon}
-                                                            <TruncatedLabelWithTooltip label={capitalizeFirstLetter(tab.label.toLowerCase())} />
+                                                            <TruncatedLabelWithTooltip
+                                                                label={
+                                                                    flattenPages.find(
+                                                                        (page) =>
+                                                                            page.path === tab.label,
+                                                                    )?.name ?? capitalizeFirstLetter(tab.label.toLowerCase())
+                                                                }
+                                                            />
                                                         </Button>
                                                     ))}
                                                 </div>

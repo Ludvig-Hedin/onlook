@@ -16,6 +16,7 @@ import { FontManager } from './font';
 import { FrameEventManager } from './frame-events';
 import { FramesManager } from './frames';
 import { GroupManager } from './group';
+import { CommentManager } from './comment';
 import { IdeManager } from './ide';
 import { ImageManager } from './image';
 import { InsertManager } from './insert';
@@ -27,6 +28,7 @@ import { ScreenshotManager } from './screenshot';
 import { SnapManager } from './snap';
 import { StateManager } from './state';
 import { StyleManager } from './style';
+import { StylePreferencesStore } from './style/preferences';
 import { TextEditingManager } from './text';
 import { ThemeManager } from './theme';
 
@@ -59,6 +61,7 @@ export class EditorEngine {
     readonly ast: AstManager = new AstManager(this);
     readonly action: ActionManager = new ActionManager(this);
     readonly style: StyleManager = new StyleManager(this);
+    readonly stylePreferences: StylePreferencesStore = new StylePreferencesStore(this);
     readonly code: CodeManager = new CodeManager(this);
     readonly chat: ChatManager = new ChatManager(this);
     readonly image: ImageManager = new ImageManager(this);
@@ -71,6 +74,7 @@ export class EditorEngine {
     readonly snap: SnapManager = new SnapManager(this);
     readonly api: ApiManager = new ApiManager(this);
     readonly ide: IdeManager = new IdeManager(this);
+    readonly comment: CommentManager = new CommentManager(this);
 
     constructor(projectId: string, posthog: PostHog) {
         this.projectId = projectId;
@@ -84,6 +88,8 @@ export class EditorEngine {
         this.frameEvent.init();
         this.chat.init();
         this.style.init();
+        this.stylePreferences.init();
+        this.comment.init();
     }
 
     async initBranches(branches: Branch[]) {
@@ -101,6 +107,7 @@ export class EditorEngine {
         this.insert.clear();
         this.move.clear();
         this.style.clear();
+        this.stylePreferences.clear();
         this.copy.clear();
         this.group.clear();
         this.canvas.clear();
@@ -113,6 +120,7 @@ export class EditorEngine {
         this.branches.clear();
         this.frameEvent.clear();
         this.screenshot.clear();
+        this.comment.clear();
         this.snap.hideSnapLines();
     }
 

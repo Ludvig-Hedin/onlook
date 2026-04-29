@@ -1,8 +1,21 @@
 import { useEditorEngine } from '@/components/store/editor';
+import {
+    getNestedPagePath,
+    getParentPagePath,
+    isFolderNode,
+    isPageNode,
+} from '@/components/store/editor/pages/helper';
 import type { PageNode } from '@onlook/models/pages';
 import { Button } from '@onlook/ui/button';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '@onlook/ui/dropdown-menu';
 import { Icons } from '@onlook/ui/icons';
 import { Input } from '@onlook/ui/input';
+import { toast } from '@onlook/ui/sonner';
 import { Tooltip, TooltipContent, TooltipPortal, TooltipTrigger } from '@onlook/ui/tooltip';
 import { observer } from 'mobx-react-lite';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -15,9 +28,21 @@ import { PageModal } from './page-modal';
 export const PagesTab = observer(() => {
     const editorEngine = useEditorEngine();
     const { ref, width, height } = useResizeObserver();
-    const [showCreateModal, setShowCreateModal] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [highlightedIndex, setHighlightedIndex] = useState<number | null>(null);
+    const [modalState, setModalState] = useState<{
+        open: boolean;
+        mode: 'create' | 'rename';
+        itemType: 'page' | 'folder';
+        baseRoute: string;
+        initialName: string;
+    }>({
+        open: false,
+        mode: 'create',
+        itemType: 'page',
+        baseRoute: '/',
+        initialName: '',
+    });
     const treeRef = useRef<TreeApi<PageNode>>(null);
     const inputRef = useRef<HTMLInputElement>(null);
 
@@ -96,7 +121,7 @@ export const PagesTab = observer(() => {
 
         if (e.key === 'Enter' && highlightedIndex !== null) {
             const selectedNode = flattenedNodes[highlightedIndex];
-            if (selectedNode && !selectedNode.isInternal) {
+            if (selectedNode && isPageNode(selectedNode.data)) {
                 try {
                     await editorEngine.pages.navigateTo(selectedNode.data.path);
                     setHighlightedIndex(null);
@@ -123,13 +148,78 @@ export const PagesTab = observer(() => {
                 node.children && node.children.length > 0 ? node.children : null,
             onSelect: async (nodes: NodeApi<PageNode>[]) => {
                 if (nodes.length > 0) {
+                    const selectedNode = nodes[0];
+                    if (!selectedNode || !isPageNode(selectedNode.data)) {
+                        return;
+                    }
                     try {
-                        await editorEngine.pages.navigateTo(nodes[0]?.data?.path ?? '');
+                        await editorEngine.pages.navigateTo(selectedNode.data.path);
                         setHighlightedIndex(null);
                     } catch (error) {
                         console.error('Failed to navigate to page:', error);
                     }
                 }
+            },
+            onMove: async ({
+                dragNodes,
+                parentNode,
+            }: {
+                dragNodes: NodeApi<PageNode>[];
+                parentNode: NodeApi<PageNode> | null;
+                index: number;
+            }) => {
+                const dragNode = dragNodes[0];
+                if (!dragNode) {
+                    return;
+                }
+
+                const targetParentPath = parentNode?.data && isFolderNode(parentNode.data)
+                    ? parentNode.data.path
+                    : '/';
+                const targetPath = getNestedPagePath(targetParentPath, dragNode.data.slug);
+
+                try {
+                    if (dragNode.data.kind === 'folder') {
+                        await editorEngine.pages.moveFolderToPath(dragNode.data.path, targetPath);
+                    } else {
+                        await editorEngine.pages.movePageToPath(dragNode.data.path, targetPath);
+                    }
+                } catch (error) {
+                    console.error('Failed to move page tree node:', error);
+                    toast.error('Failed to move item', {
+                        description: error instanceof Error ? error.message : String(error),
+                    });
+                }
+            },
+            disableDrop: ({
+                parentNode,
+                dragNodes,
+            }: {
+                parentNode: NodeApi<PageNode> | null;
+                dragNodes: NodeApi<PageNode>[];
+            }) => {
+                const dragNode = dragNodes[0];
+                if (!dragNode || dragNodes.length !== 1) {
+                    return true;
+                }
+
+                if (dragNode.data.isRoot) {
+                    return true;
+                }
+
+                if (parentNode && isPageNode(parentNode.data)) {
+                    return true;
+                }
+
+                if (
+                    dragNode.data.kind === 'folder' &&
+                    parentNode?.data &&
+                    parentNode.data.path.startsWith(`${dragNode.data.path}/`)
+                ) {
+                    return true;
+                }
+
+                return false;
             },
             height: dimensions.height,
             width: dimensions.width,
@@ -149,6 +239,16 @@ export const PagesTab = observer(() => {
         }),
         [filteredPages, dimensions.height, dimensions.width, highlightedIndex, editorEngine.pages],
     );
+
+    const openCreateModal = (itemType: 'page' | 'folder') => {
+        setModalState({
+            open: true,
+            mode: 'create',
+            itemType,
+            baseRoute: '/',
+            initialName: '',
+        });
+    };
 
     return (
         <div
@@ -174,23 +274,36 @@ export const PagesTab = observer(() => {
                         </button>
                     )}
                 </div>
-                <Tooltip>
-                    <TooltipTrigger asChild>
-                        <Button
-                            variant={'default'}
-                            size={'icon'}
-                            className="text-foreground-primary border-border-primary hover:border-border-onlook bg-background-secondary hover:bg-background-onlook h-fit w-fit border p-2"
-                            onClick={() => setShowCreateModal(true)}
-                        >
-                            <Icons.Plus />
-                        </Button>
-                    </TooltipTrigger>
-                    <TooltipPortal>
-                        <TooltipContent>
-                            <p>Create a new page</p>
-                        </TooltipContent>
-                    </TooltipPortal>
-                </Tooltip>
+                <DropdownMenu>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <DropdownMenuTrigger asChild>
+                                <Button
+                                    variant={'default'}
+                                    size={'icon'}
+                                    className="text-foreground-primary border-border-primary hover:border-border-onlook bg-background-secondary hover:bg-background-onlook h-fit w-fit border p-2"
+                                >
+                                    <Icons.Plus />
+                                </Button>
+                            </DropdownMenuTrigger>
+                        </TooltipTrigger>
+                        <TooltipPortal>
+                            <TooltipContent>
+                                <p>Create a new page or folder</p>
+                            </TooltipContent>
+                        </TooltipPortal>
+                    </Tooltip>
+                    <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => openCreateModal('page')}>
+                            <Icons.FilePlus className="mr-2 h-4 w-4" />
+                            New Page
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => openCreateModal('folder')}>
+                            <Icons.DirectoryPlus className="mr-2 h-4 w-4" />
+                            New Folder
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
             </div>
 
             {filteredPages.length === 0 ? (
@@ -205,7 +318,14 @@ export const PagesTab = observer(() => {
                     {(props) => <PageTreeNode {...props} />}
                 </Tree>
             )}
-            <PageModal mode="create" open={showCreateModal} onOpenChange={setShowCreateModal} />
+            <PageModal
+                mode={modalState.mode}
+                itemType={modalState.itemType}
+                open={modalState.open}
+                onOpenChange={(open) => setModalState((prev) => ({ ...prev, open }))}
+                baseRoute={modalState.baseRoute}
+                initialName={modalState.initialName}
+            />
         </div>
     );
 });

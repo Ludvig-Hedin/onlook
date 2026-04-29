@@ -6,6 +6,7 @@ import { Input } from '@onlook/ui/input';
 import { Separator } from '@onlook/ui/separator';
 import { Textarea } from '@onlook/ui/textarea';
 import { useRef } from 'react';
+import type React from 'react';
 import type { FaviconRef } from './favicon';
 import { Favicon } from './favicon';
 import type { ImagePickerRef } from './image';
@@ -47,6 +48,7 @@ interface MetadataFormProps {
     defaultTitle?: string;
     defaultDescription?: string;
     isRoot?: boolean;
+    leadingContent?: React.ReactNode;
 }
 
 const DEFAULT_TITLE = 'My New App';
@@ -72,6 +74,7 @@ export const MetadataForm = ({
     showFavicon = false,
     currentMetadata,
     isRoot,
+    leadingContent,
 }: MetadataFormProps) => {
     const imagePickerRef = useRef<ImagePickerRef>(null);
     const faviconRef = useRef<FaviconRef>(null);
@@ -160,6 +163,13 @@ export const MetadataForm = ({
                 {renderTitle()}
 
                 <Separator />
+
+                {leadingContent && (
+                    <>
+                        {leadingContent}
+                        <Separator />
+                    </>
+                )}
 
                 <div className="grid grid-cols-2 h-44">
                     <div className="flex flex-col text-foreground-onlook col-span-1 max-w-52">

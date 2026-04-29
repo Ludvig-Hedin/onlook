@@ -1,25 +1,51 @@
-import { useEditorEngine } from '@/components/store/editor';
+import { useState } from 'react';
+import { observer } from 'mobx-react-lite';
+
 import { BranchTabValue } from '@onlook/models';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from '@onlook/ui/alert-dialog';
 import { Button } from '@onlook/ui/button';
 import { Icons } from '@onlook/ui/icons';
+import { Input } from '@onlook/ui/input';
+import { Popover, PopoverContent, PopoverTrigger } from '@onlook/ui/popover';
+import { toast } from '@onlook/ui/sonner';
 import { cn } from '@onlook/ui/utils';
 import { timeAgo } from '@onlook/utility';
-import { observer } from 'mobx-react-lite';
-import { useState } from 'react';
-import { BranchManagement } from './branch-management';
 
+import { useEditorEngine } from '@/components/store/editor';
+import { BranchManagement } from './branch-management';
 
 export const BranchesTab = observer(() => {
     const editorEngine = useEditorEngine();
     const { branches } = editorEngine;
     const [hoveredBranchId, setHoveredBranchId] = useState<string | null>(null);
+    const [createOpen, setCreateOpen] = useState(false);
+    const [branchName, setBranchName] = useState('');
+    const [createMode, setCreateMode] = useState<'fork' | 'blank'>('fork');
+    const [isCreating, setIsCreating] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [pendingSwitchBranchId, setPendingSwitchBranchId] = useState<string | null>(null);
 
-    const handleBranchSwitch = async (branchId: string) => {
-        if (branchId === branches.activeBranch.id) return;
+    const filteredBranches = searchQuery.trim()
+        ? branches.allBranches.filter((branch) =>
+              branch.name.toLowerCase().includes(searchQuery.trim().toLowerCase()),
+          )
+        : branches.allBranches;
 
+    const performBranchSwitch = async (branchId: string) => {
         try {
             // Find a frame that belongs to this branch
-            const branchFrame = editorEngine.frames.getAll().find(frameData => frameData.frame.branchId === branchId);
+            const branchFrame = editorEngine.frames
+                .getAll()
+                .find((frameData) => frameData.frame.branchId === branchId);
             if (branchFrame) {
                 // Select the frame, which will trigger the reaction to update the active branch
                 editorEngine.frames.select([branchFrame.frame]);
@@ -29,7 +55,22 @@ export const BranchesTab = observer(() => {
             }
         } catch (error) {
             console.error('Failed to switch branch:', error);
+            toast.error('Failed to switch branch', {
+                description: error instanceof Error ? error.message : 'Please try again.',
+            });
         }
+    };
+
+    const handleBranchSwitch = async (branchId: string) => {
+        if (branchId === branches.activeBranch.id) return;
+
+        // history.canUndo is true after any in-session edit; treat that as "you have changes"
+        if (editorEngine.history.canUndo) {
+            setPendingSwitchBranchId(branchId);
+            return;
+        }
+
+        await performBranchSwitch(branchId);
     };
 
     const handleManageBranch = (branchId: string) => {
@@ -37,25 +78,174 @@ export const BranchesTab = observer(() => {
         editorEngine.state.setBranchTab(BranchTabValue.MANAGE);
     };
 
-    if (editorEngine.state.branchTab === BranchTabValue.MANAGE && editorEngine.state.manageBranchId) {
-        const manageBranch = branches.allBranches.find(b => b.id === editorEngine.state.manageBranchId);
+    if (
+        editorEngine.state.branchTab === BranchTabValue.MANAGE &&
+        editorEngine.state.manageBranchId
+    ) {
+        const manageBranch = branches.allBranches.find(
+            (b) => b.id === editorEngine.state.manageBranchId,
+        );
         if (manageBranch) {
             return <BranchManagement branch={manageBranch} />;
         }
     }
 
+    const handleCreateBranch = async () => {
+        if (isCreating) {
+            return;
+        }
+
+        try {
+            setIsCreating(true);
+            const trimmedName = branchName.trim();
+
+            if (createMode === 'fork') {
+                await branches.forkBranch(branches.activeBranch.id);
+                if (trimmedName) {
+                    await branches.updateBranch(branches.activeBranch.id, {
+                        name: trimmedName,
+                    });
+                }
+                toast.success('Branch created from current branch');
+            } else {
+                await branches.createBlankSandbox(trimmedName || undefined);
+                toast.success('Blank branch created');
+            }
+
+            setBranchName('');
+            setCreateMode('fork');
+            setCreateOpen(false);
+        } catch (error) {
+            console.error('Failed to create branch:', error);
+            toast.error('Failed to create branch', {
+                description: error instanceof Error ? error.message : 'Please try again.',
+            });
+        } finally {
+            setIsCreating(false);
+        }
+    };
+
     return (
-        <div className="flex flex-col h-full">
-            <div className="flex items-center justify-between p-4 border-b">
+        <div className="flex h-full flex-col">
+            <div className="flex items-center justify-between border-b p-4">
                 <div className="flex items-center gap-2">
                     <h2 className="text-sm">Branches</h2>
-                    <span className="text-xs text-muted-foreground">({branches.allBranches.length})</span>
+                    <span className="text-muted-foreground text-xs">
+                        ({branches.allBranches.length})
+                    </span>
                 </div>
+                <Popover open={createOpen} onOpenChange={setCreateOpen}>
+                    <PopoverTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                            <Icons.Plus className="h-4 w-4" />
+                        </Button>
+                    </PopoverTrigger>
+                    <PopoverContent align="end" className="w-72 p-3">
+                        <div className="space-y-3">
+                            <div>
+                                <p className="text-sm font-medium">Create Branch</p>
+                                <p className="text-muted-foreground text-xs">
+                                    Fork the current branch or start from a blank sandbox.
+                                </p>
+                            </div>
+                            <Input
+                                value={branchName}
+                                onChange={(event) => setBranchName(event.target.value)}
+                                placeholder="Optional branch name"
+                                disabled={isCreating}
+                            />
+                            <div className="grid grid-cols-2 gap-2">
+                                <Button
+                                    variant={createMode === 'fork' ? 'secondary' : 'outline'}
+                                    className="justify-center"
+                                    disabled={isCreating}
+                                    onClick={() => setCreateMode('fork')}
+                                >
+                                    Fork Current
+                                </Button>
+                                <Button
+                                    variant={createMode === 'blank' ? 'secondary' : 'outline'}
+                                    className="justify-center"
+                                    disabled={isCreating}
+                                    onClick={() => setCreateMode('blank')}
+                                >
+                                    Blank Branch
+                                </Button>
+                            </div>
+                            <Button
+                                className="w-full"
+                                disabled={isCreating}
+                                onClick={handleCreateBranch}
+                            >
+                                {isCreating ? (
+                                    <>
+                                        <Icons.LoadingSpinner className="mr-2 h-4 w-4 animate-spin" />
+                                        Creating...
+                                    </>
+                                ) : createMode === 'fork' ? (
+                                    'Create from Current Branch'
+                                ) : (
+                                    'Create Blank Branch'
+                                )}
+                            </Button>
+                        </div>
+                    </PopoverContent>
+                </Popover>
             </div>
 
+            {branches.allBranches.length > 3 && (
+                <div className="px-3 pt-2">
+                    <div className="relative">
+                        <Icons.MagnifyingGlass className="text-muted-foreground pointer-events-none absolute top-1/2 left-2 h-3.5 w-3.5 -translate-y-1/2" />
+                        <Input
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            placeholder="Search branches"
+                            className="h-8 pl-7 text-sm"
+                        />
+                    </div>
+                </div>
+            )}
+
+            <AlertDialog
+                open={pendingSwitchBranchId !== null}
+                onOpenChange={(open) => {
+                    if (!open) setPendingSwitchBranchId(null);
+                }}
+            >
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Switch branches with unsaved changes?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            You have edits that aren&apos;t committed to this branch. Switching now
+                            won&apos;t save them on the current branch.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={async () => {
+                                const branchId = pendingSwitchBranchId;
+                                setPendingSwitchBranchId(null);
+                                if (branchId) {
+                                    await performBranchSwitch(branchId);
+                                }
+                            }}
+                        >
+                            Switch anyway
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+
             <div className="flex-1 overflow-auto">
-                <div className="p-2 space-y-1">
-                    {branches.allBranches.map((branch) => {
+                <div className="space-y-1 p-2">
+                    {filteredBranches.length === 0 && (
+                        <div className="text-muted-foreground py-6 text-center text-xs">
+                            No branches match &quot;{searchQuery}&quot;
+                        </div>
+                    )}
+                    {filteredBranches.map((branch) => {
                         const isActive = branch.id === branches.activeBranch.id;
                         const isHovered = hoveredBranchId === branch.id;
 
@@ -63,23 +253,23 @@ export const BranchesTab = observer(() => {
                             <div
                                 key={branch.id}
                                 className={cn(
-                                    "group relative flex items-center gap-3 p-1 px-2 rounded-lg cursor-pointer transition-colors border",
+                                    'group relative flex cursor-pointer items-center gap-3 rounded-lg border p-1 px-2 transition-colors',
                                     isActive
-                                        ? "bg-accent text-foreground border-border"
-                                        : "border-transparent hover:bg-accent/50 text-foreground-secondary hover:text-foreground"
+                                        ? 'bg-accent text-foreground border-border'
+                                        : 'hover:bg-accent/50 text-foreground-secondary hover:text-foreground border-transparent',
                                 )}
                                 onClick={() => handleBranchSwitch(branch.id)}
                                 onMouseEnter={() => setHoveredBranchId(branch.id)}
                                 onMouseLeave={() => setHoveredBranchId(null)}
                             >
-                                <div className="flex items-center gap-2 min-w-0 flex-1">
+                                <div className="flex min-w-0 flex-1 items-center gap-2">
                                     {isActive ? (
-                                        <Icons.CheckCircled className="w-4 h-4 text-teal-400 flex-shrink-0" />
+                                        <Icons.CheckCircled className="h-4 w-4 flex-shrink-0 text-purple-400" />
                                     ) : (
-                                        <Icons.Branch className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                                        <Icons.Branch className="text-muted-foreground h-4 w-4 flex-shrink-0" />
                                     )}
                                     <div className="min-w-0 flex-1 overflow-hidden">
-                                        <div className="font-medium text-sm truncate">
+                                        <div className="truncate text-sm font-medium">
                                             {branch.name}
                                         </div>
                                         <div className="text-mini text-muted-foreground mb-1 truncate">
@@ -92,14 +282,14 @@ export const BranchesTab = observer(() => {
                                     <Button
                                         variant="ghost"
                                         size="sm"
-                                        className="h-8 w-8 p-2 hover:bg-background opacity-50 hover:opacity-100 transition-opacity"
+                                        className="hover:bg-background h-8 w-8 p-2 opacity-50 transition-opacity hover:opacity-100"
                                         onClick={(e) => {
                                             e.stopPropagation();
                                             handleManageBranch(branch.id);
                                         }}
                                         title="Manage branch"
                                     >
-                                        <Icons.Gear className="w-3 h-3" />
+                                        <Icons.Gear className="h-3 w-3" />
                                     </Button>
                                 )}
                             </div>

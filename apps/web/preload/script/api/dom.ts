@@ -54,6 +54,30 @@ const FILTER_CONDITIONS = [
     },
 ];
 
+const INTERACTIVE_TAGS = new Set([
+    'a',
+    'button',
+    'details',
+    'input',
+    'label',
+    'option',
+    'select',
+    'summary',
+    'textarea',
+]);
+
+const INTERACTIVE_ROLES = new Set([
+    'button',
+    'checkbox',
+    'combobox',
+    'link',
+    'menuitem',
+    'option',
+    'radio',
+    'switch',
+    'tab',
+]);
+
 export function buildLayerTree(root: HTMLElement): Map<string, LayerNode> | null {
     if (!isValidHtmlElement(root)) {
         return null;
@@ -120,14 +144,39 @@ function processNode(node: HTMLElement): LayerNode {
     const component = node.getAttribute(EditorAttributes.DATA_ONLOOK_COMPONENT_NAME) as
         | string
         | null;
+    const tagName = node.tagName.toLowerCase();
+    const htmlId = node.getAttribute('id');
+    const hasCustomAttributes = Array.from(node.attributes).some((attribute) => {
+        return (
+            attribute.name !== 'class' &&
+            attribute.name !== 'style' &&
+            attribute.name !== 'id' &&
+            !attribute.name.startsWith('data-onlook-')
+        );
+    });
+    const role = node.getAttribute('role')?.toLowerCase() ?? null;
+    const hasTabIndex = node.tabIndex >= 0;
+    const hasInlineAction = Array.from(node.attributes).some((attribute) =>
+        attribute.name.startsWith('on'),
+    );
+    const isInteractive =
+        INTERACTIVE_TAGS.has(tagName) ||
+        (role !== null && INTERACTIVE_ROLES.has(role)) ||
+        hasTabIndex ||
+        node.isContentEditable ||
+        hasInlineAction ||
+        style.cursor === 'pointer';
 
     const layerNode: LayerNode = {
         domId,
         oid: oid || null,
         instanceId: instanceId || null,
+        htmlId,
         textContent: textContent || '',
-        tagName: node.tagName.toLowerCase(),
+        tagName,
         isVisible: style.visibility !== 'hidden',
+        hasCustomAttributes,
+        isInteractive,
         component: component || null,
         frameId: getFrameId(),
         children: null,

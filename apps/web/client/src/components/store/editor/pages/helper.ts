@@ -53,19 +53,97 @@ export const validateNextJsRoute = (route: string): { valid: boolean; error?: st
     return { valid: true };
 };
 
-export const doesRouteExist = (nodes: PageNode[], route: string): boolean => {
-    const normalizedRoute = normalizeRoute(route);
+export const normalizePagePath = (path: string): string => {
+    const normalizedPath = normalizeRoute(path);
+    return normalizedPath.length === 0 ? '/' : `/${normalizedPath}`;
+};
 
-    const checkNode = (nodes: PageNode[]): boolean => {
-        for (const node of nodes) {
-            if (normalizeRoute(node.path) === normalizedRoute) {
+export const getParentPagePath = (path: string): string => {
+    const normalizedPath = normalizePagePath(path);
+    if (normalizedPath === '/') {
+        return '/';
+    }
+
+    const segments = normalizedPath.split('/').filter(Boolean);
+    segments.pop();
+
+    return segments.length === 0 ? '/' : `/${segments.join('/')}`;
+};
+
+export const getNestedPagePath = (parentPath: string, slug: string): string => {
+    const normalizedParent = normalizePagePath(parentPath);
+    const normalizedSlug = normalizeRoute(slug);
+
+    if (!normalizedSlug) {
+        return normalizedParent;
+    }
+
+    if (normalizedParent === '/') {
+        return `/${normalizedSlug}`;
+    }
+
+    return `${normalizedParent}/${normalizedSlug}`;
+};
+
+export const isPageNode = (node: PageNode): boolean => node.kind === 'page';
+
+export const isFolderNode = (node: PageNode): boolean => node.kind === 'folder';
+
+export const findPageNodeByPath = (nodes: PageNode[], route: string): PageNode | null => {
+    const normalizedRoute = normalizePagePath(route);
+
+    const checkNode = (treeNodes: PageNode[]): PageNode | null => {
+        for (const node of treeNodes) {
+            if (isPageNode(node) && normalizePagePath(node.path) === normalizedRoute) {
+                return node;
+            }
+            if (node.children?.length) {
+                const childMatch = checkNode(node.children);
+                if (childMatch) {
+                    return childMatch;
+                }
+            }
+        }
+        return null;
+    };
+
+    return checkNode(nodes);
+};
+
+export const findFolderNodeByPath = (nodes: PageNode[], route: string): PageNode | null => {
+    const normalizedRoute = normalizePagePath(route);
+
+    const checkNode = (treeNodes: PageNode[]): PageNode | null => {
+        for (const node of treeNodes) {
+            if (isFolderNode(node) && normalizePagePath(node.path) === normalizedRoute) {
+                return node;
+            }
+            if (node.children?.length) {
+                const childMatch = checkNode(node.children);
+                if (childMatch) {
+                    return childMatch;
+                }
+            }
+        }
+        return null;
+    };
+
+    return checkNode(nodes);
+};
+
+export const doesRouteExist = (
+    nodes: PageNode[],
+    route: string,
+    kind: 'page' | 'folder' = 'page',
+): boolean => {
+    const normalizedRoute = normalizePagePath(route);
+
+    const checkNode = (treeNodes: PageNode[]): boolean => {
+        for (const node of treeNodes) {
+            if (node.kind === kind && normalizePagePath(node.path) === normalizedRoute) {
                 return true;
             }
-            if (
-                Array.isArray(node.children) &&
-                node.children.length > 0 &&
-                checkNode(node.children)
-            ) {
+            if (node.children?.length && checkNode(node.children)) {
                 return true;
             }
         }
@@ -73,6 +151,42 @@ export const doesRouteExist = (nodes: PageNode[], route: string): boolean => {
     };
 
     return checkNode(nodes);
+};
+
+export const getPageNodes = (nodes: PageNode[]): PageNode[] => {
+    const pages: PageNode[] = [];
+
+    const visit = (treeNodes: PageNode[]) => {
+        for (const node of treeNodes) {
+            if (isPageNode(node)) {
+                pages.push(node);
+            }
+            if (node.children?.length) {
+                visit(node.children);
+            }
+        }
+    };
+
+    visit(nodes);
+    return pages;
+};
+
+export const getFolderNodes = (nodes: PageNode[]): PageNode[] => {
+    const folders: PageNode[] = [];
+
+    const visit = (treeNodes: PageNode[]) => {
+        for (const node of treeNodes) {
+            if (isFolderNode(node)) {
+                folders.push(node);
+            }
+            if (node.children?.length) {
+                visit(node.children);
+            }
+        }
+    };
+
+    visit(nodes);
+    return folders;
 };
 
 const IGNORED_DIRECTORIES = ['api', 'components', 'lib', 'utils', 'node_modules'];
@@ -115,6 +229,207 @@ const joinPath = (...parts: string[]): string => {
     return parts.filter(Boolean).join('/').replace(/\/+/g, '/');
 };
 
+const getDefaultNodeName = (path: string, isRoot = false): string => {
+    if (isRoot) {
+        return ROOT_PAGE_NAME;
+    }
+    const normalizedPath = normalizeRoute(path);
+    const lastSegment = normalizedPath.split('/').pop();
+    return lastSegment || ROOT_PAGE_NAME;
+};
+
+const createPageNode = ({
+    path,
+    metadata,
+    isRoot = false,
+}: {
+    path: string;
+    metadata?: PageMetadata;
+    isRoot?: boolean;
+}): PageNode => {
+    const normalizedPath = normalizePagePath(path);
+    const defaultName = getDefaultNodeName(normalizedPath, isRoot);
+
+    return {
+        id: `page:${normalizedPath}:${nanoid()}`,
+        kind: 'page',
+        path: normalizedPath,
+        slug: isRoot ? '' : getBaseName(normalizedPath),
+        defaultName,
+        name: defaultName,
+        metadata: metadata ?? {},
+        settings: undefined,
+        children: [],
+        isActive: false,
+        isRoot,
+    };
+};
+
+const createFolderNode = ({
+    path,
+    children,
+}: {
+    path: string;
+    children: PageNode[];
+}): PageNode => {
+    const normalizedPath = normalizePagePath(path);
+    const defaultName = getDefaultNodeName(normalizedPath);
+
+    return {
+        id: `folder:${normalizedPath}:${nanoid()}`,
+        kind: 'folder',
+        path: normalizedPath,
+        slug: getBaseName(normalizedPath),
+        defaultName,
+        name: defaultName,
+        children,
+        isActive: false,
+        isRoot: false,
+    };
+};
+
+const sortPageNodes = (nodes: PageNode[]): PageNode[] => {
+    return [...nodes].sort((a, b) => {
+        if (a.kind !== b.kind) {
+            return a.kind === 'page' ? -1 : 1;
+        }
+        if (a.isRoot !== b.isRoot) {
+            return a.isRoot ? -1 : 1;
+        }
+        return a.path.localeCompare(b.path);
+    });
+};
+
+const isRouteGroupSegment = (segment: string): boolean => {
+    return segment.startsWith('(') && segment.endsWith(')');
+};
+
+const getRoutePathFromSegments = (segments: string[]): string => {
+    const filteredSegments = segments.filter((segment) => !isRouteGroupSegment(segment));
+    return filteredSegments.length === 0 ? '/' : `/${filteredSegments.join('/')}`;
+};
+
+const getSandboxRoutePath = (route: string): string => {
+    return normalizePagePath(route).replace(/^\/|\/$/g, '');
+};
+
+const getRouteDirectoryPath = (basePath: string, route: string): string => {
+    return joinPath(basePath, getSandboxRoutePath(route));
+};
+
+const getPageFilePathForRoute = (basePath: string, route: string): string => {
+    return joinPath(getRouteDirectoryPath(basePath, route), 'page.tsx');
+};
+
+const createObjectPropertyKey = (key: string): T.Identifier | T.StringLiteral => {
+    return /^[$A-Z_][0-9A-Z_$]*$/i.test(key) ? t.identifier(key) : t.stringLiteral(key);
+};
+
+const createMetadataValueNode = (
+    value: unknown,
+    key?: string,
+): T.Expression => {
+    if (value instanceof URL || (key === 'metadataBase' && typeof value === 'string')) {
+        return t.newExpression(t.identifier('URL'), [t.stringLiteral(value.toString())]);
+    }
+
+    if (typeof value === 'string') {
+        return t.stringLiteral(value);
+    }
+
+    if (typeof value === 'number') {
+        return t.numericLiteral(value);
+    }
+
+    if (typeof value === 'boolean') {
+        return t.booleanLiteral(value);
+    }
+
+    if (value === null || value === undefined) {
+        return t.nullLiteral();
+    }
+
+    if (Array.isArray(value)) {
+        return t.arrayExpression(value.map((item) => createMetadataValueNode(item)));
+    }
+
+    if (typeof value === 'object') {
+        return t.objectExpression(
+            Object.entries(value).flatMap(([entryKey, entryValue]) => {
+                if (entryValue === undefined) {
+                    return [];
+                }
+
+                return [
+                    t.objectProperty(
+                        createObjectPropertyKey(entryKey),
+                        createMetadataValueNode(entryValue, entryKey),
+                    ),
+                ];
+            }),
+        );
+    }
+
+    return t.stringLiteral(String(value));
+};
+
+const extractNodeValue = (node: T.Node | null | undefined): unknown => {
+    if (!node) {
+        return undefined;
+    }
+
+    if (t.isStringLiteral(node)) {
+        return node.value;
+    }
+
+    if (t.isNumericLiteral(node)) {
+        return node.value;
+    }
+
+    if (t.isBooleanLiteral(node)) {
+        return node.value;
+    }
+
+    if (t.isNullLiteral(node)) {
+        return null;
+    }
+
+    if (
+        t.isNewExpression(node) &&
+        t.isIdentifier(node.callee) &&
+        node.callee.name === 'URL'
+    ) {
+        const firstArgument = node.arguments[0];
+        if (firstArgument && t.isStringLiteral(firstArgument)) {
+            return firstArgument.value;
+        }
+    }
+
+    if (t.isObjectExpression(node)) {
+        const result: Record<string, unknown> = {};
+        for (const prop of node.properties) {
+            if (t.isObjectProperty(prop)) {
+                const key = t.isIdentifier(prop.key)
+                    ? prop.key.name
+                    : t.isStringLiteral(prop.key)
+                      ? prop.key.value
+                      : null;
+                if (!key) {
+                    continue;
+                }
+                result[key] = extractNodeValue(prop.value);
+            }
+        }
+        return result;
+    }
+
+    if (t.isArrayExpression(node)) {
+        return node.elements.map((element) => extractNodeValue(element));
+    }
+
+    return undefined;
+};
+
 // Helper function to extract metadata from file content
 const extractMetadata = async (content: string | Uint8Array): Promise<PageMetadata | undefined> => {
     try {
@@ -127,39 +442,6 @@ const extractMetadata = async (content: string | Uint8Array): Promise<PageMetada
         }
 
         let metadata: PageMetadata | undefined;
-
-        // Helper functions for AST traversal
-        const extractObjectValue = (obj: any): any => {
-            const result: any = {};
-            for (const prop of obj.properties) {
-                if (t.isObjectProperty(prop) && t.isIdentifier(prop.key)) {
-                    const key = prop.key.name;
-                    if (t.isStringLiteral(prop.value)) {
-                        result[key] = prop.value.value;
-                    } else if (t.isObjectExpression(prop.value)) {
-                        result[key] = extractObjectValue(prop.value);
-                    } else if (t.isArrayExpression(prop.value)) {
-                        result[key] = extractArrayValue(prop.value);
-                    }
-                }
-            }
-            return result;
-        };
-
-        const extractArrayValue = (arr: any): any[] => {
-            return arr.elements
-                .map((element: any) => {
-                    if (t.isStringLiteral(element)) {
-                        return element.value;
-                    } else if (t.isObjectExpression(element)) {
-                        return extractObjectValue(element);
-                    } else if (t.isArrayExpression(element)) {
-                        return extractArrayValue(element);
-                    }
-                    return null;
-                })
-                .filter(Boolean);
-        };
 
         // Traverse the AST to find metadata export
         traverse(ast, {
@@ -179,13 +461,9 @@ const extractMetadata = async (content: string | Uint8Array): Promise<PageMetada
                             if (t.isObjectProperty(prop) && t.isIdentifier(prop.key)) {
                                 const key = prop.key.name;
                                 try {
-                                    if (t.isStringLiteral(prop.value)) {
-                                        (metadata as any)[key] = prop.value.value;
-                                    } else if (t.isObjectExpression(prop.value)) {
-                                        (metadata as any)[key] = extractObjectValue(prop.value);
-                                    } else if (t.isArrayExpression(prop.value)) {
-                                        (metadata as any)[key] = extractArrayValue(prop.value);
-                                    }
+                                    (metadata as Record<string, unknown>)[key] = extractNodeValue(
+                                        prop.value,
+                                    );
                                 } catch (error) {
                                     console.error(`Error extracting metadata:`, error);
                                 }
@@ -208,101 +486,73 @@ export const scanAppDirectory = async (
     dir: string,
     parentPath = '',
 ): Promise<PageNode[]> => {
-    const nodes: PageNode[] = [];
     let entries: FileEntry[];
 
     try {
         entries = await sandboxManager.readDir(dir);
     } catch (error) {
         console.error(`Error reading directory ${dir}:`, error);
-        return nodes;
+        return [];
     }
 
     const { pageFile, layoutFile } = getPageAndLayoutFiles(entries);
-
     const childDirectories = entries.filter(
         (entry) => entry.isDirectory && !IGNORED_DIRECTORIES.includes(entry.name),
     );
-
-    if (pageFile) {
-        const fileEntries: (FileEntry | null)[] = [
-            pageFile,
-            layoutFile || null
-        ];
-
-        const childPromises = childDirectories.map((entry) => {
+    const childResults = await Promise.all(
+        childDirectories.map((entry) => {
             const fullPath = `${dir}/${entry.name}`;
             const relativePath = joinPath(parentPath, entry.name);
             return scanAppDirectory(sandboxManager, fullPath, relativePath);
-        });
+        }),
+    );
+    const childNodes = sortPageNodes(childResults.flat());
+    const currentPath = getRoutePathFromSegments(parentPath.split('/').filter(Boolean));
+    const isRoot = ROOT_PATH_IDENTIFIERS.includes(currentPath);
 
-        const childResults = await Promise.all(childPromises);
-        const children = childResults.flat();
-
-        const { pageMetadata, layoutMetadata } = await getPageAndLayoutMetadata(fileEntries, sandboxManager, dir);
-
-        const metadata = {
-            ...layoutMetadata,
-            ...pageMetadata,
-        };
-
-        // Create page node
-        const currentDir = getBaseName(dir);
-        const isDynamicRoute = currentDir.startsWith('[') && currentDir.endsWith(']');
-
-        let cleanPath;
-        if (isDynamicRoute) {
-            const paramName = currentDir;
-            cleanPath = parentPath ? joinPath(getDirName(parentPath), paramName) : '/' + paramName;
-        } else {
-            cleanPath = parentPath ? `/${parentPath}` : '/';
+    if (!pageFile) {
+        if (isRoot) {
+            return childNodes;
         }
 
-        cleanPath = '/' + cleanPath.replace(/^\/|\/$/g, '');
-        const isRoot = ROOT_PATH_IDENTIFIERS.includes(cleanPath);
+        if (childNodes.length === 0 && !parentPath) {
+            return [];
+        }
 
-        nodes.push({
-            id: nanoid(),
-            name: isDynamicRoute
-                ? currentDir
-                : parentPath
-                    ? getBaseName(parentPath)
-                    : ROOT_PAGE_NAME,
-            path: cleanPath,
-            children,
-            isActive: false,
-            isRoot,
-            metadata: metadata ?? {},
-        });
-    } else {
-        const childPromises = childDirectories.map(async (entry) => {
-            const fullPath = `${dir}/${entry.name}`;
-            const relativePath = joinPath(parentPath, entry.name);
-            const children = await scanAppDirectory(sandboxManager, fullPath, relativePath);
-
-            if (children.length > 0) {
-                const currentDirName = getBaseName(dir);
-                const containerPath = parentPath ? `/${parentPath}` : `/${currentDirName}`;
-                const cleanPath = containerPath.replace(/\/+/g, '/');
-                return {
-                    id: nanoid(),
-                    name: currentDirName,
-                    path: cleanPath,
-                    children,
-                    isActive: false,
-                    isRoot: false,
-                    metadata: {},
-                };
-            }
-            return null;
-        });
-
-        const childResults = await Promise.all(childPromises);
-        const validNodes = childResults.filter((node) => node !== null);
-        nodes.push(...validNodes);
+        return [createFolderNode({ path: currentPath, children: childNodes })];
     }
 
-    return nodes;
+    const fileEntries: (FileEntry | null)[] = [pageFile, layoutFile || null];
+    const { pageMetadata, layoutMetadata } = await getPageAndLayoutMetadata(
+        fileEntries,
+        sandboxManager,
+        dir,
+    );
+    const metadata = {
+        ...layoutMetadata,
+        ...pageMetadata,
+    };
+
+    const pageNode = createPageNode({
+        path: currentPath,
+        metadata: metadata ?? {},
+        isRoot,
+    });
+
+    if (isRoot) {
+        return sortPageNodes([pageNode, ...childNodes]);
+    }
+
+    if (childNodes.length > 0) {
+        return [
+            createFolderNode({
+                path: currentPath,
+                children: sortPageNodes([pageNode, ...childNodes]),
+            }),
+        ];
+    }
+
+    return [pageNode];
 };
 
 const scanPagesDirectory = async (
@@ -310,15 +560,16 @@ const scanPagesDirectory = async (
     dir: string,
     parentPath = '',
 ): Promise<PageNode[]> => {
-    const nodes: PageNode[] = [];
     let entries: FileEntry[];
 
     try {
         entries = await sandboxManager.readDir(dir);
     } catch (error) {
         console.error(`Error reading directory ${dir}:`, error);
-        return nodes;
+        return [];
     }
+
+    const pageNodes: PageNode[] = [];
 
     // Process files first
     for (const entry of entries) {
@@ -364,22 +615,17 @@ const scanPagesDirectory = async (
                 console.error(`Error reading file ${dir}/${entry.name}:`, error);
             }
 
-            nodes.push({
-                id: nanoid(),
-                name:
-                    fileName === 'index'
-                        ? parentPath
-                            ? `/${getBaseName(parentPath)}`
-                            : ROOT_PAGE_NAME
-                        : '/' + fileName,
-                path: cleanPath,
-                children: [],
-                isActive: false,
-                isRoot,
-                metadata: metadata || {},
-            });
+            pageNodes.push(
+                createPageNode({
+                    path: cleanPath,
+                    metadata: metadata || {},
+                    isRoot,
+                }),
+            );
         }
     }
+
+    const folderNodes: PageNode[] = [];
 
     // Process directories
     for (const entry of entries) {
@@ -396,22 +642,35 @@ const scanPagesDirectory = async (
         if (entry.isDirectory) {
             const children = await scanPagesDirectory(sandboxManager, fullPath, relativePath);
             if (children.length > 0) {
-                const dirPath = relativePath.replace(/\\/g, '/');
-                const cleanPath = '/' + dirPath.replace(/^\/|\/$/g, '');
-                nodes.push({
-                    id: nanoid(),
-                    name: entry.name,
-                    path: cleanPath,
-                    children,
-                    isActive: false,
-                    isRoot: false,
-                    metadata: {},
-                });
+                folderNodes.push(
+                    createFolderNode({
+                        path: relativePath,
+                        children,
+                    }),
+                );
             }
         }
     }
 
-    return nodes;
+    const currentPath = normalizePagePath(parentPath);
+    const indexPage = pageNodes.find(
+        (node) => normalizePagePath(node.path) === currentPath,
+    );
+    const otherPages = pageNodes.filter(
+        (node) => normalizePagePath(node.path) !== currentPath,
+    );
+    const siblings = sortPageNodes([...otherPages, ...folderNodes]);
+
+    if (!ROOT_PATH_IDENTIFIERS.includes(currentPath) && indexPage && siblings.length > 0) {
+        return [
+            createFolderNode({
+                path: currentPath,
+                children: sortPageNodes([indexPage, ...siblings]),
+            }),
+        ];
+    }
+
+    return sortPageNodes([...pageNodes, ...folderNodes]);
 };
 
 export const scanPagesFromSandbox = async (sandboxManager: SandboxManager): Promise<PageNode[]> => {
@@ -489,10 +748,7 @@ export const detectRouterConfig = async (
 // checks if file/directory exists
 const pathExists = async (sandboxManager: SandboxManager, filePath: string): Promise<boolean> => {
     try {
-        await sandboxManager.readDir(getDirName(filePath));
-        const dirEntries = await sandboxManager.readDir(getDirName(filePath));
-        const fileName = getBaseName(filePath);
-        return dirEntries.some((entry: any) => entry.name === fileName);
+        return await sandboxManager.fileExists(filePath);
     } catch (error) {
         return false;
     }
@@ -579,6 +835,29 @@ export const createPageInSandbox = async (
     }
 };
 
+export const createFolderInSandbox = async (
+    sandboxManager: SandboxManager,
+    folderPath: string,
+): Promise<void> => {
+    const routerConfig = await sandboxManager.getRouterConfig();
+
+    if (!routerConfig || routerConfig.type !== RouterType.APP) {
+        throw new Error('Folder creation is only supported for App Router projects.');
+    }
+
+    const normalizedFolderPath = normalizePagePath(folderPath);
+    if (normalizedFolderPath === '/') {
+        throw new Error('Cannot create the root folder');
+    }
+
+    const fullPath = getRouteDirectoryPath(routerConfig.basePath, normalizedFolderPath);
+    if (await pathExists(sandboxManager, fullPath)) {
+        throw new Error('This folder already exists');
+    }
+
+    await sandboxManager.createDirectory(fullPath);
+};
+
 export const deletePageInSandbox = async (
     sandboxManager: SandboxManager,
     pagePath: string,
@@ -625,6 +904,30 @@ export const deletePageInSandbox = async (
     }
 };
 
+export const deleteFolderInSandbox = async (
+    sandboxManager: SandboxManager,
+    folderPath: string,
+): Promise<void> => {
+    const routerConfig = await sandboxManager.getRouterConfig();
+
+    if (!routerConfig || routerConfig.type !== RouterType.APP) {
+        throw new Error('Folder deletion is only supported for App Router projects.');
+    }
+
+    const normalizedFolderPath = normalizePagePath(folderPath);
+    if (normalizedFolderPath === '/') {
+        throw new Error('Cannot delete the root folder');
+    }
+
+    const fullPath = getRouteDirectoryPath(routerConfig.basePath, normalizedFolderPath);
+    if (!(await pathExists(sandboxManager, fullPath))) {
+        throw new Error('Selected folder not found');
+    }
+
+    await sandboxManager.deleteDirectory(fullPath);
+    await cleanupEmptyFolders(sandboxManager, getDirName(fullPath));
+};
+
 export const renamePageInSandbox = async (
     sandboxManager: SandboxManager,
     oldPath: string,
@@ -646,10 +949,10 @@ export const renamePageInSandbox = async (
             throw new Error('Page name contains invalid characters');
         }
 
-        const normalizedOldPath = oldPath.replace(/\/+/g, '/').replace(/^\/|\/$/g, '');
-        const oldFullPath = joinPath(routerConfig.basePath, normalizedOldPath);
-        const parentDir = getDirName(oldFullPath);
-        const newFullPath = joinPath(parentDir, newName);
+        const normalizedOldPath = normalizePagePath(oldPath);
+        const oldFullPath = getRouteDirectoryPath(routerConfig.basePath, normalizedOldPath);
+        const newRoutePath = getNestedPagePath(getParentPagePath(normalizedOldPath), newName);
+        const newFullPath = getRouteDirectoryPath(routerConfig.basePath, newRoutePath);
 
         if (!(await pathExists(sandboxManager, oldFullPath))) {
             throw new Error(`Source page not found: ${oldFullPath}`);
@@ -659,13 +962,119 @@ export const renamePageInSandbox = async (
             throw new Error(`Target path already exists: ${newFullPath}`);
         }
 
-        await sandboxManager.rename(oldFullPath, newFullPath);
+        await sandboxManager.moveDirectory(oldFullPath, newFullPath);
 
         console.log(`Renamed page from ${oldFullPath} to ${newFullPath}`);
     } catch (error) {
         console.error('Error renaming page:', error);
         throw error;
     }
+};
+
+export const renameFolderInSandbox = async (
+    sandboxManager: SandboxManager,
+    oldPath: string,
+    newName: string,
+): Promise<void> => {
+    const routerConfig = await sandboxManager.getRouterConfig();
+
+    if (!routerConfig || routerConfig.type !== RouterType.APP) {
+        throw new Error('Folder renaming is only supported for App Router projects.');
+    }
+
+    const normalizedOldPath = normalizePagePath(oldPath);
+    if (normalizedOldPath === '/') {
+        throw new Error('Cannot rename the root folder');
+    }
+
+    if (!/^[a-zA-Z0-9\-_[\]()]+$/.test(newName)) {
+        throw new Error('Folder name contains invalid characters');
+    }
+
+    const oldFullPath = getRouteDirectoryPath(routerConfig.basePath, normalizedOldPath);
+    if (!(await pathExists(sandboxManager, oldFullPath))) {
+        throw new Error(`Source folder not found: ${oldFullPath}`);
+    }
+
+    const newRoutePath = getNestedPagePath(getParentPagePath(normalizedOldPath), newName);
+    const newFullPath = getRouteDirectoryPath(routerConfig.basePath, newRoutePath);
+    if (await pathExists(sandboxManager, newFullPath)) {
+        throw new Error(`Target path already exists: ${newFullPath}`);
+    }
+
+    await sandboxManager.moveDirectory(oldFullPath, newFullPath);
+};
+
+export const movePageInSandbox = async (
+    sandboxManager: SandboxManager,
+    sourcePath: string,
+    targetPath: string,
+): Promise<void> => {
+    const routerConfig = await sandboxManager.getRouterConfig();
+
+    if (!routerConfig || routerConfig.type !== RouterType.APP) {
+        throw new Error('Page moving is only supported for App Router projects.');
+    }
+
+    const normalizedSourcePath = normalizePagePath(sourcePath);
+    const normalizedTargetPath = normalizePagePath(targetPath);
+
+    if (normalizedSourcePath === '/' || normalizedTargetPath === '/') {
+        throw new Error(
+            normalizedSourcePath === '/'
+                ? 'Root page cannot be moved'
+                : 'Cannot move a page to the root path',
+        );
+    }
+
+    const sourceFullPath = getRouteDirectoryPath(routerConfig.basePath, normalizedSourcePath);
+    const targetFullPath = getRouteDirectoryPath(routerConfig.basePath, normalizedTargetPath);
+
+    if (!(await pathExists(sandboxManager, sourceFullPath))) {
+        throw new Error(`Source page not found: ${sourceFullPath}`);
+    }
+    if (await pathExists(sandboxManager, targetFullPath)) {
+        throw new Error('Target page already exists');
+    }
+
+    await sandboxManager.moveDirectory(sourceFullPath, targetFullPath);
+    await cleanupEmptyFolders(sandboxManager, getDirName(sourceFullPath));
+};
+
+export const moveFolderInSandbox = async (
+    sandboxManager: SandboxManager,
+    sourcePath: string,
+    targetPath: string,
+): Promise<void> => {
+    const routerConfig = await sandboxManager.getRouterConfig();
+
+    if (!routerConfig || routerConfig.type !== RouterType.APP) {
+        throw new Error('Folder moving is only supported for App Router projects.');
+    }
+
+    const normalizedSourcePath = normalizePagePath(sourcePath);
+    const normalizedTargetPath = normalizePagePath(targetPath);
+
+    if (normalizedSourcePath === '/' || normalizedTargetPath === '/') {
+        throw new Error(
+            normalizedSourcePath === '/'
+                ? 'Root folder cannot be moved'
+                : 'Cannot move a folder to the root path',
+        );
+    }
+
+    const sourceFullPath = getRouteDirectoryPath(routerConfig.basePath, normalizedSourcePath);
+    const targetFullPath = getRouteDirectoryPath(routerConfig.basePath, normalizedTargetPath);
+
+    if (!(await pathExists(sandboxManager, sourceFullPath))) {
+        throw new Error(`Source folder not found: ${sourceFullPath}`);
+    }
+    if (await pathExists(sandboxManager, targetFullPath)) {
+        throw new Error('Target folder already exists');
+    }
+
+    await sandboxManager.moveDirectory(sourceFullPath, targetFullPath);
+    await cleanupEmptyFolders(sandboxManager, getDirName(sourceFullPath));
 };
 
 export const duplicatePageInSandbox = async (
@@ -753,8 +1162,8 @@ export const updatePageMetadataInSandbox = async (
         throw new Error('Metadata update is only supported for App Router projects for now.');
     }
 
-    const fullPath = joinPath(routerConfig.basePath, pagePath);
-    const pageFilePath = joinPath(fullPath, 'page.tsx');
+    const fullPath = getRouteDirectoryPath(routerConfig.basePath, pagePath);
+    const pageFilePath = getPageFilePathForRoute(routerConfig.basePath, pagePath);
     // check if page.tsx exists
     const pageExists = await pathExists(sandboxManager, pageFilePath);
 
@@ -778,10 +1187,8 @@ export const updatePageMetadataInSandbox = async (
         if (layoutExists) {
             await updateMetadataInFile(sandboxManager, layoutFilePath, metadata);
         } else {
-            // create layout.tsx
-            // Create new layout file with metadata
-            const layoutContent = `import type { Metadata } from 'next';\n\nexport const metadata: Metadata = ${JSON.stringify(metadata, null, 2)};\n\n${DEFAULT_LAYOUT_CONTENT}`;
-            await sandboxManager.writeFile(layoutFilePath, layoutContent);
+            await sandboxManager.writeFile(layoutFilePath, DEFAULT_LAYOUT_CONTENT);
+            await updateMetadataInFile(sandboxManager, layoutFilePath, metadata);
         }
     } else {
         await updateMetadataInFile(sandboxManager, pageFilePath, metadata);
@@ -849,97 +1256,14 @@ async function updateMetadataInFile(
     }
     // Create metadata object expression
     const metadataObject = t.objectExpression(
-        Object.entries(metadata).map(([key, value]) => {
-            if (typeof value === 'string') {
-                if (key === 'metadataBase') {
-                    return t.objectProperty(
-                        t.identifier(key),
-                        t.newExpression(t.identifier('URL'), [t.stringLiteral(value)]),
-                    );
-                }
-                return t.objectProperty(t.identifier(key), t.stringLiteral(value));
-            } else if (value === null) {
-                return t.objectProperty(t.identifier(key), t.nullLiteral());
-            } else if (Array.isArray(value)) {
-                return t.objectProperty(
-                    t.identifier(key),
-                    t.arrayExpression(
-                        value.map((v) => {
-                            if (typeof v === 'string') {
-                                return t.stringLiteral(v);
-                            } else if (typeof v === 'object' && v !== null) {
-                                return t.objectExpression(
-                                    Object.entries(v).map(([k, val]) => {
-                                        if (typeof val === 'string') {
-                                            return t.objectProperty(
-                                                t.identifier(k),
-                                                t.stringLiteral(val),
-                                            );
-                                        } else if (typeof val === 'number') {
-                                            return t.objectProperty(
-                                                t.identifier(k),
-                                                t.numericLiteral(val),
-                                            );
-                                        }
-                                        return t.objectProperty(
-                                            t.identifier(k),
-                                            t.stringLiteral(String(val)),
-                                        );
-                                    }),
-                                );
-                            }
-                            return t.stringLiteral(String(v));
-                        }),
-                    ),
-                );
-            } else if (typeof value === 'object' && value !== null) {
-                return t.objectProperty(
-                    t.identifier(key),
-                    t.objectExpression(
-                        Object.entries(value).map(([k, v]) => {
-                            if (typeof v === 'string') {
-                                return t.objectProperty(t.identifier(k), t.stringLiteral(v));
-                            } else if (typeof v === 'number') {
-                                return t.objectProperty(t.identifier(k), t.numericLiteral(v));
-                            } else if (Array.isArray(v)) {
-                                return t.objectProperty(
-                                    t.identifier(k),
-                                    t.arrayExpression(
-                                        v.map((item) => {
-                                            if (typeof item === 'string') {
-                                                return t.stringLiteral(item);
-                                            } else if (typeof item === 'object' && item !== null) {
-                                                return t.objectExpression(
-                                                    Object.entries(item).map(([ik, iv]) => {
-                                                        if (typeof iv === 'string') {
-                                                            return t.objectProperty(
-                                                                t.identifier(ik),
-                                                                t.stringLiteral(iv),
-                                                            );
-                                                        } else if (typeof iv === 'number') {
-                                                            return t.objectProperty(
-                                                                t.identifier(ik),
-                                                                t.numericLiteral(iv),
-                                                            );
-                                                        }
-                                                        return t.objectProperty(
-                                                            t.identifier(ik),
-                                                            t.stringLiteral(String(iv)),
-                                                        );
-                                                    }),
-                                                );
-                                            }
-                                            return t.stringLiteral(String(item));
-                                        }),
-                                    ),
-                                );
-                            }
-                            return t.objectProperty(t.identifier(k), t.stringLiteral(String(v)));
-                        }),
-                    ),
-                );
+        Object.entries(metadata).flatMap(([key, value]) => {
+            if (value === undefined) {
+                return [];
             }
-            return t.objectProperty(t.identifier(key), t.stringLiteral(String(value)));
+
+            return [
+                t.objectProperty(createObjectPropertyKey(key), createMetadataValueNode(value, key)),
+            ];
         }),
     );
 
