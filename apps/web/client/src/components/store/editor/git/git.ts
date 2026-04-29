@@ -5,7 +5,18 @@ import { APP_NAME, SUPPORT_EMAIL } from '@onlook/constants';
 import { type GitCommit } from '@onlook/git';
 
 import type { SandboxManager } from '../sandbox';
-import { prepareCommitMessage, sanitizeCommitMessage, withSyncPaused } from '@/utils/git';
+import { escapeShellString, prepareCommitMessage, sanitizeCommitMessage, withSyncPaused } from '@/utils/git';
+
+const MAX_DIFF_FILE_BYTES = 500_000;
+
+function containsNullByte(bytes: Uint8Array): boolean {
+    // Cheap binary detection: scan the first ~8KB for a null byte.
+    const limit = Math.min(bytes.byteLength, 8192);
+    for (let i = 0; i < limit; i++) {
+        if (bytes[i] === 0) return true;
+    }
+    return false;
+}
 
 export const ONLOOK_DISPLAY_NAME_NOTE_REF = 'refs/notes/onlook-display-name';
 
@@ -19,9 +30,31 @@ export interface GitCommandResult {
     error: string | null;
 }
 
+export interface PullRequestResult {
+    success: boolean;
+    url?: string;
+    number?: number;
+    existing?: boolean;
+    error?: string | null;
+}
+
+export type FileDiffStatus = 'added' | 'modified' | 'deleted';
+
+export type FileDiffSkipReason = 'binary' | 'too-large';
+
+export interface FileDiff {
+    path: string;
+    original: string;
+    modified: string;
+    status: FileDiffStatus;
+    skipped?: FileDiffSkipReason;
+}
+
 export class GitManager {
     commits: GitCommit[] | null = null;
     isLoadingCommits = false;
+    diffs: FileDiff[] = [];
+    isLoadingDiffs = false;
 
     constructor(private sandbox: SandboxManager) {
         makeAutoObservable(this);
@@ -176,6 +209,149 @@ export class GitManager {
             await this.listCommits();
         }
         return result;
+    }
+
+    async stageTracked(): Promise<GitCommandResult> {
+        return this.runCommand('git add -u');
+    }
+
+    async getStagedFileCount(): Promise<number> {
+        try {
+            const result = await this.runCommand('git diff --cached --name-only', true);
+            if (!result.success || !result.output?.trim()) {
+                return 0;
+            }
+            return result.output
+                .split('\n')
+                .map((line) => line.trim())
+                .filter(Boolean).length;
+        } catch {
+            return 0;
+        }
+    }
+
+    async hasStagedChanges(): Promise<boolean> {
+        return (await this.getStagedFileCount()) > 0;
+    }
+
+    async getDiffStat(): Promise<{ added: number; removed: number } | null> {
+        try {
+            const result = await this.runCommand('git diff HEAD --numstat', true);
+            if (!result.success || !result.output?.trim()) {
+                return null;
+            }
+            let added = 0;
+            let removed = 0;
+            for (const line of result.output.trim().split('\n')) {
+                const parts = line.trim().split('\t');
+                const a = parseInt(parts[0] ?? '0', 10);
+                const r = parseInt(parts[1] ?? '0', 10);
+                if (!isNaN(a)) added += a;
+                if (!isNaN(r)) removed += r;
+            }
+            return { added, removed };
+        } catch {
+            return null;
+        }
+    }
+
+    /**
+     * Build a file-by-file diff of the working tree against HEAD.
+     * Each entry has the original content (HEAD) and the current working-tree
+     * content, suitable for feeding to a side-by-side diff renderer.
+     */
+    async getDiffs(): Promise<FileDiff[]> {
+        this.isLoadingDiffs = true;
+        try {
+            const status = await this.getStatus();
+            if (!status) {
+                this.diffs = [];
+                return [];
+            }
+
+            const results = await Promise.all(
+                status.files.map((path) => this.buildFileDiff(path)),
+            );
+            const diffs = results.filter((d): d is FileDiff => d !== null);
+            this.diffs = diffs;
+            return diffs;
+        } finally {
+            this.isLoadingDiffs = false;
+        }
+    }
+
+    private async buildFileDiff(path: string): Promise<FileDiff | null> {
+        try {
+            const escaped = escapeShellString(path);
+            const headResult = await this.runCommand(`git show HEAD:${escaped}`, true);
+            const original = headResult.success ? headResult.output : '';
+            const existedInHead = headResult.success;
+
+            let modifiedRaw: string | Uint8Array | null = null;
+            let modifiedExists = true;
+            try {
+                modifiedRaw = await this.sandbox.readFile(path);
+            } catch {
+                modifiedExists = false;
+            }
+
+            let modified = '';
+            let isBinary = false;
+            let isTooLarge = false;
+            if (modifiedExists && modifiedRaw !== null) {
+                if (typeof modifiedRaw === 'string') {
+                    if (modifiedRaw.length > MAX_DIFF_FILE_BYTES) {
+                        isTooLarge = true;
+                    } else {
+                        modified = modifiedRaw;
+                    }
+                } else {
+                    if (modifiedRaw.byteLength > MAX_DIFF_FILE_BYTES) {
+                        isTooLarge = true;
+                    } else if (containsNullByte(modifiedRaw)) {
+                        isBinary = true;
+                    } else {
+                        modified = new TextDecoder('utf-8', { fatal: false }).decode(modifiedRaw);
+                    }
+                }
+            }
+
+            const status: FileDiffStatus =
+                !existedInHead && modifiedExists
+                    ? 'added'
+                    : existedInHead && !modifiedExists
+                        ? 'deleted'
+                        : 'modified';
+
+            const skipped: FileDiffSkipReason | undefined = isBinary
+                ? 'binary'
+                : isTooLarge
+                    ? 'too-large'
+                    : undefined;
+
+            return {
+                path,
+                original,
+                modified: skipped ? '' : modified,
+                status,
+                skipped,
+            };
+        } catch (error) {
+            console.warn('Failed to build diff for', path, error);
+            return null;
+        }
+    }
+
+    async push(): Promise<GitCommandResult> {
+        return this.runCommand('git push');
+    }
+
+    async pushBranch(branchName: string, setUpstream = false): Promise<GitCommandResult> {
+        const escapedBranch = escapeShellString(branchName);
+        const command = setUpstream
+            ? `git push --set-upstream origin ${escapedBranch}`
+            : `git push origin ${escapedBranch}`;
+        return this.runCommand(command);
     }
 
     /**

@@ -6,25 +6,25 @@ import { transKeys } from '@/i18n/keys';
 import { EditorMode } from '@onlook/models';
 import { HotkeyLabel } from '@onlook/ui/hotkey-label';
 import { Icons } from '@onlook/ui/icons';
-import { ToggleGroup, ToggleGroupItem } from '@onlook/ui/toggle-group';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@onlook/ui/tooltip';
 import { cn } from '@onlook/ui/utils';
 import { observer } from 'mobx-react-lite';
 import { AnimatePresence, motion } from 'motion/react';
 import { useTranslations } from 'next-intl';
+import { useCallback, useRef, useState } from 'react';
 import { TerminalArea } from './terminal-area';
 
 const MIN_SCALE = 0.1;
-const MAX_SCALE = 5;
+const MAX_SCALE = 3;
 const ZOOM_FACTOR = 1.25;
+// px of pointer drag that = 1% zoom change
+const DRAG_PX_PER_PERCENT = 3;
 
 const TOOLBAR_ITEMS = ({ t }: { t: ReturnType<typeof useTranslations> }) => [
     {
         mode: EditorMode.DESIGN,
         icon: Icons.CursorArrow,
         hotkey: Hotkey.SELECT,
-        disabled: false,
-        draggable: false,
         label: t(transKeys.editor.toolbar.tools.select.name),
         tooltip: t(transKeys.editor.toolbar.tools.select.tooltip),
     },
@@ -32,8 +32,6 @@ const TOOLBAR_ITEMS = ({ t }: { t: ReturnType<typeof useTranslations> }) => [
         mode: EditorMode.PAN,
         icon: Icons.Hand,
         hotkey: Hotkey.PAN,
-        disabled: false,
-        draggable: false,
         label: t(transKeys.editor.toolbar.tools.pan.name),
         tooltip: t(transKeys.editor.toolbar.tools.pan.tooltip),
     },
@@ -41,36 +39,79 @@ const TOOLBAR_ITEMS = ({ t }: { t: ReturnType<typeof useTranslations> }) => [
         mode: EditorMode.COMMENT,
         icon: Icons.ChatBubble,
         hotkey: Hotkey.COMMENT,
-        disabled: false,
-        draggable: false,
         label: t(transKeys.editor.toolbar.tools.comment.name),
         tooltip: t(transKeys.editor.toolbar.tools.comment.tooltip),
     },
-    // {
-    //     mode: InsertMode.INSERT_DIV,
-    //     icon: Icons.Square,
-    //     hotkey: Hotkey.INSERT_DIV,
-    //     disabled: false,
-    //     draggable: true,
-    //     label: t(transKeys.editor.toolbar.tools.insertDiv.name),
-    //     tooltip: t(transKeys.editor.toolbar.tools.insertDiv.tooltip),
-    // },
-    // {
-    //     mode: InsertMode.INSERT_TEXT,
-    //     icon: Icons.Text,
-    //     hotkey: Hotkey.INSERT_TEXT,
-    //     disabled: false,
-    //     draggable: true,
-    //     label: t(transKeys.editor.toolbar.tools.insertText.name),
-    //     tooltip: t(transKeys.editor.toolbar.tools.insertText.tooltip),
-    // },
 ];
 
 export const BottomBar = observer(() => {
     const t = useTranslations();
     const editorEngine = useEditorEngine();
     const toolbarItems = TOOLBAR_ITEMS({ t });
-    const shouldShow = [EditorMode.DESIGN, EditorMode.PAN, EditorMode.COMMENT].includes(editorEngine.state.editorMode);
+    const shouldShow = [EditorMode.DESIGN, EditorMode.PAN, EditorMode.COMMENT].includes(
+        editorEngine.state.editorMode,
+    );
+
+    // ── Zoom input state ──────────────────────────────────────────────────────
+    const [isEditingZoom, setIsEditingZoom] = useState(false);
+    const [zoomInputValue, setZoomInputValue] = useState('');
+    const zoomInputRef = useRef<HTMLInputElement>(null);
+    const dragStartX = useRef<number | null>(null);
+    const dragStartScale = useRef<number>(1);
+    const isDragging = useRef(false);
+
+    const handleZoomPointerDown = useCallback(
+        (e: React.PointerEvent<HTMLInputElement>) => {
+            if (isEditingZoom) return;
+            e.currentTarget.setPointerCapture(e.pointerId);
+            dragStartX.current = e.clientX;
+            dragStartScale.current = editorEngine.canvas.scale;
+            isDragging.current = false;
+        },
+        [isEditingZoom, editorEngine.canvas.scale],
+    );
+
+    const handleZoomPointerMove = useCallback(
+        (e: React.PointerEvent<HTMLInputElement>) => {
+            if (dragStartX.current === null || isEditingZoom) return;
+            const delta = e.clientX - dragStartX.current;
+            if (Math.abs(delta) > 3) isDragging.current = true;
+            if (!isDragging.current) return;
+            const percentDelta = delta / DRAG_PX_PER_PERCENT / 100;
+            const newScale = Math.min(
+                MAX_SCALE,
+                Math.max(MIN_SCALE, dragStartScale.current + percentDelta),
+            );
+            editorEngine.canvas.scale = newScale;
+        },
+        [isEditingZoom, editorEngine.canvas],
+    );
+
+    const handleZoomPointerUp = useCallback(
+        (e: React.PointerEvent<HTMLInputElement>) => {
+            e.currentTarget.releasePointerCapture(e.pointerId);
+            if (!isDragging.current && dragStartX.current !== null) {
+                // No drag happened → enter edit mode
+                const current = Math.round(editorEngine.canvas.scale * 100).toString();
+                setZoomInputValue(current);
+                setIsEditingZoom(true);
+                setTimeout(() => {
+                    zoomInputRef.current?.select();
+                }, 0);
+            }
+            dragStartX.current = null;
+            isDragging.current = false;
+        },
+        [editorEngine.canvas.scale],
+    );
+
+    const commitZoomInput = useCallback(() => {
+        const parsed = parseInt(zoomInputValue, 10);
+        if (!isNaN(parsed) && parsed > 0) {
+            editorEngine.canvas.scale = Math.min(MAX_SCALE, Math.max(MIN_SCALE, parsed / 100));
+        }
+        setIsEditingZoom(false);
+    }, [zoomInputValue, editorEngine.canvas]);
 
     return (
         <div className="absolute left-1/2 -translate-x-1/2 bottom-4">
@@ -91,46 +132,41 @@ export const BottomBar = observer(() => {
                     }}
                     style={{
                         pointerEvents: shouldShow ? 'auto' : 'none',
-                        visibility: shouldShow ? 'visible' : 'hidden'
+                        visibility: shouldShow ? 'visible' : 'hidden',
                     }}
                 >
                     <TerminalArea>
-                        <ToggleGroup
-                            type="single"
-                            value={editorEngine.state.editorMode}
-                            onValueChange={(value) => {
-                                if (value) {
-                                    editorEngine.state.setEditorMode(value as EditorMode);
-                                }
-                            }}
-                            className="gap-0.5"
-                        >
+                        {/* Mode buttons — plain buttons to avoid Radix rounding overrides */}
+                        <div className="flex items-center gap-0.5">
                             {toolbarItems.map((item) => (
                                 <Tooltip key={item.mode}>
                                     <TooltipTrigger asChild>
-                                        <ToggleGroupItem
-                                            value={item.mode}
-                                            variant="default"
+                                        <button
+                                            onClick={() =>
+                                                editorEngine.state.setEditorMode(item.mode)
+                                            }
                                             aria-label={item.hotkey.description}
-                                            disabled={item.disabled}
                                             className={cn(
-                                                "h-9 w-9 flex items-center justify-center rounded-full border border-transparent transition-all duration-150 ease-in-out",
+                                                'h-9 w-9 flex items-center justify-center rounded-full border border-transparent transition-all duration-150 ease-in-out',
                                                 editorEngine.state.editorMode === item.mode
-                                                    ? "bg-background-tertiary/50 text-foreground-primary hover:text-foreground-primary"
-                                                    : "text-foreground-tertiary hover:text-foreground-hover hover:bg-background-tertiary/50"
+                                                    ? 'bg-background-tertiary/50 text-foreground-primary'
+                                                    : 'text-foreground-tertiary hover:text-foreground-hover hover:bg-background-tertiary/50',
                                             )}
                                         >
                                             <item.icon />
-                                        </ToggleGroupItem>
+                                        </button>
                                     </TooltipTrigger>
                                     <TooltipContent sideOffset={5} hideArrow>
                                         <HotkeyLabel hotkey={item.hotkey} />
                                     </TooltipContent>
                                 </Tooltip>
                             ))}
-                        </ToggleGroup>
+                        </div>
+
                         <div className="w-px h-5 bg-border/60 mx-0.5" />
-                        <div className="flex items-center gap-0.5">
+
+                        {/* Zoom controls */}
+                        <div className="flex items-center gap-0">
                             <button
                                 onClick={() => {
                                     editorEngine.canvas.scale = Math.max(
@@ -138,14 +174,40 @@ export const BottomBar = observer(() => {
                                         editorEngine.canvas.scale / ZOOM_FACTOR,
                                     );
                                 }}
-                                className="h-7 w-7 flex items-center justify-center text-foreground-tertiary hover:text-foreground-hover hover:bg-background-tertiary/50 rounded-full transition-all duration-150"
+                                className="h-7 w-6 flex items-center justify-center text-foreground-tertiary hover:text-foreground-hover hover:bg-background-tertiary/50 rounded-full transition-all duration-150"
                                 aria-label="Zoom out"
                             >
                                 <Icons.Minus className="h-3 w-3" />
                             </button>
-                            <span className="text-xs text-foreground-secondary min-w-[3rem] text-center select-none tabular-nums">
-                                {Math.round(editorEngine.canvas.scale * 100)}%
-                            </span>
+
+                            {/* Draggable / editable zoom % */}
+                            <input
+                                ref={zoomInputRef}
+                                type="text"
+                                inputMode="numeric"
+                                value={
+                                    isEditingZoom
+                                        ? zoomInputValue
+                                        : `${Math.round(editorEngine.canvas.scale * 100)}%`
+                                }
+                                readOnly={!isEditingZoom}
+                                onChange={(e) => setZoomInputValue(e.target.value)}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') commitZoomInput();
+                                    if (e.key === 'Escape') setIsEditingZoom(false);
+                                }}
+                                onBlur={commitZoomInput}
+                                onPointerDown={handleZoomPointerDown}
+                                onPointerMove={handleZoomPointerMove}
+                                onPointerUp={handleZoomPointerUp}
+                                className={cn(
+                                    'w-10 text-xs text-foreground-secondary text-center bg-transparent border-none outline-none select-none tabular-nums transition-colors',
+                                    isEditingZoom
+                                        ? 'cursor-text text-foreground-primary'
+                                        : 'cursor-ew-resize hover:text-foreground-primary',
+                                )}
+                            />
+
                             <button
                                 onClick={() => {
                                     editorEngine.canvas.scale = Math.min(
@@ -153,7 +215,7 @@ export const BottomBar = observer(() => {
                                         editorEngine.canvas.scale * ZOOM_FACTOR,
                                     );
                                 }}
-                                className="h-7 w-7 flex items-center justify-center text-foreground-tertiary hover:text-foreground-hover hover:bg-background-tertiary/50 rounded-full transition-all duration-150"
+                                className="h-7 w-6 flex items-center justify-center text-foreground-tertiary hover:text-foreground-hover hover:bg-background-tertiary/50 rounded-full transition-all duration-150"
                                 aria-label="Zoom in"
                             >
                                 <Icons.Plus className="h-3 w-3" />

@@ -8,6 +8,21 @@ import { eq } from 'drizzle-orm';
 import { z } from 'zod';
 import { createTRPCRouter, protectedProcedure } from '../trpc';
 
+const parseRepoUrl = (repoUrl: string): { owner: string; repo: string } => {
+    const match = /github\.com\/([^/]+)\/([^/]+?)(?:\.git)?$/.exec(repoUrl.trim());
+    if (!match?.[1] || !match[2]) {
+        throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: 'Invalid GitHub repository URL',
+        });
+    }
+
+    return {
+        owner: match[1],
+        repo: match[2],
+    };
+};
+
 const getUserGitHubInstallation = async (db: DrizzleDb, userId: string) => {
     const user = await db.query.users.findFirst({
         where: eq(users.id, userId),
@@ -220,6 +235,63 @@ export const githubRouter = createTRPCRouter({
                     cause: error,
                 });
             }
+        }),
+    createPullRequest: protectedProcedure
+        .input(
+            z.object({
+                repoUrl: z.string().min(1),
+                headBranch: z.string().min(1),
+                baseBranch: z.string().min(1).optional(),
+                title: z.string().min(1),
+                body: z.string().optional(),
+            }),
+        )
+        .mutation(async ({ input, ctx }) => {
+            const { octokit } = await getUserGitHubInstallation(ctx.db, ctx.user.id);
+            const { owner, repo } = parseRepoUrl(input.repoUrl);
+
+            const { data: repoData } = await octokit.rest.repos.get({ owner, repo });
+            const baseBranch = input.baseBranch?.trim() || repoData.default_branch;
+            const headBranch = input.headBranch.trim();
+
+            if (headBranch === baseBranch) {
+                throw new TRPCError({
+                    code: 'BAD_REQUEST',
+                    message: 'Create a feature branch before opening a pull request',
+                });
+            }
+
+            const { data: existingPulls } = await octokit.rest.pulls.list({
+                owner,
+                repo,
+                state: 'open',
+                head: `${owner}:${headBranch}`,
+                base: baseBranch,
+                per_page: 1,
+            });
+
+            if (existingPulls[0]) {
+                return {
+                    url: existingPulls[0].html_url,
+                    number: existingPulls[0].number,
+                    existing: true,
+                };
+            }
+
+            const { data: pullRequest } = await octokit.rest.pulls.create({
+                owner,
+                repo,
+                head: headBranch,
+                base: baseBranch,
+                title: input.title.trim(),
+                body: input.body?.trim() || undefined,
+            });
+
+            return {
+                url: pullRequest.html_url,
+                number: pullRequest.number,
+                existing: false,
+            };
         }),
 
 });
