@@ -2,7 +2,9 @@ const { app, BrowserWindow, shell, Menu, ipcMain } = require('electron');
 const { autoUpdater } = require('electron-updater');
 const path = require('path');
 
-const APP_URL = 'https://onlook.com';
+const APP_NAME = process.env.NEXT_PUBLIC_APP_NAME || 'Weblab';
+const APP_DOMAIN = process.env.NEXT_PUBLIC_APP_DOMAIN || 'weblab.build';
+const APP_URL = process.env.NEXT_PUBLIC_SITE_URL || `https://${APP_DOMAIN}`;
 const APP_ORIGIN = new URL(APP_URL).origin;
 
 ipcMain.on('onlook:get-version', (event) => {
@@ -114,6 +116,7 @@ function buildMenu() {
 }
 
 app.whenReady().then(() => {
+    app.setName(APP_NAME);
     buildMenu();
     createWindow();
     autoUpdater.checkForUpdatesAndNotify();

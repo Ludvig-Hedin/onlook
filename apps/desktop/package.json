@@ -1,10 +1,10 @@
 {
     "name": "@onlook/desktop",
     "version": "0.0.1",
-    "description": "Onlook desktop app",
+    "description": "Weblab desktop app",
     "author": {
-        "name": "Onlook",
-        "email": "contact@onlook.com"
+        "name": "Weblab",
+        "email": "contact@weblab.build"
     },
     "main": "main.js",
     "private": true,
@@ -25,9 +25,9 @@
         "electron-builder": "^25.1.8"
     },
     "build": {
-        "appId": "com.onlook.desktop",
-        "productName": "Onlook",
-        "copyright": "Copyright © 2025-2026 Onlook",
+        "appId": "com.weblab.desktop",
+        "productName": "Weblab",
+        "copyright": "Copyright © 2025-2026 Weblab",
         "directories": {
             "output": "dist"
         },
@@ -42,14 +42,14 @@
             "target": [
                 { "target": "dmg", "arch": ["universal"] }
             ],
-            "artifactName": "Onlook.dmg"
+            "artifactName": "Weblab.dmg"
         },
         "win": {
             "icon": "assets/icon.ico",
             "target": [
                 { "target": "nsis", "arch": ["x64"] }
             ],
-            "artifactName": "Onlook-Setup.exe"
+            "artifactName": "Weblab-Setup.exe"
         },
         "linux": {
             "icon": "assets/icon.png",
@@ -57,13 +57,13 @@
                 { "target": "AppImage", "arch": ["x64"] }
             ],
             "category": "Development",
-            "artifactName": "Onlook.AppImage"
+            "artifactName": "Weblab.AppImage"
         },
         "npmRebuild": false,
         "publish": {
             "provider": "github",
-            "owner": "onlook-dev",
-            "repo": "onlook"
+            "owner": "weblab",
+            "repo": "weblab"
         }
     }
 }

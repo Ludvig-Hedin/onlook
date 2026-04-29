@@ -1,6 +1,6 @@
 # Railway Deployment Guide
 
-This repo can be deployed to Railway using the existing root `Dockerfile`.
+This repo can be deployed to Railway using the existing root `Dockerfile` for the web app.
 
 ## Why switch from Render
 
@@ -35,6 +35,37 @@ Optional variables can stay unset unless you actively use those features.
 6. Deploy once.
 7. Copy the generated Railway public domain and set `NEXT_PUBLIC_SITE_URL` to that exact URL.
 8. Redeploy after updating `NEXT_PUBLIC_SITE_URL`.
+
+## Docs service on Railway
+
+For the docs service, do not install from `docs/` in isolation because the app depends on monorepo workspace packages like `@onlook/ui`.
+
+Use one of these approaches:
+
+1. Preferred: keep the service root at the repository root, then run the docs service from the monorepo so Bun can resolve workspace packages.
+2. If you keep the Railway service root at `docs/`, change the install step to run from the repository root first, then build the docs package.
+
+Recommended commands for the docs service:
+
+```bash
+bun install
+bun --filter @onlook/docs build
+```
+
+Start command:
+
+```bash
+bun --filter @onlook/docs start
+```
+
+Docs service env vars:
+
+```properties
+NEXT_PUBLIC_APP_NAME=Weblab
+NEXT_PUBLIC_APP_DOMAIN=docs.weblab.build
+```
+
+Railway should still supply `PORT`, and `next start` should bind to that port automatically.
 
 If you want to hide the demo login button later, set `NEXT_PUBLIC_SHOW_DEV_LOGIN=false` and redeploy.
 
