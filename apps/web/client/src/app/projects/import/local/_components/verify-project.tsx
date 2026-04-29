@@ -32,18 +32,18 @@ export const VerifyProject = () => {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
-            className="w-full flex flex-row items-center border p-4 rounded-lg bg-teal-900 border-teal-600 gap-2"
+            className="w-full flex flex-row items-center border p-4 rounded-lg bg-purple-900 border-purple-600 gap-2"
         >
             <div className="flex flex-row items-center justify-between w-full gap-4">
-                <div className="p-3 bg-teal-500 rounded-lg">
+                <div className="p-3 bg-purple-500 rounded-lg">
                     <Icons.Directory className="w-5 h-5" />
                 </div>
                 <div className="flex flex-col gap-1 break-all w-full">
-                    <p className="text-regular text-teal-100">{projectData.name}</p>
-                    <p className="text-teal-200 text-mini">{projectData.folderPath}</p>
+                    <p className="text-regular text-purple-100">{projectData.name}</p>
+                    <p className="text-purple-200 text-mini">{projectData.folderPath}</p>
                 </div>
             </div>
-            <Icons.CheckCircled className="w-5 h-5 text-teal-200" />
+            <Icons.CheckCircled className="w-5 h-5 text-purple-200" />
         </motion.div>
     );
 

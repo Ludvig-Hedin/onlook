@@ -1,22 +1,25 @@
 'use client';
 
-import { useEditorEngine } from '@/components/store/editor';
-import { SubscriptionModal } from '@/components/ui/pricing-modal';
-import { SettingsModalWithProjects } from '@/components/ui/settings-modal/with-project';
+import { useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
+import { observer } from 'mobx-react-lite';
+
 import { EditorAttributes } from '@onlook/constants';
 import { EditorMode } from '@onlook/models';
 import { Button } from '@onlook/ui/button';
 import { Icons } from '@onlook/ui/icons';
 import { TooltipProvider } from '@onlook/ui/tooltip';
 import { cn } from '@onlook/ui/utils';
-import { observer } from 'mobx-react-lite';
-import { useRouter } from 'next/navigation';
-import { useEffect, useRef } from 'react';
+
+import { useEditorEngine } from '@/components/store/editor';
+import { SubscriptionModal } from '@/components/ui/pricing-modal';
+import { SettingsModalWithProjects } from '@/components/ui/settings-modal/with-project';
 import { usePanelMeasurements } from '../_hooks/use-panel-measure';
 import { useStartProject } from '../_hooks/use-start-project';
 import { BottomBar } from './bottom-bar';
 import { Canvas } from './canvas';
 import { EditorBar } from './editor-bar';
+import { KeyboardShortcutsModal } from './keyboard-shortcuts-modal';
 import { LeftPanel } from './left-panel';
 import { RightPanel } from './right-panel';
 import { TopBar } from './top-bar';
@@ -24,7 +27,7 @@ import { TopBar } from './top-bar';
 export const Main = observer(() => {
     const router = useRouter();
     const editorEngine = useEditorEngine();
-    const { isProjectReady, error } = useStartProject();
+    const { isProjectReady, error, readyState } = useStartProject();
     const leftPanelRef = useRef<HTMLDivElement | null>(null);
     const rightPanelRef = useRef<HTMLDivElement | null>(null);
     const { toolbarLeft, toolbarRight, editorBarAvailableWidth } = usePanelMeasurements(
@@ -38,9 +41,7 @@ export const Main = observer(() => {
                 return;
             }
 
-            const canvasContainer = document.getElementById(
-                EditorAttributes.CANVAS_CONTAINER_ID,
-            );
+            const canvasContainer = document.getElementById(EditorAttributes.CANVAS_CONTAINER_ID);
             if (canvasContainer?.contains(event.target as Node | null)) {
                 return;
             }
@@ -56,14 +57,16 @@ export const Main = observer(() => {
 
     if (error) {
         return (
-            <div className="h-screen w-screen flex items-center justify-center gap-2 flex-col">
+            <div className="flex h-screen w-screen flex-col items-center justify-center gap-2">
                 <div className="flex flex-row items-center justify-center gap-2">
-                    <Icons.ExclamationTriangle className="h-6 w-6 text-foreground-primary" />
+                    <Icons.ExclamationTriangle className="text-foreground-primary h-6 w-6" />
                     <div className="text-xl">Error starting project: {error}</div>
                 </div>
-                <Button onClick={() => {
-                    router.push('/');
-                }}>
+                <Button
+                    onClick={() => {
+                        router.push('/');
+                    }}
+                >
                     Go to home
                 </Button>
             </div>
@@ -71,17 +74,40 @@ export const Main = observer(() => {
     }
 
     if (!isProjectReady) {
+        const steps: { label: string; ready: boolean }[] = [
+            { label: 'Connecting sandbox', ready: readyState.sandbox },
+            { label: 'Loading canvas', ready: readyState.canvas },
+            { label: 'Loading conversations', ready: readyState.conversations },
+        ];
         return (
-            <div className="h-screen w-screen flex items-center justify-center gap-2">
-                <Icons.LoadingSpinner className="h-6 w-6 animate-spin text-foreground-primary" />
-                <div className="text-xl">Loading project...</div>
+            <div className="flex h-screen w-screen items-center justify-center">
+                <div className="flex min-w-[260px] flex-col items-center gap-4">
+                    <div className="flex items-center gap-2">
+                        <Icons.LoadingSpinner className="text-foreground-primary h-6 w-6 animate-spin" />
+                        <div className="text-xl">Loading project...</div>
+                    </div>
+                    <ul className="text-foreground-secondary flex w-full flex-col gap-1.5 text-sm">
+                        {steps.map((step) => (
+                            <li key={step.label} className="flex items-center gap-2">
+                                {step.ready ? (
+                                    <Icons.CheckCircled className="h-4 w-4 text-green-500" />
+                                ) : (
+                                    <Icons.LoadingSpinner className="text-foreground-tertiary h-4 w-4 animate-spin" />
+                                )}
+                                <span className={step.ready ? 'text-foreground-primary' : ''}>
+                                    {step.label}
+                                </span>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
             </div>
         );
     }
 
     return (
         <TooltipProvider>
-            <div className="h-screen w-screen flex flex-row select-none relative overflow-hidden">
+            <div className="relative flex h-screen w-screen flex-row overflow-hidden select-none">
                 <Canvas />
 
                 <div className="absolute top-0 w-full">
@@ -89,10 +115,7 @@ export const Main = observer(() => {
                 </div>
 
                 {/* Left Panel */}
-                <div
-                    ref={leftPanelRef}
-                    className="absolute top-10 left-0 h-[calc(100%-40px)] z-50"
-                >
+                <div ref={leftPanelRef} className="absolute top-10 left-0 z-50 h-[calc(100%-40px)]">
                     <LeftPanel />
                 </div>
                 {/* EditorBar anchored between panels */}
@@ -118,8 +141,8 @@ export const Main = observer(() => {
                 <div
                     ref={rightPanelRef}
                     className={cn(
-                        "absolute top-10 right-0 h-[calc(100%-40px)] z-50",
-                        editorEngine.state.editorMode === EditorMode.PREVIEW && 'hidden'
+                        'absolute top-10 right-0 z-50 h-[calc(100%-40px)]',
+                        editorEngine.state.editorMode === EditorMode.PREVIEW && 'hidden',
                     )}
                 >
                     <RightPanel />
@@ -129,6 +152,7 @@ export const Main = observer(() => {
             </div>
             <SettingsModalWithProjects />
             <SubscriptionModal />
-        </TooltipProvider >
+            <KeyboardShortcutsModal />
+        </TooltipProvider>
     );
 });

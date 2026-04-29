@@ -2,6 +2,7 @@ import { useEditorEngine } from '@/components/store/editor';
 import { useStateManager } from '@/components/store/state';
 import { transKeys } from '@/i18n/keys';
 import { api } from '@/trpc/react';
+import { Routes } from '@/utils/constants';
 import { ProductType } from '@onlook/stripe';
 import { Badge } from '@onlook/ui/badge';
 import { Button } from '@onlook/ui/button';
@@ -17,7 +18,7 @@ import { toast } from '@onlook/ui/sonner';
 import { cn } from '@onlook/ui/utils';
 import { observer } from 'mobx-react-lite';
 import { useTranslations } from 'next-intl';
-import { redirect } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { usePostHog } from 'posthog-js/react';
 import { useRef, useState } from 'react';
 import { CloneProjectDialog } from '../clone-project-dialog';
@@ -28,6 +29,7 @@ export const ProjectBreadcrumb = observer(() => {
     const editorEngine = useEditorEngine();
     const stateManager = useStateManager();
     const posthog = usePostHog();
+    const router = useRouter();
     const { data: project } = api.project.get.useQuery({ projectId: editorEngine.projectId });
     const { data: subscription } = api.subscription.get.useQuery();
     const isPro = subscription?.product.type === ProductType.PRO;
@@ -41,14 +43,15 @@ export const ProjectBreadcrumb = observer(() => {
     async function handleNavigateToProjects(_route?: 'create' | 'import') {
         try {
             setIsClosingProject(true);
-
-            editorEngine.screenshot.captureScreenshot();
+            void editorEngine.screenshot?.captureScreenshot().catch((error) => {
+                console.error('Failed to take screenshots:', error);
+            });
         } catch (error) {
             console.error('Failed to take screenshots:', error);
         } finally {
             setTimeout(() => {
                 setIsClosingProject(false);
-                redirect('/projects');
+                router.push(Routes.PROJECTS);
             }, 100);
         }
     }
@@ -59,7 +62,7 @@ export const ProjectBreadcrumb = observer(() => {
             return;
         }
 
-        const sandboxId = editorEngine.branches.activeBranch.sandbox.id
+        const sandboxId = editorEngine.branches.activeBranch?.sandbox?.id;
         if (!sandboxId) {
             console.error('No sandbox ID found');
             return;
@@ -131,7 +134,9 @@ export const ProjectBreadcrumb = observer(() => {
                     }}
                 >
                     <DropdownMenuItem
-                        onClick={() => handleNavigateToProjects()}
+                        onClick={() => {
+                            void handleNavigateToProjects();
+                        }}
                         className="cursor-pointer"
                     >
                         <div className="flex flex-row center items-center group">
@@ -144,7 +149,9 @@ export const ProjectBreadcrumb = observer(() => {
                     <DropdownMenuSeparator />
                     <NewProjectMenu onShowCloneDialog={setShowCloneDialog} />
                     <DropdownMenuItem
-                        onClick={handleDownloadCode}
+                        onClick={() => {
+                            void handleDownloadCode();
+                        }}
                         disabled={isDownloading || !isPro}
                         className="cursor-pointer"
                     >

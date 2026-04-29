@@ -204,6 +204,11 @@ export const ProjectCreationProvider = ({ children, totalSteps }: ProjectCreatio
                 return { isValid: false, error: 'React not found in dependencies' };
             }
 
+            const hasTailwind = dependencies?.tailwindcss ?? devDependencies?.tailwindcss;
+            if (!hasTailwind) {
+                return { isValid: false, error: 'Tailwind CSS not found in dependencies' };
+            }
+
             let routerType: RouterType = RouterType.PAGES;
 
             const hasAppLayout = files.some((f) =>

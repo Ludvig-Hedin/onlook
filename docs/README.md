@@ -38,6 +38,11 @@ The documentation is organized into the following sections:
 - **Features**: Detailed description of Onlook's features
 - **Tutorials**: Step-by-step guides for common tasks
 - **Developer Documentation**: Technical documentation for contributors
+- **Editor Updates**: Notes for shipped editor changes such as the [Left Panel Refresh](./left-panel-refresh.md)
+
+### Recent Engineering Notes
+
+- Comment collaboration endpoints now require project membership, and comment replies are returned in creation order to keep threads stable after refreshes.
 
 ## Learn More
 

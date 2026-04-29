@@ -2,14 +2,17 @@
 
 import { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
+import Link from 'next/link';
 
 import { Button } from '@onlook/ui/button';
 import { Icons } from '@onlook/ui/icons';
 
-import { ExternalRoutes } from '@/utils/constants';
+import { ExternalRoutes, Routes } from '@/utils/constants';
 import { vujahdayScript } from '../../fonts';
 import { CreateError } from './create-error';
+import { DownloadButton } from './download-button';
 import { HighDemand } from './high-demand';
+import { Import } from './import';
 import { MobileEmailCapture } from './mobile-email-capture';
 import { UnicornBackground } from './unicorn-background';
 
@@ -86,21 +89,38 @@ export function Hero() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6, delay: 0.4, ease: 'easeOut' }}
                     >
-                        <Button
-                            asChild
-                            className="bg-foreground-primary text-background-primary hover:bg-foreground-hover"
-                        >
-                            <a
-                                href={ExternalRoutes.BOOK_DEMO}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                            >
-                                Book a Demo
+                        <Button asChild className="bg-foreground-primary text-background-primary hover:bg-foreground-hover">
+                            <Link href={Routes.PROJECTS}>
+                                Get Started
                                 <Icons.ArrowRight className="h-4 w-4" />
-                            </a>
+                            </Link>
                         </Button>
                     </motion.div>
+                    <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, delay: 0.5, ease: 'easeOut' }}
+                    >
+                        <DownloadButton />
+                    </motion.div>
                 </div>
+                <motion.div
+                    className="pointer-events-auto relative z-20 hidden items-center gap-4 text-sm text-foreground-secondary sm:flex"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.6, ease: 'easeOut' }}
+                >
+                    <Import />
+                    <span className="text-foreground-secondary/30">|</span>
+                    <a
+                        href={ExternalRoutes.BOOK_DEMO}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="transition-colors duration-200 hover:text-foreground"
+                    >
+                        Book a Demo
+                    </a>
+                </motion.div>
                 <div className="pointer-events-auto w-full flex justify-center">
                     <MobileEmailCapture />
                 </div>

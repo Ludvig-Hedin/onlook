@@ -1,22 +1,22 @@
 import { api } from '@/trpc/server';
 import { Main } from './_components/main';
+import { ProjectLoadError } from './_components/project-load-error';
 import { ProjectProviders } from './providers';
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
     const projectId = (await params).id;
     if (!projectId) {
-        return <div>Invalid project ID</div>;
+        return <ProjectLoadError variant="invalid-id" />;
     }
 
     try {
-        // Fetch required project data before initializing providers
         const [project, branches] = await Promise.all([
             api.project.get({ projectId }),
             api.branch.getByProjectId({ projectId }),
         ]);
 
         if (!project) {
-            return <div>Project not found</div>;
+            return <ProjectLoadError variant="not-found" />;
         }
 
         return (
@@ -26,10 +26,14 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
         );
     } catch (error) {
         console.error('Failed to load project data:', error);
-        return (
-            <div className="h-screen w-screen flex items-center justify-center">
-                <div>Failed to load project: {error instanceof Error ? error.message : 'Unknown error'}</div>
-            </div>
-        );
+        const message = error instanceof Error ? error.message : 'Unknown error';
+        const lower = message.toLowerCase();
+        const variant: 'unauthorized' | 'not-found' | 'unknown' =
+            lower.includes('unauth') || lower.includes('forbidden') || lower.includes('session')
+                ? 'unauthorized'
+                : lower.includes('not found') || lower.includes('not_found')
+                  ? 'not-found'
+                  : 'unknown';
+        return <ProjectLoadError variant={variant} message={message} />;
     }
 }

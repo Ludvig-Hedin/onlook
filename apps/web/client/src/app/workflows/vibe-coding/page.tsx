@@ -399,7 +399,7 @@ export default function VibeCodingWorkflowPage() {
                                         'Ship PRs engineers can merge',
                                     ].map((item) => (
                                         <li key={item} className="text-foreground-primary flex items-start gap-3">
-                                            <Icons.CheckCircled className="text-teal-500 mt-0.5 h-5 w-5 flex-shrink-0" />
+                                            <Icons.CheckCircled className="text-blue-500 mt-0.5 h-5 w-5 flex-shrink-0" />
                                             <span>{item}</span>
                                         </li>
                                     ))}

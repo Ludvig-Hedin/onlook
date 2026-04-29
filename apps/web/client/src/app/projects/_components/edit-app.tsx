@@ -7,7 +7,7 @@ import { cn } from '@onlook/ui/utils';
 import { observer } from 'mobx-react-lite';
 import { motion } from 'motion/react';
 import { useTranslations } from 'next-intl';
-import { redirect } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { usePostHog } from 'posthog-js/react';
 import type { ComponentProps } from 'react';
 import { useState } from 'react';
@@ -21,12 +21,17 @@ interface EditAppButtonProps extends ComponentProps<typeof ButtonMotion> {
 export const EditAppButton = observer(({ project, onClick, ...props }: EditAppButtonProps) => {
     const t = useTranslations();
     const posthog = usePostHog();
+    const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
 
     const selectProject = (project: Project) => {
         setIsLoading(true);
         posthog.capture('open_project', { id: project.id });
-        redirect(`${Routes.PROJECT}/${project.id}`);
+        try {
+            router.push(`${Routes.PROJECT}/${project.id}`);
+        } catch {
+            setIsLoading(false);
+        }
     };
 
     const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {

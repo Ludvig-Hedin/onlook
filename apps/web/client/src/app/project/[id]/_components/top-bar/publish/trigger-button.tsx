@@ -26,7 +26,7 @@ export const TriggerButton = observer(() => {
 
     if (isCompleted) {
         colorClasses =
-            'border-teal-300 bg-teal-400/90 hover:bg-teal-400 dark:border-teal-300 dark:bg-teal-700 dark:hover:bg-teal-500/20 dark:text-teal-100 text-white hover:text-background';
+            'border-blue-300 bg-blue-400/90 hover:bg-blue-400 dark:border-blue-300 dark:bg-blue-700 dark:hover:bg-blue-500/20 dark:text-blue-100 text-white hover:text-background';
         text = editorEngine.history.length > 0 ? 'Update' : 'Live';
         icon = <Icons.Globe className="mr-1 h-4 w-4" />;
     } else if (isDeploying) {

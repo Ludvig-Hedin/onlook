@@ -47,7 +47,7 @@ export const LoginButton = ({
                 className={cn(
                     'w-full items-center justify-center text-active text-small',
                     isLastSignInMethod
-                        ? 'bg-teal-100 dark:bg-teal-950 border-teal-300 dark:border-teal-700 text-teal-900 dark:text-teal-100 text-small hover:bg-teal-200/50 dark:hover:bg-teal-800 hover:border-teal-500/70 dark:hover:border-teal-500'
+                        ? 'bg-blue-100 dark:bg-blue-950 border-blue-300 dark:border-blue-700 text-blue-900 dark:text-blue-100 text-small hover:bg-blue-200/50 dark:hover:bg-blue-800 hover:border-blue-500/70 dark:hover:border-blue-500'
                         : 'bg-background-onlook',
                 )}
                 onClick={handleLoginClick}
@@ -61,7 +61,7 @@ export const LoginButton = ({
 {t(transKeys.welcome.login[translationKey])}
             </Button>
             {isLastSignInMethod && (
-                <p className="text-teal-500 text-small mt-1">{t(transKeys.welcome.login.lastUsed)}</p>
+                <p className="text-blue-500 text-small mt-1">{t(transKeys.welcome.login.lastUsed)}</p>
             )}
         </div>
     );

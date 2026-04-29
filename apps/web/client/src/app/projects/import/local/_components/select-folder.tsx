@@ -308,14 +308,14 @@ export const NewSelectFolder = () => {
             },
             validating: {
                 title: `Verifying compatibility with ${APP_NAME}`,
-                description: "We're checking to make sure this project can work with {APP_NAME}",
+                description: `We're checking to make sure this project can work with ${APP_NAME}`,
             },
             valid: {
                 title: 'Project verified',
                 description: `Your project is ready to import to ${APP_NAME}`,
             },
             invalid: {
-                title: "This project won't work with {APP_NAME}",
+                title: `This project won't work with ${APP_NAME}`,
                 description: `${APP_NAME} only works with NextJS + React + Tailwind projects`,
             },
         };
@@ -394,19 +394,24 @@ export const NewSelectFolder = () => {
                             webkitdirectory: '',
                         } as React.InputHTMLAttributes<HTMLInputElement>)}
                     />
+                    {error && (
+                        <div className="rounded-md border border-red-500/40 bg-red-500/10 px-3 py-2 text-sm text-red-100">
+                            {error}
+                        </div>
+                    )}
                 </motion.div>
             );
         }
 
         const statusConfig = {
             valid: {
-                bgColor: 'bg-teal-900',
-                borderColor: 'border-teal-600',
-                iconBgColor: 'bg-teal-500',
-                textColor: 'text-teal-100',
-                subTextColor: 'text-teal-200',
+                bgColor: 'bg-purple-900',
+                borderColor: 'border-purple-600',
+                iconBgColor: 'bg-purple-500',
+                textColor: 'text-purple-100',
+                subTextColor: 'text-purple-200',
                 icon: (
-                    <Icons.CheckCircled className="w-5 h-5 text-teal-200 group-hover:opacity-0 transition-opacity duration-200" />
+                    <Icons.CheckCircled className="w-5 h-5 text-purple-200 group-hover:opacity-0 transition-opacity duration-200" />
                 ),
                 showError: false,
             },
@@ -424,45 +429,50 @@ export const NewSelectFolder = () => {
         const config = validation?.isValid ? statusConfig.valid : statusConfig.invalid;
 
         return (
-            <motion.div
-                key="folderPath"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                className={`w-full flex flex-row items-center border p-4 rounded-lg ${config.bgColor} ${config.borderColor} gap-2 group relative`}
-            >
-                <div
-                    className={`flex flex-col gap-2 w-full ${config.showError ? '' : 'flex-row items-center justify-between'}`}
+            <div className="space-y-4">
+                <motion.div
+                    key="folderPath"
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    className={`w-full flex flex-row items-center border p-4 rounded-lg ${config.bgColor} ${config.borderColor} gap-2 group relative`}
                 >
-                    <div className="flex flex-row items-center justify-between w-full gap-3">
-                        <div className={`p-3 ${config.iconBgColor} rounded-lg`}>
-                            <Icons.Directory className="w-5 h-5" />
+                    <div
+                        className={`flex flex-col gap-2 w-full ${config.showError ? '' : 'flex-row items-center justify-between'}`}
+                    >
+                        <div className="flex flex-row items-center justify-between w-full gap-3">
+                            <div className={`p-3 ${config.iconBgColor} rounded-lg`}>
+                                <Icons.Directory className="w-5 h-5" />
+                            </div>
+                            <div className="flex flex-col gap-1 break-all w-full">
+                                <p className={`text-regular ${config.textColor}`}>{projectData.name}</p>
+                                <p className={`text-mini ${config.subTextColor}`}>
+                                    {projectData.folderPath}
+                                </p>
+                            </div>
+                            {config.icon}
                         </div>
-                        <div className="flex flex-col gap-1 break-all w-full">
-                            <p className={`text-regular ${config.textColor}`}>{projectData.name}</p>
-                            <p className={`text-mini ${config.subTextColor}`}>
-                                {projectData.folderPath}
+                        {config.showError && (
+                            <p className={`${config.textColor} text-sm`}>
+                                {validation?.error ?? 'This project does not match the supported stack'}
                             </p>
-                        </div>
-                        {config.icon}
+                        )}
                     </div>
-                    {config.showError && (
-                        <p className={`${config.textColor} text-sm`}>
-                            This is not a NextJS Project
-                        </p>
-                    )}
-                </div>
-                {validation?.isValid && (
                     <Button
                         className={`absolute right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 hover:bg-transparent p-0 size-10 transition-opacity duration-200 ${config.bgColor}`}
                         variant="ghost"
                         size="icon"
                         onClick={reset}
                     >
-                        <Icons.MinusCircled className="w-5 h-5 text-teal-200" />
+                        <Icons.MinusCircled className={`w-5 h-5 ${validation?.isValid ? 'text-purple-200' : 'text-amber-200'}`} />
                     </Button>
+                </motion.div>
+                {error && (
+                    <div className="rounded-md border border-red-500/40 bg-red-500/10 px-3 py-2 text-sm text-red-100">
+                        {error}
+                    </div>
                 )}
-            </motion.div>
+            </div>
         );
     };
 
@@ -485,12 +495,12 @@ export const NewSelectFolder = () => {
                     </Button>
                 ) : (
                     <Button
-                        disabled={!projectData.folderPath || !!error || isUploading}
+                        disabled={isUploading}
                         type="button"
-                        onClick={nextStep}
+                        onClick={handleClickUpload}
                         className="px-3 py-2"
                     >
-                        Continue
+                        Select folder
                     </Button>
                 )}
             </StepFooter>
