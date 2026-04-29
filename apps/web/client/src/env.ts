@@ -81,6 +81,7 @@ export const env = createEnv({
         NEXT_PUBLIC_POSTHOG_HOST: z.string().optional(),
         NEXT_PUBLIC_GLEAP_API_KEY: z.string().optional(),
         NEXT_PUBLIC_FEATURE_COLLABORATION: z.coerce.boolean().default(false),
+        NEXT_PUBLIC_STYLE_PANEL_V2: z.coerce.boolean().default(false),
         NEXT_PUBLIC_HOSTING_DOMAIN: z.string().optional(),
         NEXT_PUBLIC_RB2B_ID: z.string().optional(),
         NEXT_PUBLIC_APP_NAME: z.string().default('Weblab'),
@@ -96,6 +97,7 @@ export const env = createEnv({
         CSB_API_KEY: process.env.CSB_API_KEY ?? (process.env.NODE_ENV === 'development' ? 'dev_csb_api_key' : undefined),
         RESEND_API_KEY: process.env.RESEND_API_KEY,
         NEXT_PUBLIC_FEATURE_COLLABORATION: process.env.NEXT_PUBLIC_FEATURE_COLLABORATION,
+        NEXT_PUBLIC_STYLE_PANEL_V2: process.env.NEXT_PUBLIC_STYLE_PANEL_V2,
 
         // Supabase
         SUPABASE_URL:

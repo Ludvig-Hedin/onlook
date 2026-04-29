@@ -12,6 +12,8 @@ import { HoverRect } from './elements/rect/hover';
 import { InsertRect } from './elements/rect/insert';
 import { SnapGuidelines } from './elements/snap-guidelines';
 import { TextEditor } from './elements/text';
+import { CommentPins } from './comment-pins';
+import { CommentPopover } from './comment-popover';
 
 export const Overlay = observer(() => {
     const editorEngine = useEditorEngine();
@@ -68,6 +70,8 @@ export const Overlay = observer(() => {
                 <OverlayButtons />
             )}
             <SnapGuidelines />
+            <CommentPins />
+            <CommentPopover />
         </div>
     );
 });

@@ -179,13 +179,43 @@ export const GestureScreen = observer(({ frame, isResizing }: { frame: Frame, is
     }, [editorEngine.move]);
 
     const handleClick = useCallback(
-        (_e: React.MouseEvent<HTMLDivElement>) => {
+        async (e: React.MouseEvent<HTMLDivElement>) => {
             if (editorEngine.move.consumeSuppressedClick()) {
                 return;
             }
+
+            if (editorEngine.state.pendingInsertElement) {
+                const frameData = getFrameData();
+                if (!frameData) {
+                    toast.error('Unable to insert element', {
+                        description: 'Frame data not available',
+                    });
+                    editorEngine.state.setPendingInsertElement(null);
+                    return;
+                }
+
+                try {
+                    const dropPosition = getRelativeMousePosition(e);
+                    await editorEngine.insert.insertDroppedElement(
+                        frameData,
+                        dropPosition,
+                        editorEngine.state.pendingInsertElement,
+                    );
+                    editorEngine.state.setPendingInsertElement(null);
+                    editorEngine.state.setEditorMode(EditorMode.DESIGN);
+                    editorEngine.state.setInsertMode(null);
+                } catch (error) {
+                    console.error('Failed to insert element from palette:', error);
+                    toast.error('Failed to insert element', {
+                        description: error instanceof Error ? error.message : 'Unknown error',
+                    });
+                }
+                return;
+            }
+
             editorEngine.frames.select([frame]);
         },
-        [editorEngine.frames, editorEngine.move, frame],
+        [editorEngine.frames, editorEngine.insert, editorEngine.move, editorEngine.state, frame, getFrameData, getRelativeMousePosition],
     );
 
     async function handleDoubleClick(e: React.MouseEvent<HTMLDivElement>) {
@@ -196,6 +226,9 @@ export const GestureScreen = observer(({ frame, isResizing }: { frame: Frame, is
     }
 
     async function handleMouseDown(e: React.MouseEvent<HTMLDivElement>) {
+        if (editorEngine.state.pendingInsertElement) {
+            return;
+        }
         if (editorEngine.state.editorMode === EditorMode.DESIGN || editorEngine.state.editorMode === EditorMode.CODE) {
             await handleMouseEvent(e, MouseAction.MOUSE_DOWN);
         } else if (
@@ -270,8 +303,9 @@ export const GestureScreen = observer(({ frame, isResizing }: { frame: Frame, is
                 : 'visible',
             editorEngine.state.insertMode === InsertMode.INSERT_DIV && 'cursor-crosshair',
             editorEngine.state.insertMode === InsertMode.INSERT_TEXT && 'cursor-text',
+            editorEngine.state.pendingInsertElement && 'cursor-crosshair',
         );
-    }, [editorEngine.state.editorMode, isResizing]);
+    }, [editorEngine.state.editorMode, editorEngine.state.insertMode, editorEngine.state.pendingInsertElement, isResizing]);
 
     const handleMouseOut = () => {
         if (editorEngine.move.isPreparing) {

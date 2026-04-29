@@ -14,6 +14,10 @@ import { AnimatePresence, motion } from 'motion/react';
 import { useTranslations } from 'next-intl';
 import { TerminalArea } from './terminal-area';
 
+const MIN_SCALE = 0.1;
+const MAX_SCALE = 5;
+const ZOOM_FACTOR = 1.25;
+
 const TOOLBAR_ITEMS = ({ t }: { t: ReturnType<typeof useTranslations> }) => [
     {
         mode: EditorMode.DESIGN,
@@ -32,6 +36,15 @@ const TOOLBAR_ITEMS = ({ t }: { t: ReturnType<typeof useTranslations> }) => [
         draggable: false,
         label: t(transKeys.editor.toolbar.tools.pan.name),
         tooltip: t(transKeys.editor.toolbar.tools.pan.tooltip),
+    },
+    {
+        mode: EditorMode.COMMENT,
+        icon: Icons.ChatBubble,
+        hotkey: Hotkey.COMMENT,
+        disabled: false,
+        draggable: false,
+        label: t(transKeys.editor.toolbar.tools.comment.name),
+        tooltip: t(transKeys.editor.toolbar.tools.comment.tooltip),
     },
     // {
     //     mode: InsertMode.INSERT_DIV,
@@ -57,10 +70,10 @@ export const BottomBar = observer(() => {
     const t = useTranslations();
     const editorEngine = useEditorEngine();
     const toolbarItems = TOOLBAR_ITEMS({ t });
-    const shouldShow = editorEngine.state.editorMode === EditorMode.DESIGN || editorEngine.state.editorMode === EditorMode.PAN;
+    const shouldShow = [EditorMode.DESIGN, EditorMode.PAN, EditorMode.COMMENT].includes(editorEngine.state.editorMode);
 
     return (
-        <div className="absolute left-1/2 -translate-x-1/2 bottom-4 overflow-hidden">
+        <div className="absolute left-1/2 -translate-x-1/2 bottom-4">
             <AnimatePresence mode="wait">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -68,7 +81,7 @@ export const BottomBar = observer(() => {
                         opacity: shouldShow ? 1 : 0,
                         y: shouldShow ? 0 : 20,
                     }}
-                    className="flex flex-col border-[0.5px] border-border p-1 px-1 bg-background rounded-lg backdrop-blur drop-shadow-xl overflow-hidden"
+                    className="flex flex-col border-[0.5px] border-border p-1 px-1.5 bg-background rounded-full backdrop-blur drop-shadow-xl"
                     transition={{
                         type: 'spring',
                         bounce: 0.1,
@@ -101,7 +114,7 @@ export const BottomBar = observer(() => {
                                             aria-label={item.hotkey.description}
                                             disabled={item.disabled}
                                             className={cn(
-                                                "h-9 w-9 flex items-center justify-center rounded-md border border-transparent transition-all duration-150 ease-in-out",
+                                                "h-9 w-9 flex items-center justify-center rounded-full border border-transparent transition-all duration-150 ease-in-out",
                                                 editorEngine.state.editorMode === item.mode
                                                     ? "bg-background-tertiary/50 text-foreground-primary hover:text-foreground-primary"
                                                     : "text-foreground-tertiary hover:text-foreground-hover hover:bg-background-tertiary/50"
@@ -116,6 +129,36 @@ export const BottomBar = observer(() => {
                                 </Tooltip>
                             ))}
                         </ToggleGroup>
+                        <div className="w-px h-5 bg-border/60 mx-0.5" />
+                        <div className="flex items-center gap-0.5">
+                            <button
+                                onClick={() => {
+                                    editorEngine.canvas.scale = Math.max(
+                                        MIN_SCALE,
+                                        editorEngine.canvas.scale / ZOOM_FACTOR,
+                                    );
+                                }}
+                                className="h-7 w-7 flex items-center justify-center text-foreground-tertiary hover:text-foreground-hover hover:bg-background-tertiary/50 rounded-full transition-all duration-150"
+                                aria-label="Zoom out"
+                            >
+                                <Icons.Minus className="h-3 w-3" />
+                            </button>
+                            <span className="text-xs text-foreground-secondary min-w-[3rem] text-center select-none tabular-nums">
+                                {Math.round(editorEngine.canvas.scale * 100)}%
+                            </span>
+                            <button
+                                onClick={() => {
+                                    editorEngine.canvas.scale = Math.min(
+                                        MAX_SCALE,
+                                        editorEngine.canvas.scale * ZOOM_FACTOR,
+                                    );
+                                }}
+                                className="h-7 w-7 flex items-center justify-center text-foreground-tertiary hover:text-foreground-hover hover:bg-background-tertiary/50 rounded-full transition-all duration-150"
+                                aria-label="Zoom in"
+                            >
+                                <Icons.Plus className="h-3 w-3" />
+                            </button>
+                        </div>
                     </TerminalArea>
                 </motion.div>
             </AnimatePresence>

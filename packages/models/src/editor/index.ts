@@ -9,6 +9,7 @@ export enum EditorMode {
     CODE = 'code',
     PREVIEW = 'preview',
     PAN = 'pan',
+    COMMENT = 'comment',
 }
 
 export enum InsertMode {

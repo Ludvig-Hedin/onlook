@@ -203,14 +203,14 @@
     --np-primary-icon-background: #3b82f6; /* blue-500*/
     --np-primary-icon-shape: #dbeafe; /* blue-100*/
 
-    --np-secondary-card-background: #ccfbf1; /* teal-100*/
-    --np-secondary-card-background-hover: #99f6e4; /* teal-200*/
-    --np-secondary-card-border: #5eead4; /* teal-300*/
-    --np-secondary-card-border-hover: #2dd4bf; /* teal-400 */
-    --np-secondary-card-text: #134e4a; /* teal-900*/
-    --np-secondary-card-subtext: #0f766e; /* teal-700*/
-    --np-secondary-icon-background: #14b8a6; /* teal-500*/
-    --np-secondary-icon-shape: #ccfbf1; /* teal 100*/
+    --np-secondary-card-background: #F7EDFF; /* purple-100*/
+    --np-secondary-card-background-hover: #E1BBFF; /* purple-200*/
+    --np-secondary-card-border: #D198FF; /* purple-300*/
+    --np-secondary-card-border-hover: #C174FF; /* purple-400 */
+    --np-secondary-card-text: #3D006E; /* purple-900*/
+    --np-secondary-card-subtext: #7300D1; /* purple-700*/
+    --np-secondary-icon-background: #AE4AFF; /* purple-500*/
+    --np-secondary-icon-shape: #F7EDFF; /* purple-100*/
 
     --background: 0 0% 100%; /* white */
     --background-onlook: 0 0% 90%; /* light gray */
@@ -243,7 +243,7 @@
     --secondary: 0 0% 95%; /* very light gray */
     --secondary-foreground: 0 0% 10%; /* black */
 
-    --destructive: 205 100% 53%; /* blue[400] */
+    --destructive: 0 72% 51%; /* red */
     --destructive-foreground: 0 0% 100%; /* white */
 
     --card: 0 0% 100%; /* white */
@@ -270,7 +270,7 @@
     --input: 0 0% 95%; /* very light gray */
     --ring: 0 0% 90%; /* light gray */
 
-    --radius: 0.5rem; /* shadcn */
+    --radius: 1rem; /* shadcn */
 
     /* Color Tokens */
     --color-amber-default: 206 100% 78%; /* #90D1FF */
@@ -302,17 +302,17 @@
     --color-purple-900: oklch(0.25 0.45 300);
     --color-purple-950: oklch(0.15 0.5 300);
 
-    --color-red-default: 206 100% 78%; /* #90D1FF */
-    --color-red-100: 206 100% 94%; /* #E3F3FF */
-    --color-red-200: 206 100% 78%; /* #90D1FF */
-    --color-red-300: 206 100% 66%; /* #53B8FF */
-    --color-red-400: 206 100% 53%; /* #109BFF */
-    --color-red-500: 206 100% 44%; /* #0081DE */
-    --color-red-600: 206 100% 35%; /* #006AB5 */
-    --color-red-700: 206 100% 28%; /* #00538F */
-    --color-red-800: 206 100% 20%; /* #003E69 */
-    --color-red-900: 206 100% 14%; /* #002A48 */
-    --color-red-950: 206 100% 9%; /* #001B2E */
+    --color-red-default: 0 72% 51%; /* #e53e3e */
+    --color-red-100: 0 93% 94%; /* #fee2e2 */
+    --color-red-200: 0 96% 89%; /* #fecaca */
+    --color-red-300: 0 94% 82%; /* #fca5a5 */
+    --color-red-400: 0 91% 71%; /* #f87171 */
+    --color-red-500: 0 84% 60%; /* #ef4444 */
+    --color-red-600: 0 72% 51%; /* #dc2626 */
+    --color-red-700: 0 74% 42%; /* #b91c1c */
+    --color-red-800: 0 70% 35%; /* #991b1b */
+    --color-red-900: 0 63% 31%; /* #7f1d1d */
+    --color-red-950: 0 75% 15%; /* #450a0a */
 
     --color-blue-default: 206 100% 78%; /* #90D1FF */
     --color-blue-100: 206 100% 94%; /* #E3F3FF */
@@ -350,17 +350,17 @@
     --color-green-900: 206 100% 14%; /* #002A48 */
     --color-green-950: 206 100% 9%; /* #001B2E */
 
-    --color-teal-default: 171 100% 44%; /* #00deba */
-    --color-teal-100: 171 100% 90%; /* #cbfff6 */
-    --color-teal-200: 171 100% 44%; /* #00deba */
-    --color-teal-300: 171 100% 38%; /* #00c1a2 */
-    --color-teal-400: 171 100% 32%; /* #00a68b */
-    --color-teal-500: 171 100% 27%; /* #008b74 */
-    --color-teal-600: 171 100% 22%; /* #00715e */
-    --color-teal-700: 171 100% 17%; /* #005849 */
-    --color-teal-800: 171 100% 13%; /* #004036 */
-    --color-teal-900: 171 100% 8%; /* #002a23 */
-    --color-teal-950: 171 100% 6%; /* #00211c */
+    --color-teal-default: 206 100% 78%; /* #90D1FF */
+    --color-teal-100: 206 100% 94%; /* #E3F3FF */
+    --color-teal-200: 206 100% 78%; /* #90D1FF */
+    --color-teal-300: 206 100% 66%; /* #53B8FF */
+    --color-teal-400: 206 100% 53%; /* #109BFF */
+    --color-teal-500: 206 100% 44%; /* #0081DE */
+    --color-teal-600: 206 100% 35%; /* #006AB5 */
+    --color-teal-700: 206 100% 28%; /* #00538F */
+    --color-teal-800: 206 100% 20%; /* #003E69 */
+    --color-teal-900: 206 100% 14%; /* #002A48 */
+    --color-teal-950: 206 100% 9%; /* #001B2E */
 
     --color-yellow-default: 206 100% 78%; /* #90D1FF */
     --color-yellow-100: 206 100% 94%; /* #E3F3FF */
@@ -456,14 +456,14 @@
     --np-primary-icon-background: #3b82f6; /* blue-500*/
     --np-primary-icon-shape: #dbeafe; /* blue 100*/
 
-    --np-secondary-card-background: #042f2e; /* teal-950 */
-    --np-secondary-card-background-hover: #155e75; /* teal-800*/
-    --np-secondary-card-border: #155e75; /* teal-800*/
-    --np-secondary-card-border-hover: #0891b2; /* teal-600; */
-    --np-secondary-card-text: #ccfbf1; /* teal-100*/
-    --np-secondary-card-subtext: #5eead4; /* teal-300*/
-    --np-secondary-icon-background: #14b8a6; /* teal-500*/
-    --np-secondary-icon-shape: #ccfbf1; /* teal 100*/
+    --np-secondary-card-background: #29004B; /* purple-950 */
+    --np-secondary-card-background-hover: #57009E; /* purple-800*/
+    --np-secondary-card-border: #57009E; /* purple-800*/
+    --np-secondary-card-border-hover: #920EFF; /* purple-600 */
+    --np-secondary-card-text: #F7EDFF; /* purple-100*/
+    --np-secondary-card-subtext: #D198FF; /* purple-300*/
+    --np-secondary-icon-background: #AE4AFF; /* purple-500*/
+    --np-secondary-icon-shape: #F7EDFF; /* purple-100*/
 
     --background: 20 14.3% 4.1%; /* shadcn */
     --background-onlook: 0 0% 10%; /* gray[900] */
@@ -496,8 +496,8 @@
     --secondary: 12 6.5% 15.1%; /* shadcn */
     --secondary-foreground: 60 9.1% 97.8%; /* shadcn */
 
-    --destructive: 206 100% 35%; /* blue[600] */
-    --destructive-foreground: 206 100% 94%; /* blue[100] */
+    --destructive: 0 72% 51%; /* red */
+    --destructive-foreground: 0 0% 100%; /* white */
 
     --card: 20 14.3% 4.1%; /* shadcn */
     --card-foreground: 60 9.1% 97.8%; /* shadcn */
@@ -558,6 +558,15 @@
     --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
     --color-sidebar-border: var(--sidebar-border);
     --color-sidebar-ring: var(--sidebar-ring);
+
+    /* Radius scale — anchored to --radius (1rem) */
+    --radius-xs: 0.25rem;
+    --radius-sm: 0.5rem;
+    --radius-md: 0.75rem;
+    --radius-lg: var(--radius);
+    --radius-xl: calc(var(--radius) + 0.25rem);
+    --radius-2xl: calc(var(--radius) + 0.5rem);
+    --radius-3xl: calc(var(--radius) + 1rem);
 }
 
 @layer base {

@@ -1,0 +1,131 @@
+'use client';
+
+import { useEditorEngine } from '@/components/store/editor';
+import { Icons } from '@onlook/ui/icons';
+import { cn } from '@onlook/ui/utils';
+import { observer } from 'mobx-react-lite';
+import { useState } from 'react';
+
+type CommentFilter = 'open' | 'resolved';
+
+function formatRelativeTime(date: Date | string): string {
+    const d = new Date(date);
+    const now = new Date();
+    const diff = now.getTime() - d.getTime();
+    const minutes = Math.floor(diff / 60000);
+    if (minutes < 1) return 'just now';
+    if (minutes < 60) return `${minutes}m ago`;
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours}h ago`;
+    const days = Math.floor(hours / 24);
+    return `${days}d ago`;
+}
+
+function getInitials(name: string): string {
+    return name
+        .split(/[\s@.]+/)
+        .filter(Boolean)
+        .slice(0, 2)
+        .map((s) => s[0]?.toUpperCase() ?? '')
+        .join('');
+}
+
+export const CommentsTab = observer(() => {
+    const editorEngine = useEditorEngine();
+    const [filter, setFilter] = useState<CommentFilter>('open');
+    const comments = editorEngine.comment.comments;
+
+    const filtered = comments.filter((c) =>
+        filter === 'open' ? c.resolvedAt === null : c.resolvedAt !== null,
+    );
+
+    function flyToComment(commentId: string, canvasX: number, canvasY: number) {
+        const scale = editorEngine.canvas.scale;
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+        editorEngine.canvas.position = {
+            x: vw / 2 - canvasX * scale,
+            y: vh / 2 - canvasY * scale,
+        };
+        editorEngine.comment.setActiveCommentId(commentId);
+    }
+
+    return (
+        <div className="flex h-full flex-col overflow-hidden">
+            {/* Filter */}
+            <div className="flex gap-1 border-b border-border px-3 py-2">
+                <button
+                    onClick={() => setFilter('open')}
+                    className={cn(
+                        'rounded-md px-2.5 py-1 text-xs font-medium transition-colors',
+                        filter === 'open'
+                            ? 'bg-background-tertiary text-foreground-primary'
+                            : 'text-foreground-tertiary hover:text-foreground-hover',
+                    )}
+                >
+                    Open
+                </button>
+                <button
+                    onClick={() => setFilter('resolved')}
+                    className={cn(
+                        'rounded-md px-2.5 py-1 text-xs font-medium transition-colors',
+                        filter === 'resolved'
+                            ? 'bg-background-tertiary text-foreground-primary'
+                            : 'text-foreground-tertiary hover:text-foreground-hover',
+                    )}
+                >
+                    Resolved
+                </button>
+            </div>
+
+            {/* List */}
+            <div className="flex flex-1 flex-col gap-1 overflow-y-auto p-2">
+                {editorEngine.comment.isLoading && filtered.length === 0 ? (
+                    <div className="flex flex-1 items-center justify-center text-xs text-foreground-tertiary">
+                        Loading...
+                    </div>
+                ) : filtered.length === 0 ? (
+                    <div className="flex flex-1 items-center justify-center text-xs text-foreground-tertiary">
+                        {filter === 'open' ? 'No open comments' : 'No resolved comments'}
+                    </div>
+                ) : (
+                    filtered.map((comment) => (
+                        <button
+                            key={comment.id}
+                            onClick={() => flyToComment(comment.id, comment.canvasX, comment.canvasY)}
+                            className={cn(
+                                'flex w-full flex-col gap-1.5 rounded-lg border border-transparent p-3 text-left transition-colors hover:border-border hover:bg-background-secondary',
+                                editorEngine.comment.activeCommentId === comment.id &&
+                                    'border-border bg-background-secondary',
+                            )}
+                        >
+                            <div className="flex items-center gap-2">
+                                <div className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-blue-600 text-[10px] font-semibold text-white">
+                                    {getInitials(comment.authorName)}
+                                </div>
+                                <span className="flex-1 truncate text-xs font-medium text-foreground-primary">
+                                    {comment.authorName}
+                                </span>
+                                <span className="text-[10px] text-foreground-tertiary">
+                                    {formatRelativeTime(comment.createdAt)}
+                                </span>
+                            </div>
+                            <p className="line-clamp-2 text-xs text-foreground-secondary">
+                                {comment.content}
+                            </p>
+                            {comment.replies.length > 0 && (
+                                <div className="flex items-center gap-1 text-[10px] text-foreground-tertiary">
+                                    <Icons.ChatBubble className="h-3 w-3" />
+                                    <span>
+                                        {comment.replies.length}{' '}
+                                        {comment.replies.length === 1 ? 'reply' : 'replies'}
+                                    </span>
+                                </div>
+                            )}
+                        </button>
+                    ))
+                )}
+            </div>
+        </div>
+    );
+});

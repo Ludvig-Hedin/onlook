@@ -97,6 +97,11 @@
                 "name": "プレビュー",
                 "description": "ウェブサイトの機能をプレビュー＆テストします",
                 "tooltip": "プレビューモードに切り替え"
+            },
+            "comment": {
+                "name": "コメント",
+                "description": "キャンバスにコメントを追加します",
+                "tooltip": "コメントモードに切り替え"
             }
         },
         "toolbar": {
@@ -108,6 +113,10 @@
                 "pan": {
                     "name": "画面移動",
                     "tooltip": "キャンバスをパンして移動"
+                },
+                "comment": {
+                    "name": "コメント",
+                    "tooltip": "キャンバスにコメントを追加・表示"
                 },
                 "insertDiv": {
                     "name": "コンテナ挿入",
@@ -173,6 +182,22 @@
                                 "tooltip": "変更はインスタンスのコードに適用されます。"
                             }
                         }
+                    },
+                    "comments": {
+                        "name": "コメント",
+                        "open": "未解決",
+                        "resolved": "解決済み",
+                        "emptyOpen": "未解決のコメントはありません",
+                        "emptyResolved": "解決済みのコメントはありません",
+                        "reply": "返信",
+                        "resolve": "解決",
+                        "unresolve": "未解決に戻す",
+                        "delete": "削除",
+                        "edit": "編集",
+                        "submit": "送信",
+                        "cancel": "キャンセル",
+                        "addComment": "コメントを追加...",
+                        "addReply": "返信を追加..."
                     }
                 }
             },

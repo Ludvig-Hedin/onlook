@@ -1,5 +1,6 @@
 export * from './canvas';
 export * from './chat';
+export * from './comment';
 export * from './domain';
 export * from './feedback';
 export * from './project';

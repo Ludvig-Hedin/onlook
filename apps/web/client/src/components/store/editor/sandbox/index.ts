@@ -193,6 +193,11 @@ export class SandboxManager {
         return this.fs.copyDirectory(path, targetPath);
     }
 
+    async createDirectory(path: string): Promise<void> {
+        if (!this.fs) throw new Error('File system not initialized');
+        return this.fs.createDirectory(path);
+    }
+
     async deleteFile(path: string): Promise<void> {
         if (!this.fs) throw new Error('File system not initialized');
         return this.fs.deleteFile(path);
@@ -206,6 +211,11 @@ export class SandboxManager {
     async rename(oldPath: string, newPath: string): Promise<void> {
         if (!this.fs) throw new Error('File system not initialized');
         return this.fs.moveFile(oldPath, newPath);
+    }
+
+    async moveDirectory(oldPath: string, newPath: string): Promise<void> {
+        if (!this.fs) throw new Error('File system not initialized');
+        return this.fs.moveDirectory(oldPath, newPath);
     }
 
     // Download the code as a zip

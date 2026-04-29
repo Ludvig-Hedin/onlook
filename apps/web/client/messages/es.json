@@ -208,6 +208,11 @@
                 "name": "Vista Previa",
                 "description": "Previsualice y pruebe la funcionalidad de su sitio web",
                 "tooltip": "Cambiar al modo Vista Previa"
+            },
+            "comment": {
+                "name": "Comentario",
+                "description": "Agregar comentarios al lienzo",
+                "tooltip": "Cambiar al modo comentario"
             }
         },
         "toolbar": {
@@ -219,6 +224,10 @@
                 "pan": {
                     "name": "Desplazar",
                     "tooltip": "Desplazar y moverse por el lienzo"
+                },
+                "comment": {
+                    "name": "Comentario",
+                    "tooltip": "Agregar y ver comentarios en el lienzo"
                 },
                 "insertDiv": {
                     "name": "Insertar Contenedor",
@@ -284,6 +293,22 @@
                                 "tooltip": "Los cambios se aplican al código de instancia."
                             }
                         }
+                    },
+                    "comments": {
+                        "name": "Comentarios",
+                        "open": "Abiertos",
+                        "resolved": "Resueltos",
+                        "emptyOpen": "No hay comentarios abiertos",
+                        "emptyResolved": "No hay comentarios resueltos",
+                        "reply": "Responder",
+                        "resolve": "Resolver",
+                        "unresolve": "Reabrir",
+                        "delete": "Eliminar",
+                        "edit": "Editar",
+                        "submit": "Enviar",
+                        "cancel": "Cancelar",
+                        "addComment": "Agregar un comentario...",
+                        "addReply": "Agregar una respuesta..."
                     }
                 }
             },

@@ -119,10 +119,10 @@ export const CodeControls = ({ isDirty, currentPath, onSave, onRefresh, onCreate
                             onClick={handleSave}
                             disabled={!isDirty || isSaving}
                             className={cn(
-                                "px-2 py-1 w-fit h-fit cursor-pointer mr-0.5 ml-1",
+                                "group px-2 py-1 w-fit h-fit cursor-pointer mr-0.5 ml-1",
                                 isDirty
-                                    ? "text-background-primary hover:text-teal-100 hover:bg-teal-500 bg-foreground-primary"
-                                    : "hover:bg-background-onlook hover:text-teal-200"
+                                    ? "text-background-primary hover:text-blue-100 hover:bg-blue-500 bg-foreground-primary"
+                                    : "hover:bg-background-onlook hover:text-blue-200"
                             )}
                         >
                             {isSaving ? (
@@ -130,7 +130,7 @@ export const CodeControls = ({ isDirty, currentPath, onSave, onRefresh, onCreate
                             ) : (
                                 <Icons.Save className={cn(
                                     "h-4 w-4",
-                                    isDirty && "text-teal-200 group-hover:text-teal-100"
+                                    isDirty && "text-blue-200 group-hover:text-blue-100"
                                 )} />
                             )}
                             <span className="text-small">{isSaving ? 'Saving...' : 'Save'}</span>

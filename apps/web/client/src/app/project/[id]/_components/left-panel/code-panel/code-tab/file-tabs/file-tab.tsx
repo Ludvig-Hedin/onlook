@@ -37,10 +37,10 @@ export const FileTab = ({
                         'text-sm h-full flex items-center focus:outline-none min-w-0 flex-1',
                         isActive
                             ? isFileDirty
-                                ? 'text-teal-300'
+                                ? 'text-blue-300'
                                 : 'text-foreground'
                             : isFileDirty
-                                ? 'text-teal-500'
+                                ? 'text-blue-500'
                                 : 'text-foreground-secondary/50',
                     )}
                     onClick={onClick}
@@ -49,7 +49,7 @@ export const FileTab = ({
                     {isFileDirty && (
                         <span className={cn(
                             "ml-1 flex-shrink-0",
-                            isActive ? "text-teal-300" : "text-teal-500"
+                            isActive ? "text-blue-300" : "text-blue-500"
                         )}>
                             ●
                         </span>
@@ -57,7 +57,7 @@ export const FileTab = ({
                     {isActive && (
                         <div className={cn(
                             "absolute bottom-0 left-0 w-full h-[2px]",
-                            isFileDirty ? "bg-teal-300" : "bg-foreground-hover"
+                            isFileDirty ? "bg-blue-300" : "bg-foreground-hover"
                         )}></div>
                     )}
                     {!isActive && (

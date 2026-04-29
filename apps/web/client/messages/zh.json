@@ -208,6 +208,11 @@
                 "name": "预览",
                 "description": "预览并测试网站功能",
                 "tooltip": "切换到预览模式"
+            },
+            "comment": {
+                "name": "评论",
+                "description": "在画布上添加评论",
+                "tooltip": "切换到评论模式"
             }
         },
         "toolbar": {
@@ -219,6 +224,10 @@
                 "pan": {
                     "name": "平移",
                     "tooltip": "在画布上平移并移动"
+                },
+                "comment": {
+                    "name": "评论",
+                    "tooltip": "在画布上添加和查看评论"
                 },
                 "insertDiv": {
                     "name": "插入容器",
@@ -284,6 +293,22 @@
                                 "tooltip": "更改会应用于实例代码。"
                             }
                         }
+                    },
+                    "comments": {
+                        "name": "评论",
+                        "open": "待处理",
+                        "resolved": "已解决",
+                        "emptyOpen": "没有待处理的评论",
+                        "emptyResolved": "没有已解决的评论",
+                        "reply": "回复",
+                        "resolve": "标记为已解决",
+                        "unresolve": "标记为未解决",
+                        "delete": "删除",
+                        "edit": "编辑",
+                        "submit": "提交",
+                        "cancel": "取消",
+                        "addComment": "添加评论...",
+                        "addReply": "添加回复..."
                     }
                 }
             },

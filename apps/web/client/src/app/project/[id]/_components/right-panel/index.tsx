@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@onlook/ui/tabs';
 import { cn } from '@onlook/ui/utils';
 
 import { useEditorEngine } from '@/components/store/editor';
+import { env } from '@/env';
 import { transKeys } from '@/i18n/keys';
 import { ChatTab } from './chat-tab';
 import { ChatControls } from './chat-tab/controls';
@@ -18,8 +19,10 @@ import { ChatHistory } from './chat-tab/history';
 import { ChatPanelDropdown } from './chat-tab/panel-dropdown';
 import { DropdownManagerProvider } from '../editor-bar/hooks/use-dropdown-manager';
 import { StyleTab } from './style-tab';
+import { StyleTabV2 } from './style-tab-v2';
+import { CommentsTab } from './comments-tab';
 
-type RightPanelTab = 'style' | 'chat';
+type RightPanelTab = 'style' | 'chat' | 'comments';
 
 export const RightPanel = observer(() => {
     const editorEngine = useEditorEngine();
@@ -82,6 +85,10 @@ export const RightPanel = observer(() => {
                                         <Icons.Sparkles className="h-4 w-4" />
                                         {t(transKeys.editor.panels.edit.tabs.chat.name)}
                                     </TabsTrigger>
+                                    <TabsTrigger value="comments" className="gap-1.5">
+                                        <Icons.ChatBubble className="h-4 w-4" />
+                                        {t(transKeys.editor.panels.edit.tabs.comments.name)}
+                                    </TabsTrigger>
                                 </TabsList>
                                 <div className="ml-auto flex items-center gap-1">
                                     {activeTab === 'chat' && (
@@ -119,7 +126,7 @@ export const RightPanel = observer(() => {
                             />
 
                             <TabsContent value="style" className="min-h-0 flex-1 overflow-hidden">
-                                <StyleTab />
+                                {env.NEXT_PUBLIC_STYLE_PANEL_V2 ? <StyleTabV2 /> : <StyleTab />}
                             </TabsContent>
 
                             <TabsContent value="chat" className="min-h-0 flex-1 overflow-hidden">
@@ -131,6 +138,10 @@ export const RightPanel = observer(() => {
                                         />
                                     )}
                                 </div>
+                            </TabsContent>
+
+                            <TabsContent value="comments" className="min-h-0 flex-1 overflow-hidden">
+                                <CommentsTab />
                             </TabsContent>
                         </Tabs>
                     </DropdownManagerProvider>

@@ -133,7 +133,7 @@ export const TopBar = observer(
                 )}
                 style={{
                     backgroundColor: 'rgba(255, 255, 255, 0.04)',
-                    ...(isSelected && { backgroundColor: 'rgba(20, 184, 166, 0.1)' }),
+                    ...(isSelected && { backgroundColor: 'rgba(16, 155, 255, 0.1)' }),
                     height: `${28 / editorEngine.canvas.scale}px`,
                     width: `${frame.dimension.width}px`,
                     marginBottom: `${8 / editorEngine.canvas.scale}px`,
@@ -198,7 +198,7 @@ export const TopBar = observer(
                         </Button>
                     </HoverOnlyTooltip>
                     <BranchDisplay frame={frame} />
-                    <span className={cn("ml-1.25 mb-0.5", isSelected ? "text-teal-700" : "text-foreground-secondary/50")}>·</span>
+                    <span className={cn("ml-1.25 mb-0.5", isSelected ? "text-blue-700" : "text-foreground-secondary/50")}>·</span>
                     <PageSelector frame={frame} />
                 </div>
                 <HoverOnlyTooltip content="Preview in new tab" side="top" hideArrow className="mb-0">

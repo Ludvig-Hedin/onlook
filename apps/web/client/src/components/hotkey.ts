@@ -3,9 +3,11 @@ import { capitalizeFirstLetter } from '@onlook/utility';
 export class Hotkey {
     // Modes
     static readonly SELECT = new Hotkey('v', 'Select');
-    static readonly CODE = new Hotkey('c', 'Code');
+    static readonly CODE = new Hotkey('e', 'Code');
     static readonly ESCAPE = new Hotkey('esc', 'Escape');
     static readonly PAN = new Hotkey('h', 'Pan');
+    static readonly COMMENT = new Hotkey('c', 'Comment');
+    static readonly TOGGLE_COMMENTS = new Hotkey('shift+c', 'Toggle Comments');
     static readonly PREVIEW = new Hotkey('p', 'Preview');
     static readonly INSERT_DIV = new Hotkey('r', 'Insert Div');
     static readonly RELOAD_APP = new Hotkey('mod+r', 'Reload App');
@@ -14,6 +16,15 @@ export class Hotkey {
     static readonly SIDEBAR_PAGES = new Hotkey('alt+3', 'Pages');
     static readonly SIDEBAR_IMAGES = new Hotkey('alt+4', 'Images');
     static readonly SIDEBAR_BRANCHES = new Hotkey('alt+5', 'Branches');
+
+    // Mode switching
+    static readonly MODE_DESIGN = new Hotkey('mod+1', 'Design Mode');
+    static readonly MODE_CODE = new Hotkey('mod+2', 'Code Mode');
+    static readonly MODE_PREVIEW = new Hotkey('mod+3', 'Preview Mode');
+
+    // Toggles
+    static readonly TOGGLE_TERMINAL = new Hotkey('mod+`', 'Toggle Terminal');
+    static readonly OPEN_MODEL_PICKER = new Hotkey('mod+shift+m', 'Open Model Picker');
 
     // Zoom
     static readonly ZOOM_FIT = new Hotkey('mod+0', 'Zoom Fit');
@@ -28,7 +39,7 @@ export class Hotkey {
     static readonly OPEN_DEV_TOOL = new Hotkey('mod+shift+i', 'Open Devtool');
     static readonly ADD_AI_CHAT = new Hotkey('mod+shift+l', 'Add to AI chat');
     static readonly NEW_AI_CHAT = new Hotkey('mod+l', 'New AI Chat');
-    static readonly CHAT_MODE_TOGGLE = new Hotkey('mod+period', 'Open Chat Mode Menu');
+    static readonly CHAT_MODE_TOGGLE = new Hotkey('mod+period', 'Toggle Preview');
     static readonly MOVE_LAYER_UP = new Hotkey('shift+arrowup', 'Move Layer Up');
     static readonly MOVE_LAYER_DOWN = new Hotkey('shift+arrowdown', 'Move Layer Down');
     static readonly SHOW_HOTKEYS = new Hotkey('mod+k', 'Show Shortcuts');
@@ -46,6 +57,9 @@ export class Hotkey {
     // Delete
     static readonly BACKSPACE = new Hotkey('backspace', 'Delete');
     static readonly DELETE = new Hotkey('delete', 'Delete');
+
+    // Style panel
+    static readonly RESET_STYLE = new Hotkey('alt+backspace', 'Reset focused style');
 
     // private to disallow creating other instances of this type
     private constructor(
@@ -84,6 +98,9 @@ export class Hotkey {
                 }
                 if (value === 'period') {
                     return '.';
+                }
+                if (value === '`') {
+                    return '`';
                 }
                 return capitalizeFirstLetter(value);
             })

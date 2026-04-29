@@ -4,6 +4,7 @@ import {
     ChatType,
     EditorMode,
     InsertMode,
+    type DropElementProperties,
     type LeftPanelTabValue
 } from '@onlook/models';
 import { debounce } from 'lodash';
@@ -19,6 +20,7 @@ export class StateManager {
 
     editorMode: EditorMode = EditorMode.DESIGN;
     insertMode: InsertMode | null = null;
+    pendingInsertElement: DropElementProperties | null = null;
     leftPanelTab: LeftPanelTabValue | null = null;
     brandTab: BrandTabValue | null = null;
     branchTab: BranchTabValue | null = null;
@@ -36,6 +38,10 @@ export class StateManager {
 
     setInsertMode(mode: InsertMode | null) {
         this.insertMode = mode;
+    }
+
+    setPendingInsertElement(properties: DropElementProperties | null) {
+        this.pendingInsertElement = properties;
     }
 
     setLeftPanelTab(tab: LeftPanelTabValue | null) {
@@ -103,6 +109,7 @@ export class StateManager {
             this.publishOpen = false;
             this.branchTab = null;
             this.manageBranchId = null;
+            this.pendingInsertElement = null;
         });
         this.resetCanvasScrollingDebounced.cancel();
     }

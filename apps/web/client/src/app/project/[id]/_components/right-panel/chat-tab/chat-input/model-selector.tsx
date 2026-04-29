@@ -1,8 +1,16 @@
 'use client';
 
-import { CHAT_MODEL_OPTIONS, type ChatModel } from '@onlook/models';
+import { useEffect, useState } from 'react';
+
+import type { ChatModel } from '@onlook/models';
+import { CHAT_MODEL_OPTIONS } from '@onlook/models';
 import { Button } from '@onlook/ui/button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@onlook/ui/dropdown-menu';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '@onlook/ui/dropdown-menu';
 import { Icons } from '@onlook/ui/icons';
 import { cn } from '@onlook/ui/utils';
 
@@ -13,15 +21,23 @@ export const ModelSelector = ({
     value: ChatModel;
     onChange: (model: ChatModel) => void;
 }) => {
-    const current = CHAT_MODEL_OPTIONS.find((option) => option.model === value) ?? CHAT_MODEL_OPTIONS[0];
+    const current =
+        CHAT_MODEL_OPTIONS.find((option) => option.model === value) ?? CHAT_MODEL_OPTIONS[0];
+    const [isOpen, setIsOpen] = useState(false);
+
+    useEffect(() => {
+        const handleOpen = () => setIsOpen(true);
+        window.addEventListener('open-model-selector', handleOpen);
+        return () => window.removeEventListener('open-model-selector', handleOpen);
+    }, []);
 
     return (
-        <DropdownMenu>
+        <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
             <DropdownMenuTrigger asChild>
                 <Button
                     variant="ghost"
                     size="sm"
-                    className="h-8 gap-1.5 px-2 text-xs text-foreground-secondary hover:bg-background-secondary hover:text-foreground-primary"
+                    className="text-foreground-secondary hover:bg-background-secondary hover:text-foreground-primary h-8 gap-1.5 px-2 text-xs"
                 >
                     <Icons.ChevronDown className="h-3.5 w-3.5" />
                     <span className="max-w-[160px] truncate">{current?.label ?? 'Model'}</span>
@@ -38,7 +54,7 @@ export const ModelSelector = ({
                         )}
                     >
                         <span className="text-sm font-medium">{option.label}</span>
-                        <span className="text-xs text-foreground-tertiary">{option.model}</span>
+                        <span className="text-foreground-tertiary text-xs">{option.model}</span>
                     </DropdownMenuItem>
                 ))}
             </DropdownMenuContent>

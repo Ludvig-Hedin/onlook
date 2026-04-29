@@ -206,7 +206,7 @@ const UserMessageComponent = ({ onEditMessage, message }: UserMessageProps) => {
                             className="h-6 w-6 p-1"
                         >
                             {isCopied ? (
-                                <Icons.Check className="h-4 w-4 text-teal-200" />
+                                <Icons.Check className="h-4 w-4 text-blue-200" />
                             ) : (
                                 <Icons.Copy className="h-4 w-4" />
                             )}

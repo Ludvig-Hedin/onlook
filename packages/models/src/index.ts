@@ -2,6 +2,7 @@ export * from './actions/';
 export * from './assets/';
 export * from './auth/';
 export * from './chat/';
+export * from './comment/';
 export * from './code/';
 export * from './create/';
 export * from './domain/';

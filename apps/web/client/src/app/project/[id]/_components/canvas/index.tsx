@@ -34,20 +34,32 @@ export const Canvas = observer(() => {
     const [framesInSelection, setFramesInSelection] = useState<Set<string>>(new Set());
 
     const handleCanvasMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
+        if (event.button !== 0) {
+            return;
+        }
+
         if (event.target !== containerRef.current) {
             return;
         }
 
-        // Start drag selection only in design mode and left mouse button
-        if (event.button !== 0) {
+        // COMMENT mode: place a comment pin at the click location
+        if (editorEngine.state.editorMode === EditorMode.COMMENT) {
+            if (!containerRef.current) {
+                return;
+            }
+            const rect = containerRef.current.getBoundingClientRect();
+            const canvasX = (event.clientX - rect.left - position.x) / scale;
+            const canvasY = (event.clientY - rect.top - position.y) / scale;
+            editorEngine.comment.setPendingPlacement({ x: canvasX, y: canvasY });
             return;
         }
 
         // Switch to chat mode when clicking on empty canvas space during code editing
         if (editorEngine.state.editorMode === EditorMode.CODE) {
             editorEngine.state.setEditorMode(EditorMode.DESIGN);
-            return
+            return;
         }
+        // Start drag selection only in design mode
         if (editorEngine.state.editorMode === EditorMode.DESIGN) {
             const rect = containerRef.current.getBoundingClientRect();
             const x = event.clientX - rect.left;

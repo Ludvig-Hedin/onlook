@@ -2,6 +2,7 @@ export * from './assert';
 export * from './autolayout';
 export * from './clone';
 export * from './color';
+export * from './css-to-tailwind';
 export * from './domain';
 export * from './email';
 export * from './errors';

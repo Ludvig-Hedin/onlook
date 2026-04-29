@@ -208,6 +208,11 @@
                 "name": "미리보기",
                 "description": "웹사이트 기능 미리보기 및 테스트",
                 "tooltip": "미리보기 모드로 변경"
+            },
+            "comment": {
+                "name": "코멘트",
+                "description": "캔버스에 코멘트 추가",
+                "tooltip": "코멘트 모드로 변경"
             }
         },
         "toolbar": {
@@ -219,6 +224,10 @@
                 "pan": {
                     "name": "이동",
                     "tooltip": "캔버스 이동 및 주변 탐색"
+                },
+                "comment": {
+                    "name": "코멘트",
+                    "tooltip": "캔버스에서 코멘트 추가 및 보기"
                 },
                 "insertDiv": {
                     "name": "컨테이너 추가",
@@ -284,6 +293,22 @@
                                 "tooltip": "변경 사항이 인스턴스 코드에 적용됩니다."
                             }
                         }
+                    },
+                    "comments": {
+                        "name": "코멘트",
+                        "open": "열림",
+                        "resolved": "해결됨",
+                        "emptyOpen": "열린 코멘트가 없습니다",
+                        "emptyResolved": "해결된 코멘트가 없습니다",
+                        "reply": "답글",
+                        "resolve": "해결",
+                        "unresolve": "해결 취소",
+                        "delete": "삭제",
+                        "edit": "수정",
+                        "submit": "제출",
+                        "cancel": "취소",
+                        "addComment": "코멘트 추가...",
+                        "addReply": "답글 추가..."
                     }
                 }
             },

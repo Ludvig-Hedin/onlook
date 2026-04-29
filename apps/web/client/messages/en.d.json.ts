@@ -211,6 +211,11 @@ declare const messages: {
                 "name": "Preview",
                 "description": "Preview and test your website's functionality",
                 "tooltip": "Switch to Preview mode"
+            },
+            "comment": {
+                "name": "Comment",
+                "description": "Add comments to the canvas",
+                "tooltip": "Switch to comment mode"
             }
         },
         "toolbar": {
@@ -222,6 +227,10 @@ declare const messages: {
                 "pan": {
                     "name": "Pan",
                     "tooltip": "Pan and move around the canvas"
+                },
+                "comment": {
+                    "name": "Comment",
+                    "tooltip": "Add and view comments on the canvas"
                 },
                 "insertDiv": {
                     "name": "Insert Container",
@@ -287,6 +296,22 @@ declare const messages: {
                                 "tooltip": "Changes apply to instance code."
                             }
                         }
+                    },
+                    "comments": {
+                        "name": "Comments",
+                        "open": "Open",
+                        "resolved": "Resolved",
+                        "emptyOpen": "No open comments",
+                        "emptyResolved": "No resolved comments",
+                        "reply": "Reply",
+                        "resolve": "Resolve",
+                        "unresolve": "Unresolve",
+                        "delete": "Delete",
+                        "edit": "Edit",
+                        "submit": "Submit",
+                        "cancel": "Cancel",
+                        "addComment": "Add a comment...",
+                        "addReply": "Add a reply..."
                     }
                 }
             },
