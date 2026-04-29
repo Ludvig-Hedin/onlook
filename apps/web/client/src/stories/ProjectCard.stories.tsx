@@ -25,11 +25,6 @@ const meta = {
     ),
   ],
   argTypes: {
-    aspectRatio: {
-      control: 'select',
-      options: ['aspect-[4/2.6]', 'aspect-[4/2.8]', 'aspect-square', 'aspect-video'],
-      description: 'The aspect ratio of the card',
-    },
     searchQuery: {
       control: 'text',
       description: 'Search query to highlight in project name and description',
@@ -70,7 +65,6 @@ export const Default: Story = {
   args: {
     project: createMockProject(),
     refetch: mockRefetch,
-    aspectRatio: 'aspect-[4/2.6]',
     searchQuery: '',
     HighlightText,
   },
@@ -92,7 +86,6 @@ export const NoImage: Story = {
       },
     }),
     refetch: mockRefetch,
-    aspectRatio: 'aspect-[4/2.6]',
     HighlightText,
   },
 };
@@ -214,7 +207,6 @@ export const SquareAspect: Story = {
       },
     }),
     refetch: mockRefetch,
-    aspectRatio: 'aspect-square',
     HighlightText,
   },
 };
@@ -239,7 +231,6 @@ export const WideAspect: Story = {
       },
     }),
     refetch: mockRefetch,
-    aspectRatio: 'aspect-video',
     HighlightText,
   },
 };

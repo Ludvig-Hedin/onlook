@@ -245,17 +245,17 @@ export const TopBar = ({ searchQuery, onSearchChange }: TopBarProps) => {
                         </DropdownMenuItem>
                         <DropdownMenuItem
                             className={cn(
-                                'focus:bg-teal-100 focus:text-teal-900',
-                                'hover:bg-teal-100 hover:text-teal-900',
-                                'dark:focus:bg-teal-900 dark:focus:text-teal-100',
-                                'dark:hover:bg-teal-900 dark:hover:text-teal-100',
+                                'focus:bg-blue-100 focus:text-blue-900',
+                                'hover:bg-blue-100 hover:text-blue-900',
+                                'dark:focus:bg-blue-900 dark:focus:text-blue-100',
+                                'dark:hover:bg-blue-900 dark:hover:text-blue-100',
                                 'cursor-pointer select-none group',
                             )}
                             onSelect={() => {
                                 router.push(Routes.IMPORT_PROJECT);
                             }}
                         >
-                            <Icons.Upload className="w-4 h-4 mr-1 text-foreground-secondary group-hover:text-teal-100" />
+                            <Icons.Upload className="w-4 h-4 mr-1 text-foreground-secondary group-hover:text-blue-100" />
                             <p className="text-microPlus">{t(transKeys.projects.actions.import)}</p>
                         </DropdownMenuItem>
                     </DropdownMenuContent>

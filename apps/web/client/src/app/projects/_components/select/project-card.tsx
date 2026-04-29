@@ -1,109 +1,167 @@
 'use client';
 
-import { getFileUrlFromStorage } from '@/utils/supabase/client';
-import { STORAGE_BUCKETS } from '@onlook/constants';
-import type { Project } from '@onlook/models';
-import { timeAgo } from '@onlook/utility';
-import { motion } from 'motion/react';
 import { useEffect, useMemo, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { motion } from 'motion/react';
+
+import type { Project } from '@onlook/models';
+import { Checkbox } from '@onlook/ui/checkbox';
+import { Icons } from '@onlook/ui/icons';
+import { cn } from '@onlook/ui/utils';
+import { timeAgo } from '@onlook/utility';
+
+import type { ProjectListItem } from './project-card-utils';
 import { EditAppButton } from '../edit-app';
 import { SettingsDropdown } from '../settings';
+import {
+    getDisplayUrl,
+    getFaviconUrl,
+    getProjectPreviewImageUrl,
+    getProjectSiteUrl,
+} from './project-card-utils';
+import { ProjectPreviewSurface } from './project-preview-surface';
 
 export function ProjectCard({
     project,
     refetch,
-    aspectRatio = "aspect-[4/2.6]",
-    searchQuery = "",
-    HighlightText
+    searchQuery = '',
+    HighlightText,
+    selectionMode = false,
+    selected = false,
+    onSelectionChange,
 }: {
-    project: Project;
-    refetch: () => void;
-    aspectRatio?: string;
+    project: ProjectListItem;
+    refetch: () => void | Promise<unknown>;
     searchQuery?: string;
     HighlightText?: React.ComponentType<{ text: string; searchQuery: string }>;
+    selectionMode?: boolean;
+    selected?: boolean;
+    onSelectionChange?: (selected: boolean) => void;
 }) {
-    const [img, setImg] = useState<string | null>(null);
-    const SHOW_DESCRIPTION = false;
+    const router = useRouter();
+    const [faviconFailed, setFaviconFailed] = useState(false);
+
+    const lastUpdated = useMemo(
+        () => timeAgo(project.metadata?.updatedAt),
+        [project.metadata?.updatedAt],
+    );
+    const previewImageUrl = useMemo(() => getProjectPreviewImageUrl(project), [project]);
+    const siteUrl = useMemo(() => getProjectSiteUrl(project), [project]);
+    const displayUrl = useMemo(() => getDisplayUrl(siteUrl), [siteUrl]);
+    const faviconUrl = useMemo(() => getFaviconUrl(siteUrl), [siteUrl]);
 
     useEffect(() => {
-        let isMounted = true;
-        const preview = project.metadata?.previewImg;
-        if (!preview) return;
-        if (preview.type === 'url' && preview.url) {
-            if (isMounted) setImg(preview.url);
-        } else {
-            const path = preview.storagePath?.path ?? '';
-            if (!path) return;
-            const bucket = preview.storagePath?.bucket ?? STORAGE_BUCKETS.PREVIEW_IMAGES;
-            const url = getFileUrlFromStorage(bucket, path);
-            if (isMounted) setImg(url ?? null);
-        }
-        return () => {
-            isMounted = false;
-        };
-    }, [project.metadata?.previewImg]);
+        setFaviconFailed(false);
+    }, [faviconUrl]);
 
-    const lastUpdated = useMemo(() => timeAgo(project.metadata.updatedAt), [project.metadata.updatedAt]);
+    const handleCardClick = () => {
+        if (selectionMode) {
+            onSelectionChange?.(!selected);
+            return;
+        }
+
+        router.push(`/project/${project.id}`);
+    };
 
     return (
         <motion.div
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            whileHover={{ y: -4 }}
+            whileHover={{ y: -2 }}
             transition={{ type: 'spring', stiffness: 300, damping: 24 }}
-            className="w-full break-inside-avoid cursor-pointer"
+            className="group w-full"
         >
-            <div className={`relative ${aspectRatio} rounded-lg overflow-hidden shadow-sm hover:shadow-xl hover:shadow-black/20 transition-all duration-300 group`}>
-                {img ? (
-                    <img src={img} alt={project.name} className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
-                ) : (
-                    <>
-                        <div className="absolute inset-0 w-full h-full bg-gradient-to-t from-gray-800/40 via-gray-500/40 to-gray-400/40" />
-                        <div className="absolute inset-0 rounded-lg border-[0.5px] border-gray-500/70" style={{ maskImage: 'linear-gradient(to bottom, black 60%, transparent 100%)' }} />
-                    </>
+            <div
+                className={cn(
+                    'cursor-pointer rounded-[28px] p-1.5 transition-colors duration-200',
+                    selected ? 'bg-white/8' : 'bg-transparent hover:bg-white/4',
                 )}
-
-                <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-                <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/70 to-transparent pointer-events-none" />
-
-                <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-30">
-                    <SettingsDropdown project={project} refetch={refetch} />
-                </div>
-
-                <div className="absolute inset-0 flex items-center justify-center bg-background/30 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none group-hover:pointer-events-auto z-20">
-                    <EditAppButton
-                        project={project}
+                onClick={handleCardClick}
+                onKeyDown={(event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        handleCardClick();
+                    }
+                }}
+                role="button"
+                tabIndex={0}
+            >
+                <div className="relative">
+                    <ProjectPreviewSurface
+                        projectName={project.name}
+                        imageUrl={previewImageUrl}
+                        siteUrl={siteUrl}
+                        className="aspect-[4/2.75]"
                     />
+
+                    <button
+                        type="button"
+                        className={cn(
+                            'absolute top-3 left-3 z-30 rounded-full border border-white/10 bg-black/50 p-1.5 backdrop-blur-md transition-opacity',
+                            selectionMode || selected
+                                ? 'opacity-100'
+                                : 'opacity-0 group-hover:opacity-100',
+                        )}
+                        onClick={(event) => event.stopPropagation()}
+                    >
+                        <Checkbox
+                            checked={selected}
+                            onCheckedChange={(checked) => onSelectionChange?.(checked === true)}
+                            aria-label={`Select ${project.name}`}
+                            className="border-white/20 bg-white/5 data-[state=checked]:border-white/30 data-[state=checked]:bg-white data-[state=checked]:text-black"
+                        />
+                    </button>
+
+                    {!selectionMode && (
+                        <>
+                            <div className="absolute top-3 right-3 z-30 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                                <SettingsDropdown
+                                    project={project as Project}
+                                    refetch={() => {
+                                        void refetch();
+                                    }}
+                                />
+                            </div>
+                            <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center opacity-0 transition-opacity group-hover:pointer-events-auto group-hover:opacity-100">
+                                <EditAppButton project={project as Project} />
+                            </div>
+                        </>
+                    )}
                 </div>
 
-                <div
-                    className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-background via-background/20 to-transparent p-4 h-32 transition-all duration-300 group-hover:from-background group-hover:via-background/40"
-                    style={{ bottom: "-1px", left: "-1px", right: "-1px" }}
-                >
-                    <div className="flex justify-between items-end h-full">
-                        <div>
-                            <div className="text-white font-medium text-base mb-1 truncate drop-shadow-lg">
+                <div className="mt-3 flex items-start justify-between gap-3 px-1">
+                    <div className="min-w-0">
+                        <div className="flex items-center gap-2">
+                            {faviconUrl && !faviconFailed ? (
+                                // eslint-disable-next-line @next/next/no-img-element
+                                <img
+                                    src={faviconUrl}
+                                    alt=""
+                                    className="h-4 w-4 shrink-0 rounded-[4px] object-cover"
+                                    loading="lazy"
+                                    onError={() => setFaviconFailed(true)}
+                                />
+                            ) : (
+                                <Icons.Globe className="text-foreground-tertiary h-4 w-4 shrink-0" />
+                            )}
+                            <span className="text-foreground truncate text-sm font-medium">
                                 {HighlightText ? (
                                     <HighlightText text={project.name} searchQuery={searchQuery} />
                                 ) : (
                                     project.name
                                 )}
-                            </div>
-                            <div className="text-white/70 text-xs mb-1 drop-shadow-lg flex items-center">
-                                <span>{lastUpdated} ago</span>
-                            </div>
-                            {SHOW_DESCRIPTION && project.metadata?.description && (
-                                <div className="text-white/60 text-xs line-clamp-1 drop-shadow-lg">
-                                    {HighlightText ? (
-                                        <HighlightText text={project.metadata.description} searchQuery={searchQuery} />
-                                    ) : (
-                                        project.metadata.description
-                                    )}
-                                </div>
-                            )}
+                            </span>
+                        </div>
+
+                        <div className="text-foreground-tertiary mt-1 flex items-center gap-2 text-xs">
+                            <Icons.ExternalLink className="h-3.5 w-3.5 shrink-0 opacity-60" />
+                            <span className="truncate">{displayUrl ?? 'No URL yet'}</span>
                         </div>
                     </div>
+
+                    <span className="text-foreground-tertiary mt-0.5 flex-shrink-0 text-xs">
+                        {lastUpdated} ago
+                    </span>
                 </div>
             </div>
         </motion.div>

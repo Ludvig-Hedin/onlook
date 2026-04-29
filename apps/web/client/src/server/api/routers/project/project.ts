@@ -185,11 +185,43 @@ export const projectRouter = createTRPCRouter({
                     ne(userProjects.projectId, input.excludeProjectId),
                 ) : eq(userProjects.userId, ctx.user.id),
                 with: {
-                    project: true,
+                    project: {
+                        with: {
+                            branches: {
+                                where: eq(branches.isDefault, true),
+                                with: {
+                                    frames: true,
+                                },
+                            },
+                            previewDomains: true,
+                            projectCustomDomains: true,
+                        },
+                    },
                 },
                 limit: input?.limit,
             });
-            return fetchedUserProjects.map((userProject) => fromDbProject(userProject.project)).sort((a, b) => new Date(b.metadata.updatedAt).getTime() - new Date(a.metadata.updatedAt).getTime());
+            return fetchedUserProjects
+                .map((userProject) => {
+                    const project = userProject.project;
+                    const defaultBranch = project.branches[0];
+                    const frameUrl = defaultBranch?.frames[0]?.url ?? null;
+                    const previewDomain = project.previewDomains[0]?.fullDomain ?? null;
+                    const publishedDomain = project.projectCustomDomains[0]?.fullDomain ?? null;
+                    const previewUrl = previewDomain ? `https://${previewDomain}` : null;
+                    const publishedUrl = publishedDomain ? `https://${publishedDomain}` : null;
+
+                    return {
+                        ...fromDbProject(project),
+                        previewUrl,
+                        publishedUrl,
+                        siteUrl: publishedUrl ?? previewUrl ?? frameUrl,
+                    };
+                })
+                .sort(
+                    (a, b) =>
+                        new Date(b.metadata.updatedAt).getTime() -
+                        new Date(a.metadata.updatedAt).getTime(),
+                );
         }),
     get: protectedProcedure
         .input(z.object({ projectId: z.string() }))
