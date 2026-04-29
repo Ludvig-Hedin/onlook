@@ -16,6 +16,8 @@ Open http://localhost:3000 with your browser to see the result.
 
 For production deployments, set `NEXT_PUBLIC_APP_NAME=Weblab` and `NEXT_PUBLIC_APP_DOMAIN=docs.weblab.build` on the docs service.
 
+The docs service also exposes `/api/health` for Railway healthchecks.
+
 ## Explore
 
 In the project, you can see:

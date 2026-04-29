@@ -61,7 +61,7 @@ Railway should use:
 /api/health
 ```
 
-This route is implemented in [apps/web/client/src/app/api/health/route.ts](/Users/ludvighedin/Programming/personal/AB/coder-new/onlook/apps/web/client/src/app/api/health/route.ts) and returns HTTP 200.
+This route is implemented in [docs/src/app/api/health/route.ts](/Users/ludvighedin/Programming/personal/AB/coder-new/onlook/docs/src/app/api/health/route.ts) and returns HTTP 200.
 
 ## Database
 
