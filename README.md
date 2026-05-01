@@ -2,7 +2,7 @@
 
 <div align="center">
 <img width="800" alt="header image" src="assets/web-preview.png">
-<h3 align="center">Onlook</h3>
+<h3 align="center">Weblab</h3>
   <p align="center">
     Cursor for Designers
     <br />
@@ -50,6 +50,8 @@
 
 </div>
 
+> **⚠️ Brand note for AI agents:** This product is called **Weblab** (weblab.build). Use "Weblab" in all user-facing text. Package scopes `@onlook/*` and the GitHub org `onlook-dev` are legacy identifiers — do not rename them.
+
 # An Open-Source, Visual-First Code Editor
 
 Craft websites, prototypes, and designs with AI in Next.js + TailwindCSS. Make
@@ -57,16 +59,16 @@ edits directly in the browser DOM with a visual editor. Design in realtime with
 code. An open-source alternative to Bolt.new, Lovable, V0, Replit Agent, Figma
 Make, Webflow, etc.
 
-### 🚧 🚧 🚧 Onlook is still under development 🚧 🚧 🚧
+### 🚧 🚧 🚧 Weblab is still under development 🚧 🚧 🚧
 
-We're actively looking for contributors to help make Onlook for Web an
+We're actively looking for contributors to help make Weblab for Web an
 incredible prompt-to-build experience. Check the
 [open issues](https://github.com/onlook-dev/onlook/issues) for a full list of
 proposed features (and known issues), and join our
 [Discord](https://discord.gg/hERDfFZCsH) to collaborate with hundreds of other
 builders.
 
-## What you can do with Onlook:
+## What you can do with Weblab:
 
 - [x] Create Next.js app in seconds
   - [x] Start from text or image
@@ -100,7 +102,7 @@ builders.
   - [x] Queue multiple messages at once
   - [ ] Use Images as references and as assets in a project
   - [ ] Setup and use MCPs in projects
-  - [ ] Allow Onlook to use itself as a toolcall for branch creation and iteration
+  - [ ] Allow Weblab to use itself as a toolcall for branch creation and iteration
 - [ ] Advanced project support
   - [ ] Support non-NextJS projects
   - [ ] Support non-Tailwind projects
@@ -109,13 +111,13 @@ builders.
 
 ## Getting Started
 
-Use our [hosted app](https://onlook.com) or
+Use our [hosted app](https://weblab.build) or
 [run locally](https://docs.onlook.com/developers/running-locally).
 
 ### Usage
 
-Onlook will run on any Next.js + TailwindCSS project, import your project into
-Onlook or start from scratch within the editor.
+Weblab will run on any Next.js + TailwindCSS project, import your project into
+Weblab or start from scratch within the editor.
 
 Use the AI chat to create or edit a project you're working on. At any time, you
 can always right-click an element to open up the exact location of the element
@@ -138,7 +140,7 @@ Preview the code side-by-side with your site design.
 
 <br>
 
-Use Onlook's editor toolbar to adjust Tailwind styles, directly manipulate
+Use Weblab's editor toolbar to adjust Tailwind styles, directly manipulate
 objects, and experiment with layouts.
 
 <img width="600" alt="image" src="assets/text-styling.png" />
@@ -148,7 +150,7 @@ objects, and experiment with layouts.
 For full documentation, visit [docs.onlook.com](https://docs.onlook.com)
 
 To see how to Contribute, visit
-[Contributing to Onlook](https://docs.onlook.com/developers) in our docs.
+[Contributing to Weblab](https://docs.onlook.com/developers) in our docs.
 
 ## How it works
 
@@ -222,10 +224,10 @@ See the [CONTRIBUTING.md](CONTRIBUTING.md) for instructions and code of conduct.
 - Team: [Discord](https://discord.gg/hERDfFZCsH) -
   [Twitter](https://twitter.com/onlookdev) -
   [LinkedIn](https://www.linkedin.com/company/onlook-dev/) -
-  [Email](mailto:contact@onlook.com)
+  [Email](mailto:contact@weblab.build)
 - Project:
   [https://github.com/onlook-dev/onlook](https://github.com/onlook-dev/onlook)
-- Website: [https://onlook.com](https://onlook.com)
+- Website: [https://weblab.build](https://weblab.build)
 
 ## License
 

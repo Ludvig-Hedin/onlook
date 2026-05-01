@@ -2,6 +2,15 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## ⚠️ Brand Name — Read First
+
+> **This product is called Weblab** (domain: weblab.build).
+>
+> - All user-facing strings, UI copy, metadata, and i18n messages must use **"Weblab"**, not "Onlook".
+> - The brand constant is `APP_NAME = 'Weblab'` in `packages/constants/src/editor.ts` — always import it; never hardcode the name.
+> - Package scopes (`@onlook/*`), the GitHub org (`onlook-dev`), and `data-onlook-*` DOM attributes still use the old name — **do not rename those** (Phase 2 work).
+> - If you encounter "Onlook" in user-visible text, treat it as a bug and replace it with `APP_NAME`.
+
 ## Commands
 
 ```bash

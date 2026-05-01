@@ -5,5 +5,5 @@ https://docs.onlook.com/developers
 
 ### Running locally
 
-To get set up and run Onlook locally, see here:
+To get set up and run Weblab locally, see here:
 https://docs.onlook.com/developers/running-locally
