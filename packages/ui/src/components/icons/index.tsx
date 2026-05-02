@@ -1,3 +1,4 @@
+import { BrandLogo, BrandSymbol, BrandWordmark } from '../brand';
 import {
   AlignBottomIcon,
   AlignCenterHorizontallyIcon,
