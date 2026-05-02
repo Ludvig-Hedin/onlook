@@ -61,6 +61,12 @@ declare const messages: {
             "downloadingCode": "Preparing download...",
             "downloadSuccess": "Download started successfully",
             "downloadError": "Failed to prepare download",
+            "downloadToFolder": "Download to folder…",
+            "downloadingToFolder": "Saving to folder…",
+            "openLocalFolder": "Open Local Folder",
+            "openingLocalFolder": "Opening…",
+            "importingLocalFolder": "Uploading files…",
+            "localFolderUnsupportedTooltip": "Local folder access requires Chrome, Edge, or Arc",
             "recentProjects": "Recent Projects"
         },
         "dialogs": {

@@ -2,6 +2,7 @@
 
 import { useEditorEngine } from '@/components/store/editor';
 import { useCreateBlankProject } from '@/hooks/use-create-blank-project';
+import { useImportLocalProject } from '@/hooks/use-import-local-project';
 import { transKeys } from '@/i18n/keys';
 import { Routes } from '@/utils/constants';
 import {
@@ -22,6 +23,7 @@ interface NewProjectMenuProps {
 export const NewProjectMenu = observer(({ onShowCloneDialog }: NewProjectMenuProps) => {
     const editorEngine = useEditorEngine();
     const { handleStartBlankProject, isCreatingProject } = useCreateBlankProject();
+    const { handleImportLocalProject, isImporting } = useImportLocalProject();
     const t = useTranslations();
     const router = useRouter();
 
@@ -34,6 +36,16 @@ export const NewProjectMenu = observer(({ onShowCloneDialog }: NewProjectMenuPro
         }
 
         await handleStartBlankProject();
+    };
+
+    const handleImportWithScreenshot = async () => {
+        try {
+            editorEngine.screenshot.captureScreenshot();
+        } catch (error) {
+            console.error('Failed to capture screenshot:', error);
+        }
+
+        await handleImportLocalProject();
     };
 
     return (
@@ -57,6 +69,20 @@ export const NewProjectMenu = observer(({ onShowCloneDialog }: NewProjectMenuPro
                             <Icons.FilePlus className="mr-2" />
                         )}
                         {t(transKeys.projects.actions.blankProject)}
+                    </div>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                    onClick={() => void handleImportWithScreenshot()}
+                    disabled={isImporting || isCreatingProject}
+                    className="cursor-pointer"
+                >
+                    <div className="flex flex-row center items-center group">
+                        {isImporting ? (
+                            <Icons.LoadingSpinner className="mr-2 animate-spin" />
+                        ) : (
+                            <Icons.Directory className="mr-2" />
+                        )}
+                        {t(transKeys.projects.actions.openLocalFolder)}
                     </div>
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => router.push(Routes.IMPORT_PROJECT)}>

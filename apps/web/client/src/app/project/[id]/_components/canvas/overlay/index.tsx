@@ -14,6 +14,7 @@ import { SnapGuidelines } from './elements/snap-guidelines';
 import { TextEditor } from './elements/text';
 import { CommentPins } from './comment-pins';
 import { CommentPopover } from './comment-popover';
+import { RemoteCursors } from './remote-cursors';
 
 export const Overlay = observer(() => {
     const editorEngine = useEditorEngine();
@@ -72,6 +73,7 @@ export const Overlay = observer(() => {
             <SnapGuidelines />
             <CommentPins />
             <CommentPopover />
+            <RemoteCursors />
         </div>
     );
 });

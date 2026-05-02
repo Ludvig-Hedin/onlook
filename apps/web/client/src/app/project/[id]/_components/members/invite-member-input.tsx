@@ -1,18 +1,26 @@
+'use client';
+
 import { api } from '@/trpc/react';
 import { ProjectRole } from '@onlook/models';
 import { Button } from '@onlook/ui/button';
 import { Input } from '@onlook/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@onlook/ui/select';
 import { toast } from '@onlook/ui/sonner';
 import { useState } from 'react';
 
 export const InviteMemberInput = ({ projectId }: { projectId: string }) => {
     const apiUtils = api.useUtils();
     const [email, setEmail] = useState('');
-    const [selectedRole, setSelectedRole] = useState<ProjectRole>(ProjectRole.ADMIN);
+    // Bug fix #7: Default to EDITOR — giving every new invitee ADMIN rights was too aggressive.
+    const [selectedRole, setSelectedRole] = useState<ProjectRole>(ProjectRole.EDITOR);
     const [isLoading, setIsLoading] = useState(false);
 
     const createInvitation = api.invitation.create.useMutation({
         onSuccess: () => {
+            // Bug fix #4: Clear form and give clear success feedback so the user
+            // doesn't double-submit thinking nothing happened.
+            setEmail('');
+            toast.success('Invitation sent');
             apiUtils.invitation.list.invalidate();
             apiUtils.invitation.suggested.invalidate();
         },
@@ -24,13 +32,13 @@ export const InviteMemberInput = ({ projectId }: { projectId: string }) => {
     });
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
         try {
             setIsLoading(true);
-            e.preventDefault();
             await createInvitation.mutateAsync({
                 inviteeEmail: email,
                 role: selectedRole,
-                projectId: projectId,
+                projectId,
             });
         } finally {
             setIsLoading(false);
@@ -43,27 +51,42 @@ export const InviteMemberInput = ({ projectId }: { projectId: string }) => {
             onSubmit={handleSubmit}
         >
             <div className="flex flex-1 items-center gap-2 relative">
+                {/* Bug fix #9: pr-24 reserves space so email text never runs under the Select trigger */}
                 <Input
+                    type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="Add email address"
-                    className="flex-1"
+                    className="flex-1 pr-24"
                 />
-                {/* <Select
+                <Select
                     value={selectedRole}
                     onValueChange={(value) => setSelectedRole(value as ProjectRole)}
                 >
-                    <SelectTrigger className="w-22 text-xs border-0 p-2 rounded-tl-none rounded-bl-none focus:ring-0 bg-transparent absolute right-0">
+                    <SelectTrigger className="w-24 text-xs border-0 p-2 rounded-tl-none rounded-bl-none focus:ring-0 bg-transparent absolute right-0">
                         <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
                         <SelectItem value={ProjectRole.ADMIN}>
                             <div className="flex flex-col">
                                 <span>Admin</span>
+                                <span className="text-xs text-muted-foreground">Can edit and manage members</span>
+                            </div>
+                        </SelectItem>
+                        <SelectItem value={ProjectRole.EDITOR}>
+                            <div className="flex flex-col">
+                                <span>Editor</span>
+                                <span className="text-xs text-muted-foreground">Can edit the project</span>
+                            </div>
+                        </SelectItem>
+                        <SelectItem value={ProjectRole.VIEWER}>
+                            <div className="flex flex-col">
+                                <span>Viewer</span>
+                                <span className="text-xs text-muted-foreground">Can view only</span>
                             </div>
                         </SelectItem>
                     </SelectContent>
-                </Select> */}
+                </Select>
             </div>
             <Button type="submit" disabled={!email || isLoading}>
                 Invite

@@ -58,6 +58,12 @@
             "downloadingCode": "准备下载...",
             "downloadSuccess": "下载成功",
             "downloadError": "下载失败",
+            "downloadToFolder": "下载到文件夹…",
+            "downloadingToFolder": "正在保存到文件夹…",
+            "openLocalFolder": "打开本地文件夹",
+            "openingLocalFolder": "正在打开…",
+            "importingLocalFolder": "正在上传文件…",
+            "localFolderUnsupportedTooltip": "本地文件夹访问需要 Chrome、Edge 或 Arc 浏览器",
             "recentProjects": "最近项目"
         },
         "dialogs": {

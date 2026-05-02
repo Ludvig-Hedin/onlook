@@ -18,6 +18,7 @@ import { FramesManager } from './frames';
 import { GroupManager } from './group';
 import { CommentManager } from './comment';
 import { IdeManager } from './ide';
+import { PresenceManager } from './presence';
 import { ImageManager } from './image';
 import { InsertManager } from './insert';
 import { MoveManager } from './move';
@@ -75,6 +76,7 @@ export class EditorEngine {
     readonly api: ApiManager = new ApiManager(this);
     readonly ide: IdeManager = new IdeManager(this);
     readonly comment: CommentManager = new CommentManager(this);
+    readonly presence: PresenceManager = new PresenceManager(this);
 
     constructor(projectId: string, posthog: PostHog) {
         this.projectId = projectId;
@@ -90,6 +92,7 @@ export class EditorEngine {
         this.style.init();
         this.stylePreferences.init();
         this.comment.init();
+        this.presence.init();
     }
 
     async initBranches(branches: Branch[]) {
@@ -121,6 +124,7 @@ export class EditorEngine {
         this.frameEvent.clear();
         this.screenshot.clear();
         this.comment.clear();
+        this.presence.clear();
         this.snap.hideSnapLines();
     }
 

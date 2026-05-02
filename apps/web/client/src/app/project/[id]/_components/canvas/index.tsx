@@ -99,11 +99,22 @@ export const Canvas = observer(() => {
 
     const handleCanvasMouseMove = useCallback(
         throttle((event: React.MouseEvent<HTMLDivElement>) => {
-            if (!isDragSelecting || !containerRef.current) {
-                return;
-            }
+            if (!containerRef.current) return;
 
+            // Bug fix #13: cache getBoundingClientRect once — both the presence broadcast
+            // and the drag-selection path use it, so calling it twice was wasteful.
             const rect = containerRef.current.getBoundingClientRect();
+
+            // Broadcast cursor position to remote collaborators (always, regardless of drag state).
+            // Read position/scale directly from the engine to avoid stale closure values.
+            const pos = editorEngine.canvas.position;
+            const sc = editorEngine.canvas.scale;
+            const canvasX = (event.clientX - rect.left - pos.x) / sc;
+            const canvasY = (event.clientY - rect.top - pos.y) / sc;
+            editorEngine.presence.updateCursor(canvasX, canvasY);
+
+            if (!isDragSelecting) return;
+
             const x = event.clientX - rect.left;
             const y = event.clientY - rect.top;
             setDragSelectEnd({ x, y });
@@ -111,7 +122,7 @@ export const Canvas = observer(() => {
             // Update frames in selection for visual feedback
             updateFramesInSelection(dragSelectStart, { x, y });
         }, 16), // ~60fps
-        [isDragSelecting, dragSelectStart, updateFramesInSelection]
+        [isDragSelecting, dragSelectStart, updateFramesInSelection, editorEngine]
     );
 
     const handleCanvasMouseUp = (event: React.MouseEvent<HTMLDivElement>) => {
@@ -295,6 +306,9 @@ export const Canvas = observer(() => {
                 onMouseMove={handleCanvasMouseMove}
                 onMouseUp={handleCanvasMouseUp}
                 onMouseLeave={(e) => {
+                    // Hide our cursor from remote users when the pointer exits the canvas
+                    editorEngine.presence.clearCursor();
+
                     // Only terminate drag if no mouse button is pressed
                     // Note: The global mouseup listener will handle the actual cleanup
                     // This is just an additional safety check for when mouse leaves without buttons pressed

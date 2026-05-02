@@ -58,6 +58,12 @@
             "downloadingCode": "Preparando descarga...",
             "downloadSuccess": "Descarga iniciada correctamente",
             "downloadError": "Error al preparar la descarga",
+            "downloadToFolder": "Descargar a una carpeta…",
+            "downloadingToFolder": "Guardando en la carpeta…",
+            "openLocalFolder": "Abrir carpeta local",
+            "openingLocalFolder": "Abriendo…",
+            "importingLocalFolder": "Subiendo archivos…",
+            "localFolderUnsupportedTooltip": "El acceso a carpetas locales requiere Chrome, Edge o Arc",
             "recentProjects": "Proyectos Recientes"
         },
         "dialogs": {

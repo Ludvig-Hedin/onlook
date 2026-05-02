@@ -30,7 +30,7 @@ export const MembersContent = () => {
             </div>
             <InviteMemberInput projectId={projectId} />
             {members?.map((member) => (
-                <MemberRow key={member.user.id} user={member.user} role={member.role} />
+                <MemberRow key={member.user.id} user={member.user} role={member.role} projectId={projectId} />
             ))}
             {invitations?.map((invitation) => (
                 <InvitationRow key={invitation.id} invitation={invitation} />

@@ -1,5 +1,6 @@
 import { useEditorEngine } from '@/components/store/editor';
 import { useStateManager } from '@/components/store/state';
+import { useDownloadProjectToFolder } from '@/hooks/use-download-project-to-folder';
 import { transKeys } from '@/i18n/keys';
 import { api } from '@/trpc/react';
 import { Routes } from '@/utils/constants';
@@ -39,6 +40,10 @@ export const ProjectBreadcrumb = observer(() => {
     const [isClosingProject, setIsClosingProject] = useState(false);
     const [isDownloading, setIsDownloading] = useState(false);
     const [showCloneDialog, setShowCloneDialog] = useState(false);
+    const {
+        handleDownloadToFolder,
+        isDownloading: isDownloadingToFolder,
+    } = useDownloadProjectToFolder();
 
     async function handleNavigateToProjects(_route?: 'create' | 'import') {
         try {
@@ -161,6 +166,24 @@ export const ProjectBreadcrumb = observer(() => {
                                     : t(transKeys.projects.actions.downloadCode)}
                             </div>
                             <Badge variant="secondary" className="ml-2 text-xs bg-blue-400 text-white rounded-full p-0.5 px-1.5">PRO</Badge>
+                        </div>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                        onClick={() => {
+                            void handleDownloadToFolder();
+                        }}
+                        disabled={isDownloadingToFolder}
+                        className="cursor-pointer"
+                    >
+                        <div className="flex flex-row center items-center group">
+                            {isDownloadingToFolder ? (
+                                <Icons.LoadingSpinner className="mr-2 animate-spin" />
+                            ) : (
+                                <Icons.Directory className="mr-2" />
+                            )}
+                            {isDownloadingToFolder
+                                ? t(transKeys.projects.actions.downloadingToFolder)
+                                : t(transKeys.projects.actions.downloadToFolder)}
                         </div>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />

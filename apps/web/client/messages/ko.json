@@ -58,6 +58,12 @@
             "downloadingCode": "다운로드 준비 중...",
             "downloadSuccess": "다운로드가 성공적으로 시작되었습니다.",
             "downloadError": "다운로드 준비에 실패했습니다.",
+            "downloadToFolder": "폴더에 다운로드…",
+            "downloadingToFolder": "폴더에 저장 중…",
+            "openLocalFolder": "로컬 폴더 열기",
+            "openingLocalFolder": "여는 중…",
+            "importingLocalFolder": "파일 업로드 중…",
+            "localFolderUnsupportedTooltip": "로컬 폴더 접근은 Chrome, Edge 또는 Arc 브라우저가 필요합니다",
             "recentProjects": "최근 프로젝트"
         },
         "dialogs": {
