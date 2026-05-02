@@ -52,13 +52,17 @@ const MessageContentComponent = ({
             );
         } else if (part?.type === 'reasoning') {
             const isLastPart = idx === parts.length - 1;
-            // Only show reasoning while actively thinking (streaming the last part)
-            if (!isStream || !isLastPart) return null;
+            const isStreamingThisPart = isStream && isLastPart;
             return (
-                <Reasoning key={part.text} className={cn(
-                    "m-0 mb-2 items-center gap-2 text-foreground-tertiary",
-                    "bg-gradient-to-l from-white/20 via-white/90 to-white/20 bg-[length:200%_100%] bg-clip-text text-transparent animate-shimmer filter drop-shadow-[0_0_10px_rgba(255,255,255,0.4)]"
-                )} isStreaming={true} defaultOpen={true}>
+                <Reasoning
+                    key={`reasoning-${idx}`}
+                    className={cn(
+                        "m-0 mb-2 items-center gap-2 text-foreground-tertiary",
+                        isStreamingThisPart && "bg-gradient-to-l from-white/20 via-white/90 to-white/20 bg-[length:200%_100%] bg-clip-text text-transparent animate-shimmer filter drop-shadow-[0_0_10px_rgba(255,255,255,0.4)]"
+                    )}
+                    isStreaming={isStreamingThisPart}
+                    defaultOpen={true}
+                >
                     <ReasoningTrigger />
                     <ReasoningContent className="text-xs">{part.text}</ReasoningContent>
                 </Reasoning>

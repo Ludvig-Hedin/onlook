@@ -48,7 +48,7 @@ export const ModelSelector = ({
                     className="text-foreground-secondary hover:bg-background-secondary hover:text-foreground-primary h-8 gap-1.5 px-2 text-xs"
                 >
                     <Icons.ChevronDown className="h-3.5 w-3.5 shrink-0" />
-                    <span className="hidden max-w-[160px] truncate @[260px]:inline">
+                    <span className="max-w-[80px] truncate @[260px]:max-w-[160px]">
                         {currentLabel}
                     </span>
                 </Button>
