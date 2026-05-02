@@ -12,7 +12,7 @@ import { useGitHubStats } from '../_components/top-bar/github';
 import { vujahdayScript } from '../fonts';
 
 export default function AboutPage() {
-    const { raw: starCount, contributors } = useGitHubStats();
+    const { contributors } = useGitHubStats();
     const parallax = useParallaxCursor({ intensity: 0.15, smoothness: 0.08 });
     const prefersReducedMotion = useReducedMotion();
 
@@ -89,10 +89,8 @@ export default function AboutPage() {
                 </p>
                 <h2>Company Facts</h2>
                 <ul>
-                    <li>24,000+ GitHub stars</li>
                     <li>90+ open-source contributors</li>
                     <li>3 team members</li>
-                    <li>Y Combinator W25</li>
                     <li>Based in San Francisco, California</li>
                 </ul>
                 <h2>Founders</h2>
@@ -107,11 +105,6 @@ export default function AboutPage() {
                     <li>Reinvention — Creativity in approaching problems, pushing beyond state-of-the-art.</li>
                     <li>Competence — Taking pride in work, inspiring others with taste and technique.</li>
                 </ul>
-                <h2>We're Hiring</h2>
-                <p>
-                    Join "The Odyssey" — our founding team. We look for commitment, passion for design/devtools/AI,
-                    and world-class excellence. Hiring process: screening calls, technical interview, references, paid work trial.
-                </p>
             </section>
 
             <main className="bg-background text-foreground-primary">
@@ -130,19 +123,14 @@ export default function AboutPage() {
                             className="block lg:hidden mb-24"
                             {...getBlurAnimationProps(0.1)}
                         >
-                            <div className="grid grid-cols-1 md:grid-cols-2 grid-rows-2 gap-y-6 gap-x-6 w-full">
+                            <div className="grid grid-cols-2 gap-y-6 gap-x-6 w-full">
                                 {/* Stat 1 */}
-                                <div className="row-start-1 col-start-1 text-left">
-                                    <div className="text-3xl font-light mb-1">{starCount !== null ? starCount.toLocaleString() : ''}</div>
-                                    <div className="text-regular text-foreground-tertiary/80">Stars on GitHub</div>
-                                </div>
-                                {/* Stat 2 */}
-                                <div className="row-start-1 col-start-2 text-left mr-12 ">
+                                <div className="text-left">
                                     <div className="text-3xl font-light mb-1">{contributors !== null ? contributors.toLocaleString() : ''}</div>
                                     <div className="text-regular text-foreground-tertiary/80">Open-Source<br />Contributors</div>
                                 </div>
-                                {/* Stat 3 */}
-                                <div className="row-start-2 col-start-1 text-left">
+                                {/* Stat 2 */}
+                                <div className="text-left">
                                     <div className="text-3xl font-light mb-1">3</div>
                                     <div className="text-regular text-foreground-tertiary/80">Team members</div>
                                 </div>
@@ -165,19 +153,14 @@ export default function AboutPage() {
                                 className="flex flex-col mt-12 lg:mt-0 hidden lg:block md:w-[340px] md:ml-auto"
                                 {...getBlurAnimationProps(0.3)}
                             >
-                                <div className="grid grid-cols-1 md:grid-cols-2 grid-rows-2 gap-y-12 gap-x-16 w-full">
+                                <div className="grid grid-cols-2 gap-y-12 gap-x-16 w-full">
                                     {/* Stat 1 */}
-                                    <div className="row-start-1 col-start-1 text-left">
-                                        <div className="text-4xl font-light mb-2">{starCount !== null ? starCount.toLocaleString() : ''}</div>
-                                        <div className="text-regularPlus text-foreground-tertiary/80">Stars on GitHub</div>
-                                    </div>
-                                    {/* Stat 2 */}
-                                    <div className="row-start-1 col-start-2 text-left">
+                                    <div className="text-left">
                                         <div className="text-4xl font-light mb-2">{contributors !== null ? contributors.toLocaleString() : ''}</div>
                                         <div className="text-regularPlus text-foreground-tertiary/80">Open-Source<br />Contributors</div>
                                     </div>
-                                    {/* Stat 3 */}
-                                    <div className="row-start-2 col-start-1 text-left">
+                                    {/* Stat 2 */}
+                                    <div className="text-left">
                                         <div className="text-4xl font-light mb-2">3</div>
                                         <div className="text-regularPlus text-foreground-tertiary/80">Team members</div>
                                     </div>

@@ -27,6 +27,7 @@ export const Routes = {
     // Dashboard
     PROJECTS: '/projects',
     PROJECT: '/project',
+    NEW_PROJECT: '/projects/new',
     IMPORT_PROJECT: '/projects/import',
     IMPORT_GITHUB: '/projects/import/github',
 
@@ -40,7 +41,7 @@ export const ExternalRoutes = {
     DOCS: 'https://docs.onlook.com',
     BLOG: 'https://onlook.substack.com',
     X: 'https://x.com/onlookdev',
-    GITHUB: 'https://github.com/onlook-dev/onlook',
+    GITHUB: 'https://github.com/Ludvig-Hedin/Weblab',
     CONTACT: 'mailto:contact@onlook.com',
     LINKEDIN: 'https://www.linkedin.com/company/onlook-dev/',
     YOUTUBE: 'https://www.youtube.com/@onlookdev',

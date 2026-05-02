@@ -190,7 +190,7 @@ export default function FAQPage() {
                     constrained to your design system, preventing brand drift. Changes become mergeable
                     pull requests. Weblab supports all major frameworks (React, Next.js, Vue, Angular, Svelte),
                     styling approaches (Tailwind, CSS Modules, styled-components), and component libraries
-                    (shadcn/ui, Material UI, Chakra UI, Mantine, Radix UI). It's open source with 24k+ GitHub stars.
+                    (shadcn/ui, Material UI, Chakra UI, Mantine, Radix UI). It's open source.
                 </p>
             </section>
 

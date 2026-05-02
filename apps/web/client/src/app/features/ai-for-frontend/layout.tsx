@@ -95,7 +95,7 @@ const jsonLd = {
         'Visual canvas interface for designers',
         'No coding required for designers',
         'Real-time collaboration',
-        'Open source with 24k+ GitHub stars',
+        'Open source',
     ],
     aggregateRating: {
         '@type': 'AggregateRating',

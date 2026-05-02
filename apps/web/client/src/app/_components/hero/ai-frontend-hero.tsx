@@ -6,12 +6,10 @@ import { motion } from 'motion/react';
 import { Button } from '@onlook/ui/button';
 
 import { ExternalRoutes } from '@/utils/constants';
-import { useGitHubStats } from '../top-bar/github';
 import { UnicornBackground } from './unicorn-background';
 
 export function AiFrontendHero() {
     const router = useRouter();
-    const { formatted: starCount } = useGitHubStats();
 
     const handleBookDemo = () => {
         window.open(ExternalRoutes.BOOK_DEMO, '_blank');
@@ -71,14 +69,6 @@ export function AiFrontendHero() {
                     transition={{ duration: 0.6, delay: 0.4, ease: 'easeOut' }}
                     style={{ willChange: 'opacity, filter', transform: 'translateZ(0)' }}
                 >
-                    <div className="flex items-center gap-2">
-                        <span>{starCount}+ GitHub stars</span>
-                    </div>
-                    <div className="bg-foreground-secondary h-1 w-1 rounded-full"></div>
-                    <div className="flex items-center gap-2">
-                        <span>YC W25</span>
-                    </div>
-                    <div className="bg-foreground-secondary h-1 w-1 rounded-full"></div>
                     <div className="flex items-center gap-2">
                         <span>Open Source</span>
                     </div>

@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
     title: `About ${APP_NAME} | The Team Behind the Visual Editor for React`,
     description:
-        `Meet the team behind ${APP_NAME} — an AI-powered visual editor for frontend development. Founded to obliterate the divide between creativity and implementation. YC W25, 24k+ GitHub stars, open source.`,
+        `Meet the team behind ${APP_NAME} — an AI-powered visual editor for frontend development. Founded to obliterate the divide between creativity and implementation. Open source.`,
     keywords: [
         // Company
         `${APP_NAME} team`,
@@ -18,13 +18,6 @@ export const metadata: Metadata = {
         'developer tools startup',
         // Location
         'San Francisco startup',
-        'YC W25',
-        'Y Combinator startup',
-        // Hiring
-        `${APP_NAME} careers`,
-        `${APP_NAME} jobs`,
-        'design tools jobs',
-        'developer tools jobs',
         // Open source
         'open source design tool',
         'open source visual editor',
@@ -100,13 +93,12 @@ const organizationJsonLd = {
         addressCountry: 'US',
     },
     sameAs: [
-        'https://github.com/onlook-dev/onlook',
+        'https://github.com/Ludvig-Hedin/Weblab',
         'https://x.com/onlookdev',
         'https://www.linkedin.com/company/onlook-dev/',
         'https://discord.gg/ZZzadNQtns',
         'https://onlook.substack.com/',
     ],
-    award: 'Y Combinator W25',
 };
 
 const faqJsonLd = {
@@ -134,7 +126,7 @@ const faqJsonLd = {
             name: `Where is ${APP_NAME} based?`,
             acceptedAnswer: {
                 '@type': 'Answer',
-                text: `${APP_NAME} is based in San Francisco, California. The team operates from their headquarters (the "Barracks") after completing Y Combinator W25.`,
+                text: `${APP_NAME} is based in San Francisco, California. The team operates from their headquarters (the "Barracks").`,
             },
         },
         {
@@ -142,15 +134,7 @@ const faqJsonLd = {
             name: `Is ${APP_NAME} open source?`,
             acceptedAnswer: {
                 '@type': 'Answer',
-                text: `Yes. ${APP_NAME} is open source with 24k+ GitHub stars and 100+ contributors. You can browse the codebase, contribute improvements, or self-host it for your team.`,
-            },
-        },
-        {
-            '@type': 'Question',
-            name: `Is ${APP_NAME} hiring?`,
-            acceptedAnswer: {
-                '@type': 'Answer',
-                text: `Yes. ${APP_NAME} is hiring for "The Odyssey" — their founding team. They look for commitment, passion for design/devtools/AI, and world-class excellence. The hiring process includes screening calls, technical interviews, reference calls, and a paid work trial.`,
+                text: `Yes. ${APP_NAME} is open source with 100+ contributors. You can browse the codebase, contribute improvements, or self-host it for your team.`,
             },
         },
     ],

@@ -94,7 +94,7 @@ export default function AiForFrontendPage() {
                         <li>Compatible with shadcn/ui, Material UI, Chakra UI, Mantine, Radix UI</li>
                         <li>Visual canvas interface — no coding required for designers</li>
                         <li>Changes become real pull requests engineers can merge</li>
-                        <li>Open source with 24k+ GitHub stars</li>
+                        <li>Open source</li>
                     </ul>
                     <h2>Who is ${APP_NAME} for?</h2>
                     <p>

@@ -7,7 +7,7 @@ export const organizationSchema = {
     url: `https://${APP_DOMAIN}/`,
     logo: `https://${APP_DOMAIN}/favicon.ico`,
     sameAs: [
-        "https://github.com/onlook-dev/onlook", // update in Phase 2 when repo renamed
+        "https://github.com/Ludvig-Hedin/Weblab",
         "https://twitter.com/onlookdev", // update when social handles change
         "https://www.linkedin.com/company/onlook-dev/",
     ],

@@ -18,12 +18,10 @@ import { ResponsiveMockupSection } from '../../_components/landing-page/responsi
 import { AiChatInteractive } from '../../_components/shared/mockups/ai-chat-interactive';
 import { DirectEditingInteractive } from '../../_components/shared/mockups/direct-editing-interactive';
 import { TailwindColorEditorMockup } from '../../_components/shared/mockups/tailwind-color-editor';
-import { useGitHubStats } from '../../_components/top-bar/github';
 import { WebsiteLayout } from '../../_components/website-layout';
 
 function PrototypeFeaturesHero() {
     const router = useRouter();
-    const { formatted: starCount } = useGitHubStats();
 
     return (
         <div className="relative flex h-full w-full flex-col items-center justify-center gap-12 p-8 text-center text-lg">
@@ -83,14 +81,6 @@ function PrototypeFeaturesHero() {
                     transition={{ duration: 0.6, delay: 0.4, ease: 'easeOut' }}
                     style={{ willChange: 'opacity, filter', transform: 'translateZ(0)' }}
                 >
-                    <div className="flex items-center gap-2">
-                        <span>{starCount}+ GitHub stars</span>
-                    </div>
-                    <div className="bg-foreground-secondary h-1 w-1 rounded-full"></div>
-                    <div className="flex items-center gap-2">
-                        <span>YC W25</span>
-                    </div>
-                    <div className="bg-foreground-secondary h-1 w-1 rounded-full"></div>
                     <div className="flex items-center gap-2">
                         <span>Open Source</span>
                     </div>

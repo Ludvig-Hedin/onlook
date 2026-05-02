@@ -79,7 +79,7 @@ const jsonLd = {
         'React and Next.js templates',
         'Direct GitHub PR output',
         'Works with Tailwind, shadcn/ui, Material UI',
-        'Open source with 24k+ GitHub stars',
+        'Open source',
     ],
     offers: {
         '@type': 'Offer',
@@ -130,7 +130,7 @@ const faqJsonLd = {
             name: `Is ${APP_NAME} open source?`,
             acceptedAnswer: {
                 '@type': 'Answer',
-                text: `Yes. ${APP_NAME} is open source with 24k+ GitHub stars. You can browse the codebase, contribute improvements, or self-host it for your team.`,
+                text: `Yes. ${APP_NAME} is open source. You can browse the codebase, contribute improvements, or self-host it for your team.`,
             },
         },
     ],

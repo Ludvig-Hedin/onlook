@@ -22,7 +22,7 @@ export const baseOptions: BaseLayoutProps = {
         {
             type: 'main',
             text: 'GitHub',
-            url: 'https://github.com/onlook-dev/onlook',
+            url: 'https://github.com/Ludvig-Hedin/Weblab',
             external: true,
             icon: <Icons.GitHubLogo className="w-4 h-4" />
         },

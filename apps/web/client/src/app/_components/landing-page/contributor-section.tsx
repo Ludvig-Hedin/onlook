@@ -12,8 +12,27 @@ interface Contributor {
     id: number;
 }
 
+const DEFAULT_REPO = 'Ludvig-Hedin/Weblab';
+
+/**
+ * Pull `owner/repo` out of a github.com URL so the contributors API call
+ * always targets the same repo as the user-facing githubLink prop.
+ */
+function parseRepoFromUrl(url: string | undefined): string {
+    if (!url) return DEFAULT_REPO;
+    try {
+        const parsed = new URL(url);
+        if (!parsed.hostname.endsWith('github.com')) return DEFAULT_REPO;
+        const segments = parsed.pathname.split('/').filter(Boolean);
+        if (segments.length < 2) return DEFAULT_REPO;
+        return `${segments[0]}/${segments[1]}`;
+    } catch {
+        return DEFAULT_REPO;
+    }
+}
+
 // Floating Circles: two concentric rings
-const FloatingRings = () => {
+const FloatingRings = ({ repo }: { repo: string }) => {
     const [isMd, setIsMd] = useState(false);
     const [contributors, setContributors] = useState<Contributor[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -31,7 +50,9 @@ const FloatingRings = () => {
     useEffect(() => {
         const fetchContributors = async () => {
             try {
-                const response = await fetch('https://api.github.com/repos/onlook-dev/onlook/contributors?per_page=100');
+                const response = await fetch(
+                    `https://api.github.com/repos/${repo}/contributors?per_page=100`,
+                );
                 if (!response.ok) {
                     throw new Error('Failed to fetch contributors');
                 }
@@ -48,7 +69,7 @@ const FloatingRings = () => {
         };
 
         fetchContributors();
-    }, []);
+    }, [repo]);
 
     if (!mounted) {
         return null;
@@ -137,18 +158,24 @@ const FloatingRings = () => {
 };
 
 interface ContributorSectionProps {
+    /**
+     * Fallback star-count rendered when the GitHub API call fails.
+     * Named `contributorCount` historically — kept for backwards compatibility
+     * with existing callers, but it actually backs the star count display.
+     */
     contributorCount?: number;
     githubLink?: string;
     discordLink?: string;
 }
 
 export function ContributorSection({
-    contributorCount = 9412,
-    githubLink = "https://github.com/onlook-dev/onlook",
+    contributorCount = 0,
+    githubLink = "https://github.com/Ludvig-Hedin/Weblab",
     discordLink = "https://discord.gg/ZZzadNQtns"
 }: ContributorSectionProps) {
     const [starCount, setStarCount] = useState<string>("0");
     const [isLoading, setIsLoading] = useState(true);
+    const repo = parseRepoFromUrl(githubLink);
 
     const formatStarCount = (count: number): string => {
         return count.toLocaleString();
@@ -157,7 +184,7 @@ export function ContributorSection({
     useEffect(() => {
         const fetchStarCount = async () => {
             try {
-                const response = await fetch('https://api.github.com/repos/onlook-dev/onlook');
+                const response = await fetch(`https://api.github.com/repos/${repo}`);
                 const data = await response.json();
                 setStarCount(formatStarCount(data.stargazers_count));
                 setIsLoading(false);
@@ -169,14 +196,14 @@ export function ContributorSection({
         };
 
         fetchStarCount();
-    }, [contributorCount]);
+    }, [contributorCount, repo]);
 
     return (
         <div className="relative w-full flex items-center justify-center py-32 mt-8 overflow-hidden px-4">
             {/* Main Contributors Content */}
             <div className="w-full max-w-6xl mx-auto relative z-10 flex flex-col items-center justify-center bg-background-onlook rounded-3xl px-12 py-32 shadow-xl overflow-hidden md:[--md-scale:1] [--md-scale:0]" style={{ minWidth: 420 }}>
                 {/* Floating Circles: two concentric rings */}
-                <FloatingRings />
+                <FloatingRings repo={repo} />
                 <h2 className="text-foreground-primary text-3xl md:text-4xl font-light text-center mb-2">
                     Supported by you &<br />
                     {isLoading ? '...' : starCount} other builders

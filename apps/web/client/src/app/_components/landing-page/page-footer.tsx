@@ -1,7 +1,6 @@
 import { ExternalRoutes, Routes } from '@/utils/constants';
 import { Icons } from '@onlook/ui/icons';
 import { useRouter } from 'next/navigation';
-import { Illustrations } from './illustrations';
 
 export function Footer() {
     const router = useRouter();
@@ -83,11 +82,8 @@ export function Footer() {
                         <a href="/site-map" className="hover:underline" title="View the sitemap">Sitemap</a>
                     </div>
                     {/* Right: Copyright */}
-                    <div className="text-foreground-tertiary text-small w-full md:w-auto flex justify-center md:justify-end">© {new Date().getFullYear()} On Off, Inc.</div>
+                    <div className="text-foreground-tertiary text-small w-full md:w-auto flex justify-center md:justify-end">© {new Date().getFullYear()} Weblab</div>
                 </div>
-            </div>
-            <div className="max-w-5xl mx-auto px-8 pb-4 pt-24 flex justify-center">
-                <Illustrations.OnlookLogoSeal className="w-full h-full [mask-image:linear-gradient(to_bottom,black_0%,transparent_100%)] text-foreground-primary/20" />
             </div>
         </footer>
     );

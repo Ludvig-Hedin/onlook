@@ -12,7 +12,6 @@ import { UnicornBackground } from '../../_components/hero/unicorn-background';
 import { CTASection } from '../../_components/landing-page/cta-section';
 import { FAQSection } from '../../_components/landing-page/faq-section';
 import { OnlookInterfaceMockup } from '../../_components/landing-page/onlook-interface-mockup';
-import { useGitHubStats } from '../../_components/top-bar/github';
 import { WebsiteLayout } from '../../_components/website-layout';
 
 const vibeCodingFaqs = [
@@ -59,7 +58,6 @@ const getBlurAnimationProps = (delay: number = 0) => ({
 });
 
 function VibeCodingHero() {
-    const { formatted: starCount } = useGitHubStats();
 
     return (
         <div className="relative flex h-full w-full flex-col items-center justify-center gap-12 p-8 text-center text-lg">
@@ -118,14 +116,6 @@ function VibeCodingHero() {
                     transition={{ duration: 0.6, delay: 0.4, ease: 'easeOut' }}
                     style={{ willChange: 'opacity, filter', transform: 'translateZ(0)' }}
                 >
-                    <div className="flex items-center gap-2">
-                        <span>{starCount}+ GitHub stars</span>
-                    </div>
-                    <div className="bg-foreground-secondary h-1 w-1 rounded-full"></div>
-                    <div className="flex items-center gap-2">
-                        <span>YC W25</span>
-                    </div>
-                    <div className="bg-foreground-secondary h-1 w-1 rounded-full"></div>
                     <div className="flex items-center gap-2">
                         <span>Open Source</span>
                     </div>
