@@ -119,6 +119,7 @@ import {
   ListCheckIcon,
   MailXIcon,
   MessageSquareIcon,
+  MicIcon,
   SquareCheckIcon,
   SquareXIcon } from
 'lucide-react';
@@ -1703,6 +1704,7 @@ export const Icons = {
   MixerHorizontal: MixerHorizontalIcon,
   MixerVertical: MixerVerticalIcon,
   MessageSquare: MessageSquareIcon,
+  Microphone: MicIcon,
 
   Pencil: Pencil1Icon,
   PencilPaper: Pencil2Icon,
