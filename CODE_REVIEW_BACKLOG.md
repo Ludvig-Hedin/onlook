@@ -8,18 +8,28 @@ chat input, comments, projects/select, stores, tRPC, desktop release workflow.
 |----|--------|
 | CR-001 | auto-fixed |
 | CR-002 | open |
-| CR-003 | open |
+| CR-003 | fixed (2026-05-04) |
 | CR-004 | open |
-| CR-005 | open |
-| CR-006 | open |
+| CR-005 | fixed (2026-05-04) |
+| CR-006 | fixed (2026-05-03) |
 | CR-007 | open |
-| CR-008 | open |
-| CR-009 | open |
+| CR-008 | done (fixed in feature/settings-overhaul working tree) |
+| CR-009 | fixed (2026-05-04) |
 | CR-010 | open |
 | CR-011 | open |
 | CR-012 | open |
-| CR-013 | open |
-| CR-014 | open |
+| CR-013 | fixed (2026-05-03) |
+| CR-014 | fixed (2026-05-03) |
+| CR-015 | auto-fixed (2026-05-03 review) |
+| CR-016 | fixed (2026-05-03) |
+| CR-017 | open (2026-05-03 review) |
+| CR-018 | fixed (2026-05-03) |
+| CR-019 | fixed (2026-05-03) |
+| CR-020 | fixed (2026-05-03) |
+| CR-021 | open (2026-05-03 review) |
+| CR-022 | open (2026-05-03 review) |
+| CR-023 | open (2026-05-03 review) |
+| CR-024 | discussion-only (2026-05-03 review) |
 
 ---
 
@@ -100,14 +110,14 @@ chat input, comments, projects/select, stores, tRPC, desktop release workflow.
 
 ---
 
-## CR-008 — Default chat model hardcoded to `OPENROUTER_MODELS.KIMI_K2_6`
+## CR-008 — Default chat model hardcoded to `OPENROUTER_MODELS.KIMI_K2_6` *(done)*
 
-- **Area:** [chat-tab-content/index.tsx:19](apps/web/client/src/app/project/[id]/_components/right-panel/chat-tab/chat-tab-content/index.tsx)
+- **Area:** [chat-tab-content/index.tsx](apps/web/client/src/app/project/[id]/_components/right-panel/chat-tab/chat-tab-content/index.tsx)
 - **Type:** maintainability
 - **Impact:** user-facing
 - **Risk:** medium
-- **Summary:** Default state is now `OPENROUTER_MODELS.KIMI_K2_6` instead of `CHAT_MODEL_OPTIONS[0]!.model`. If KIMI_K2_6 is removed from `CHAT_MODEL_OPTIONS`, the dropdown will show "Model" with no current option but the request will still be sent against a model that may be unsupported on the backend (or the Select shows blank). Coupling the default to the canonical option list is safer.
-- **Suggested approach:** route the default through `CHAT_MODEL_OPTIONS` (e.g. find the entry whose `.model === OPENROUTER_MODELS.KIMI_K2_6` and fall back to `[0]`), or persist the user's last choice and use that.
+- **Summary:** Default state was `OPENROUTER_MODELS.KIMI_K2_6` rather than the canonical option list head.
+- **Resolution (2026-05-03):** Working tree now uses `useState<ChatModel>(CHAT_MODEL_OPTIONS[0].model)` and additionally hydrates from `userSettings?.chat.defaultModel` once settings load (gated by a `userChangedModel` ref so a session-level pick beats the saved default). Marking done.
 
 ---
 
@@ -174,4 +184,100 @@ chat input, comments, projects/select, stores, tRPC, desktop release workflow.
 - **Risk:** low
 - **Summary:** `StaticTemplate.id` is typed as `string`. `STATIC_TEMPLATE_ALIASES` and the `templateNames` map in `select/index.tsx` use `Record<StaticTemplate['id'], …>` which collapses to `Record<string, …>` — adding a new TEMPLATES entry will not produce a TS error if its alias entry is missing, and `availableStaticTemplateIds` will silently drop it.
 - **Suggested approach:** narrow the id with a literal-union type (`'portfolio' | 'saas' | …`) and reuse it across both files. Then missing aliases become compile errors.
+
+---
+
+# Review pass 2026-05-03
+
+Scope: 18 modified files + 4 unpushed commits + a large set of new untracked files spanning Ollama support, transcription endpoint, local-folder import, settings overhaul (account/ai/appearance/editor/git/github/language/shortcuts tabs), framework adapters, and an MCP package.
+
+## CR-015 — Transcribe route used `Onlook` brand strings *(auto-fixed)*
+
+- **Area:** [api/transcribe/route.ts](apps/web/client/src/app/api/transcribe/route.ts)
+- **Type:** bug (brand)
+- **Impact:** internal (OpenRouter dashboard attribution)
+- **Risk:** low
+- **Summary:** Outbound headers were `HTTP-Referer: https://onlook.com` and `X-Title: Onlook`, in violation of the CLAUDE.md "Weblab" rule for user-facing strings.
+- **Fix applied:** swapped to `https://weblab.build` and `Weblab`. No behavior change beyond the OpenRouter attribution string.
+
+## CR-016 — `/api/models/local` is unauthenticated and unrate-limited
+
+- **Area:** [api/models/local/route.ts](apps/web/client/src/app/api/models/local/route.ts)
+- **Type:** security / hardening
+- **Impact:** internal
+- **Risk:** low
+- **Summary:** No `getSupabaseUser` check, no rate limit. SSRF is correctly mitigated (loopback-only allowlist on `baseUrl`), but the inconsistency with `/api/chat` and `/api/transcribe` (both auth + rate-limited) is worth addressing.
+- **Suggested approach:** Wrap with `getSupabaseUser` and reuse the in-memory limiter from `transcribe/helpers/rate-limit.ts` (or factor a shared limiter).
+
+## CR-017 — Local-Ollama detection probes the *server's* localhost, not the user's
+
+- **Area:** [api/models/local/route.ts](apps/web/client/src/app/api/models/local/route.ts), [chat-tab-content/index.tsx](apps/web/client/src/app/project/[id]/_components/right-panel/chat-tab/chat-tab-content/index.tsx), [ai-tab.tsx](apps/web/client/src/components/ui/settings-modal/ai-tab.tsx)
+- **Type:** design / deployment-dependent bug
+- **Impact:** user-facing
+- **Risk:** medium
+- **Summary:** The "detect local Ollama" flow runs server-side (`fetch('http://localhost:11434/api/tags')` from a Next.js Route Handler). On Vercel/hosted deployments, `localhost` is the function container — *not* the user's machine — so the feature only works in self-hosted/dev. In hosted mode it always returns 0 models and silently misleads the AI tab UI ("No local models detected. Make sure Ollama is running.").
+- **Suggested approach:** Either (a) move detection to client-side (browser → `http://localhost:11434/api/tags` directly; needs Ollama CORS config), or (b) gate the entire local-models UI behind a self-hosted flag so hosted users don't see a broken affordance.
+
+## CR-018 — Race condition in local-models fetch on URL change
+
+- **Area:** [chat-tab-content/index.tsx](apps/web/client/src/app/project/[id]/_components/right-panel/chat-tab/chat-tab-content/index.tsx), [ai-tab.tsx](apps/web/client/src/components/ui/settings-modal/ai-tab.tsx) (`detectLocalModels`)
+- **Type:** bug
+- **Impact:** user-facing
+- **Risk:** low
+- **Summary:** Both fire `fetch('/api/models/local?...')` from `useEffect` without an `AbortController`. Rapid edits to the Ollama URL (or unmount during in-flight) can let an older response resolve last and overwrite the newer model list. `response.ok` also isn't checked before `response.json()`, so a 4xx HTML body would throw and be silently swallowed by the `.catch(() => setLocalModels([]))`.
+- **Suggested approach:** Wire an `AbortController` per fetch; abort on dep change and on unmount. Check `response.ok` and treat non-2xx as "unavailable" with a console warn.
+
+## CR-019 — Ollama base URL double-`/api` if user includes path segment
+
+- **Area:** [packages/ai/src/chat/providers.ts](packages/ai/src/chat/providers.ts) (`getOllamaProvider`), [api/models/local/route.ts](apps/web/client/src/app/api/models/local/route.ts)
+- **Type:** bug
+- **Impact:** user-facing
+- **Risk:** low
+- **Summary:** `${baseUrl.replace(/\/$/, '')}/api` always appends `/api`. If a user pastes `http://localhost:11434/api`, the SDK will be configured with `http://localhost:11434/api/api`. Mirror issue in the probe route.
+- **Suggested approach:** Normalize once: strip a single trailing `/api` segment if present before appending. Extract a small util in `@onlook/models` and reuse in both places.
+
+## CR-020 — `ChatModel` type widened; route forwards arbitrary `ollama/<anything>`
+
+- **Area:** [packages/models/src/llm/index.ts](packages/models/src/llm/index.ts), [packages/ai/src/agents/root.ts](packages/ai/src/agents/root.ts), [api/chat/route.ts](apps/web/client/src/app/api/chat/route.ts)
+- **Type:** hardening
+- **Impact:** internal
+- **Risk:** low
+- **Summary:** `ChatModel = OPENROUTER_MODELS | OllamaModelId` (where `OllamaModelId = \`ollama/${string}\``) means any string of that shape is type-valid. The chat route forwards it to `initModel` without validation. Garbage like `ollama/../foo` only fails because the upstream Ollama HTTP API rejects unknown names — we shouldn't rely on that.
+- **Suggested approach:** Validate the part after `ollama/` against a name regex (e.g. `^[a-z0-9._:-]+$`) before forwarding. Reject otherwise with a 400.
+
+## CR-021 — `getOllamaProvider` casts via `as unknown as LanguageModel`
+
+- **Area:** [packages/ai/src/chat/providers.ts](packages/ai/src/chat/providers.ts)
+- **Type:** DX / type safety
+- **Impact:** internal
+- **Risk:** low
+- **Summary:** Forced double-cast through `unknown` papers over a type mismatch between `ollama-ai-provider-v2` and the `ai` SDK's `LanguageModel`. If either SDK shifts, TS won't catch a regression.
+- **Suggested approach:** Track the real incompatibility (likely v1 vs v2 of `LanguageModel`); pin matching versions and remove the cast.
+
+## CR-022 — `useImportLocalProject` drops the import intent on unauthed entry
+
+- **Area:** [hooks/use-import-local-project.ts](apps/web/client/src/hooks/use-import-local-project.ts)
+- **Type:** UX
+- **Impact:** user-facing
+- **Risk:** low
+- **Summary:** When the user clicks "Open local folder" while signed out, the auth modal opens and the return URL is saved — but the folder picker isn't reopened after sign-in. User has to remember to click the button again.
+- **Suggested approach:** Set a "resume intent" localforage flag before opening auth. After successful auth, the `projects` page reads it and re-triggers the picker once.
+
+## CR-023 — DB schema changes (`default_model`, `ollama_base_url`) require `bun db:push`
+
+- **Area:** [packages/db/src/schema/user/settings.ts](packages/db/src/schema/user/settings.ts) and mappers/defaults
+- **Type:** ops note
+- **Impact:** infra
+- **Risk:** medium (forgotten = runtime failure on first save)
+- **Summary:** Two new nullable text columns added to `user_settings`. RLS-enabled. No migration file is committed (the project uses `db:push`, not generated SQL), so columns won't exist in any environment until someone runs it.
+- **Suggested approach:** Run `bun db:push` against staging/prod (maintainer-only per CLAUDE.md). Confirm the existing `user_settings` RLS policies cover the new columns.
+
+## CR-024 — `/api/transcribe` 90s `AbortController` flagged for Workflow *(discussion-only)*
+
+- **Area:** [api/transcribe/route.ts](apps/web/client/src/app/api/transcribe/route.ts)
+- **Type:** discussion
+- **Impact:** infra
+- **Risk:** low
+- **Summary:** Vercel best-practice hook flagged the 90s timeout as "long-running serverless logic, consider Workflow." For a single request/response upstream call this isn't a Workflow fit — Workflow targets durable, pausable, multi-step flows. Vercel's 300s default function timeout already accommodates 90s.
+- **Suggested approach:** No action. Logged here so the team has the trace if/when transcription becomes a multi-step or streaming flow.
 
