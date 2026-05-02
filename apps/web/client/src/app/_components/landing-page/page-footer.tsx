@@ -1,3 +1,4 @@
+import { BrandWordmark } from '@onlook/ui/brand';
 import { ExternalRoutes, Routes } from '@/utils/constants';
 import { Icons } from '@onlook/ui/icons';
 import { useRouter } from 'next/navigation';
@@ -13,7 +14,7 @@ export function Footer() {
                     className="flex flex-col gap-8 cursor-pointer"
                     onClick={() => router.push('/')}
                 >
-                    <Icons.OnlookTextLogo className="w-24 h-5 text-foreground-primary" />
+                    <BrandWordmark className="w-24 h-5 text-foreground-primary" />
                 </div>
                 {/* Center: Links */}
                 <div className="flex-1 flex flex-col md:flex-row gap-12 md:gap-12 justify-center">
