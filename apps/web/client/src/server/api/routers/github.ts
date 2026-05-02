@@ -9,18 +9,21 @@ import { z } from 'zod';
 import { createTRPCRouter, protectedProcedure } from '../trpc';
 
 const parseRepoUrl = (repoUrl: string): { owner: string; repo: string } => {
-    const match = /github\.com\/([^/]+)\/([^/]+?)(?:\.git)?$/.exec(repoUrl.trim());
-    if (!match?.[1] || !match[2]) {
-        throw new TRPCError({
-            code: 'BAD_REQUEST',
-            message: 'Invalid GitHub repository URL',
-        });
+    const bad = () =>
+        new TRPCError({ code: 'BAD_REQUEST', message: 'Invalid GitHub repository URL' });
+    try {
+        const url = new URL(repoUrl.trim());
+        const hostname = url.hostname.toLowerCase();
+        if (hostname !== 'github.com' && hostname !== 'www.github.com') throw bad();
+        const parts = url.pathname.replace(/^\//, '').split('/');
+        const owner = parts[0];
+        const repo = parts[1]?.replace(/\.git$/, '');
+        if (!owner || !repo) throw bad();
+        return { owner, repo };
+    } catch (err) {
+        if (err instanceof TRPCError) throw err;
+        throw bad();
     }
-
-    return {
-        owner: match[1],
-        repo: match[2],
-    };
 };
 
 const getUserGitHubInstallation = async (db: DrizzleDb, userId: string) => {

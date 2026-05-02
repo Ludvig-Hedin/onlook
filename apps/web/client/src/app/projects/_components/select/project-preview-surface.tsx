@@ -95,6 +95,7 @@ export const ProjectPreviewSurface = ({
                         src={siteUrl!}
                         title={`${projectName} preview`}
                         loading="lazy"
+                        referrerPolicy="no-referrer"
                         className="pointer-events-none absolute top-0 left-0 border-0 bg-white"
                         onLoad={() => setIframeLoaded(true)}
                         style={{

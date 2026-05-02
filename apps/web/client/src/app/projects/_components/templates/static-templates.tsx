@@ -5,8 +5,18 @@ import { motion } from 'motion/react';
 import { Button } from '@onlook/ui/button';
 import { Icons } from '@onlook/ui/icons';
 
+export type StaticTemplateId =
+    | 'portfolio'
+    | 'saas'
+    | 'blog'
+    | 'dashboard'
+    | 'ecommerce'
+    | 'agency'
+    | 'docs'
+    | 'app';
+
 export interface StaticTemplate {
-    id: string;
+    id: StaticTemplateId;
     name: string;
     description: string;
     /** Tailwind background class for the thumbnail */

@@ -12,13 +12,13 @@ export const AuthButton = () => {
         <div className="flex items-center gap-3 mt-0">
             {user ? (
                 <>
-                    <Button variant="secondary" asChild className="rounded cursor-pointer">
+                    <Button variant="secondary" size="sm" asChild className="cursor-pointer">
                         <Link href={Routes.PROJECTS}>Projects</Link>
                     </Button>
                     <CurrentUserAvatar className="cursor-pointer hover:opacity-80" />
                 </>
             ) : (
-                <Button variant="secondary" asChild className="rounded cursor-pointer">
+                <Button variant="secondary" size="sm" asChild className="cursor-pointer">
                     <Link href={Routes.LOGIN}>Sign In</Link>
                 </Button>
             )}
