@@ -1,7 +1,24 @@
+import type { ToolSet } from 'ai';
+import { generateObject, NoSuchToolError, smoothStream, stepCountIs, streamText } from 'ai';
+
+import type { ChatMessage, ChatModel, ModelConfig, OllamaModelId } from '@onlook/models';
+import {
+    ChatType,
+    getProviderFromModel,
+    LLMProvider,
+    OLLAMA_DEFAULT_BASE_URL,
+    OPENROUTER_MODELS,
+} from '@onlook/models';
+
 import type { ToolCall } from '@ai-sdk/provider-utils';
-import { ChatType, LLMProvider, OPENROUTER_MODELS, type ChatMessage, type ChatModel, type ModelConfig } from '@onlook/models';
-import { NoSuchToolError, generateObject, smoothStream, stepCountIs, streamText, type ToolSet } from 'ai';
-import { convertToStreamMessages, getAskModeSystemPrompt, getCreatePageSystemPrompt, getSystemPrompt, getToolSetFromType, initModel } from '../index';
+import {
+    convertToStreamMessages,
+    getAskModeSystemPrompt,
+    getCreatePageSystemPrompt,
+    getSystemPrompt,
+    getToolSetFromType,
+    initModel,
+} from '../index';
 
 export const createRootAgentStream = ({
     chatType,
@@ -11,6 +28,7 @@ export const createRootAgentStream = ({
     traceId,
     messages,
     model,
+    ollamaBaseUrl,
 }: {
     chatType: ChatType;
     conversationId: string;
@@ -19,8 +37,9 @@ export const createRootAgentStream = ({
     traceId: string;
     messages: ChatMessage[];
     model: ChatModel;
+    ollamaBaseUrl?: string;
 }) => {
-    const modelConfig = getModelFromType(chatType, model);
+    const modelConfig = getModelFromType(chatType, model, ollamaBaseUrl);
     const systemPrompt = getSystemPromptFromType(chatType);
     const toolSet = getToolSetFromType(chatType);
     return streamText({
@@ -46,7 +65,7 @@ export const createRootAgentStream = ({
             },
         },
     });
-}
+};
 
 const getSystemPromptFromType = (chatType: ChatType): string => {
     switch (chatType) {
@@ -58,21 +77,39 @@ const getSystemPromptFromType = (chatType: ChatType): string => {
         default:
             return getSystemPrompt();
     }
-}
+};
 
-const getModelFromType = (chatType: ChatType, selectedModel: ChatModel): ModelConfig => {
-    switch (chatType) {
-        case ChatType.CREATE:
-        case ChatType.FIX:
-            return initModel({ provider: LLMProvider.OPENROUTER, model: selectedModel });
-        case ChatType.ASK:
-        case ChatType.EDIT:
+const getModelFromType = (
+    chatType: ChatType,
+    selectedModel: ChatModel,
+    ollamaBaseUrl?: string,
+): ModelConfig => {
+    const provider = getProviderFromModel(selectedModel);
+    switch (provider) {
+        case LLMProvider.OLLAMA:
+            return initModel({
+                provider: LLMProvider.OLLAMA,
+                model: selectedModel as OllamaModelId,
+                ollamaBaseUrl: ollamaBaseUrl ?? OLLAMA_DEFAULT_BASE_URL,
+            });
+        case LLMProvider.OPENROUTER:
         default:
-            return initModel({ provider: LLMProvider.OPENROUTER, model: selectedModel });
+            return initModel({
+                provider: LLMProvider.OPENROUTER,
+                model: selectedModel as OPENROUTER_MODELS,
+            });
     }
-}
+};
 
-export const repairToolCall = async ({ toolCall, tools, error }: { toolCall: ToolCall<string, unknown>, tools: ToolSet, error: Error }) => {
+export const repairToolCall = async ({
+    toolCall,
+    tools,
+    error,
+}: {
+    toolCall: ToolCall<string, unknown>;
+    tools: ToolSet;
+    error: Error;
+}) => {
     if (NoSuchToolError.isInstance(error)) {
         throw new Error(
             `Tool "${toolCall.toolName}" not found. Available tools: ${Object.keys(tools).join(', ')}`,
@@ -97,7 +134,7 @@ export const repairToolCall = async ({ toolCall, tools, error }: { toolCall: Too
         schema: tool.inputSchema,
         prompt: [
             `The model tried to call the tool "${toolCall.toolName}"` +
-            ` with the following arguments:`,
+                ` with the following arguments:`,
             JSON.stringify(toolCall.input),
             `The tool accepts the following schema:`,
             JSON.stringify(tool?.inputSchema),
@@ -111,4 +148,4 @@ export const repairToolCall = async ({ toolCall, tools, error }: { toolCall: Too
         toolName: toolCall.toolName,
         input: JSON.stringify(repairedArgs),
     };
-}
+};

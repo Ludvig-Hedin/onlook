@@ -1,35 +1,48 @@
+import type { LanguageModel } from 'ai';
+import { createOpenRouter } from '@openrouter/ai-sdk-provider';
+import { createOllama } from 'ollama-ai-provider-v2';
+
+import type { InitialModelPayload, ModelConfig, OllamaModelId } from '@onlook/models';
 import {
+    getMaxTokens,
     LLMProvider,
-    MODEL_MAX_TOKENS,
+    OLLAMA_DEFAULT_BASE_URL,
     OPENROUTER_MODELS,
-    type InitialModelPayload,
-    type ModelConfig
 } from '@onlook/models';
 import { assertNever } from '@onlook/utility';
-import { createOpenRouter } from '@openrouter/ai-sdk-provider';
-import type { LanguageModel } from 'ai';
 
-export function initModel({
-    provider: requestedProvider,
-    model: requestedModel,
-}: InitialModelPayload): ModelConfig {
+export function initModel(payload: InitialModelPayload): ModelConfig {
     let model: LanguageModel;
     let providerOptions: Record<string, any> | undefined;
-    let maxOutputTokens: number = MODEL_MAX_TOKENS[requestedModel];
+    const maxOutputTokens = getMaxTokens(payload.model);
 
-    switch (requestedProvider) {
-        case LLMProvider.OPENROUTER:
-            model = getOpenRouterProvider(requestedModel);
+    switch (payload.provider) {
+        case LLMProvider.OPENROUTER: {
+            model = getOpenRouterProvider(payload.model);
             providerOptions = {
                 openrouter: { transforms: ['middle-out'] },
             };
-            const isAnthropic = requestedModel === OPENROUTER_MODELS.CLAUDE_4_5_SONNET || requestedModel === OPENROUTER_MODELS.CLAUDE_3_5_HAIKU || requestedModel === OPENROUTER_MODELS.CLAUDE_OPUS_4_7;
-            providerOptions = isAnthropic
-                ? { ...providerOptions, anthropic: { cacheControl: { type: 'ephemeral' } } }
-                : providerOptions;
+            const isAnthropic =
+                payload.model === OPENROUTER_MODELS.CLAUDE_4_5_SONNET ||
+                payload.model === OPENROUTER_MODELS.CLAUDE_3_5_HAIKU ||
+                payload.model === OPENROUTER_MODELS.CLAUDE_OPUS_4_7;
+            if (isAnthropic) {
+                providerOptions = {
+                    ...providerOptions,
+                    anthropic: { cacheControl: { type: 'ephemeral' } },
+                };
+            }
             break;
+        }
+        case LLMProvider.OLLAMA: {
+            model = getOllamaProvider(
+                payload.model,
+                payload.ollamaBaseUrl ?? OLLAMA_DEFAULT_BASE_URL,
+            );
+            break;
+        }
         default:
-            assertNever(requestedProvider);
+            assertNever(payload);
     }
 
     return {
@@ -46,9 +59,19 @@ function getOpenRouterProvider(model: OPENROUTER_MODELS): LanguageModel {
     const openrouter = createOpenRouter({
         apiKey: process.env.OPENROUTER_API_KEY,
         headers: {
-            'HTTP-Referer': 'https://onlook.com',
-            'X-Title': 'Onlook',
+            'HTTP-Referer': 'https://weblab.build',
+            'X-Title': 'Weblab',
         },
     });
     return openrouter(model);
+}
+
+function getOllamaProvider(modelId: OllamaModelId, baseUrl: string): LanguageModel {
+    // Strip "ollama/" prefix — the SDK expects just the model name (e.g. "llama3.2")
+    const modelName = modelId.replace(/^ollama\//, '');
+    // Normalise: strip trailing /api (or /api/) so users who paste the API URL
+    // don't end up with a doubled /api/api path.
+    const root = baseUrl.replace(/\/api\/?$/, '').replace(/\/$/, '');
+    const ollama = createOllama({ baseURL: `${root}/api` });
+    return ollama(modelName) as unknown as LanguageModel;
 }
