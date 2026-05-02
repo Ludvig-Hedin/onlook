@@ -138,182 +138,19 @@ export interface IconProps {
 }
 
 export const Icons = {
+  // Brand logo components — delegates to packages/ui/src/components/brand.tsx
+  // To replace the logo, edit that file (single source of truth).
   OnlookLogo: ({ className, ...props }: IconProps) =>
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 22 22"
-    fill="none"
-    className={className}
-    {...props} data-oid="9637cd24f1">
-    
-            <g clipPath="url(#clip0_2707_69355)" data-oid="f3c649d26e">
-                <mask
-        id="mask0_2707_69355"
-        style={{ maskType: 'alpha' }}
-        maskUnits="userSpaceOnUse"
-        x="0"
-        y="0"
-        width="23"
-        height="22" data-oid="d0acd3a2c4">
-        
-                    <circle
-          cx="11.0078"
-          cy="11"
-          r="11"
-          fill="black"
-          style={{ fill: 'black', fillOpacity: 1 }} data-oid="36f581cd1d" />
-        
-                </mask>
-                <g mask="url(#mask0_2707_69355)" data-oid="44f051645d">
-                    <path
-          fillRule="evenodd"
-          clipRule="evenodd"
-          d="M16.737 20.3969C19.9024 18.4654 22.0156 14.9795 22.0156 11C22.0156 4.92487 17.0908 0 11.0156 0C4.94049 0 0.015625 4.92487 0.015625 11C0.015625 13.6014 0.918657 15.9919 2.42835 17.8751L6.43945 14.6732V10.2135V8.20775L3.9857 5.75391H6.43945H15.6693C16.5441 5.75391 17.2533 6.46309 17.2533 7.33791V10.1708C16.4269 9.5987 15.8319 9.13852 15.8319 9.13852L13.0395 10.8308L17.8203 14.8924L16.737 20.3969ZM11.3203 6.98584H14.6616C14.6616 6.98584 14.7871 8.37687 12.9594 8.37687C11.3203 6.98574 11.3203 6.98584 11.3203 6.98584Z"
-          fill="#F7F7F7"
-          style={{ fill: '#F7F7F7', fillOpacity: 1 }} data-oid="82626a84e0" />
-        
-                </g>
-                <path
-        fillRule="evenodd"
-        clipRule="evenodd"
-        d="M2.42188 17.8751L6.43297 14.6732V10.2135V8.20775L3.97922 5.75391H6.43297H15.6628C16.5376 5.75391 17.2468 6.46309 17.2468 7.33791V10.1708C16.4204 9.5987 15.8254 9.13852 15.8254 9.13852L13.0331 10.8308L17.8138 14.8924L16.7305 20.3969C15.0635 21.414 13.1048 22 11.0091 22C7.53543 22 4.43779 20.3898 2.42188 17.8751ZM11.3138 6.98584H14.6552C14.6552 6.98584 14.7806 8.37687 12.9529 8.37687C11.3138 6.98574 11.3138 6.98584 11.3138 6.98584Z"
-        fill="#202123"
-        style={{ fill: '#202123', fillOpacity: 1 }} data-oid="0e498b495c" />
-      
-                <mask id="path-4-inside-1_2707_69355" fill="white" data-oid="db65505c53">
-                    <path d="M22.0078 11C22.0078 17.0751 17.0829 22 11.0078 22C4.93268 22 0.0078125 17.0751 0.0078125 11C0.0078125 4.92487 4.93268 0 11.0078 0C17.0829 0 22.0078 4.92487 22.0078 11Z" data-oid="6da1165333" />
-                </mask>
-                <path
-        d="M21.1484 11C21.1484 16.6005 16.6083 21.1406 11.0078 21.1406V22.8594C17.5576 22.8594 22.8672 17.5498 22.8672 11H21.1484ZM11.0078 21.1406C5.4073 21.1406 0.867188 16.6005 0.867188 11H-0.851562C-0.851562 17.5498 4.45806 22.8594 11.0078 22.8594V21.1406ZM0.867188 11C0.867188 5.39949 5.4073 0.859375 11.0078 0.859375V-0.859375C4.45806 -0.859375 -0.851562 4.45025 -0.851562 11H0.867188ZM11.0078 0.859375C16.6083 0.859375 21.1484 5.39949 21.1484 11H22.8672C22.8672 4.45025 17.5576 -0.859375 11.0078 -0.859375V0.859375Z"
-        fill="#F7F7F7"
-        style={{ fill: '#F7F7F7', fillOpacity: 1 }}
-        mask="url(#path-4-inside-1_2707_69355)" data-oid="30869891ed" />
-      
-            </g>
-            <defs data-oid="1bd009eef9">
-                <clipPath id="clip0_2707_69355" data-oid="698110204d">
-                    <rect
-          width="22"
-          height="22"
-          fill="white"
-          style={{ fill: 'white', fillOpacity: 1 }} data-oid="76a064360d" />
-        
-                </clipPath>
-            </defs>
-        </svg>,
+    <BrandSymbol className={className} {...props} />,
 
   OnlookIcon: ({ className, ...props }: IconProps) =>
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width={22}
-    height={22}
-    fill="none"
-    className={className}
-    {...props} data-oid="6b96e8a52e">
-    
-            <g clipPath="url(#clip0_2707_69355)" data-oid="f90261b0b6">
-                <mask
-        id="mask0_2707_69355"
-        style={{ maskType: 'alpha' }}
-        maskUnits="userSpaceOnUse"
-        x="0"
-        y="0"
-        width="23"
-        height="22" data-oid="9c4bd423fd">
-        
-                    <circle
-          cx="11.0078"
-          cy="11"
-          r="11"
-          fill="black"
-          style={{ fill: 'black', fillOpacity: 1 }} data-oid="ca87abcae2" />
-        
-                </mask>
-                <g mask="url(#mask0_2707_69355)" data-oid="3d8890c476">
-                    <path
-          fillRule="evenodd"
-          clipRule="evenodd"
-          d="M16.737 20.3969C19.9024 18.4654 22.0156 14.9795 22.0156 11C22.0156 4.92487 17.0908 0 11.0156 0C4.94049 0 0.015625 4.92487 0.015625 11C0.015625 13.6014 0.918657 15.9919 2.42835 17.8751L6.43945 14.6732V10.2135V8.20775L3.9857 5.75391H6.43945H15.6693C16.5441 5.75391 17.2533 6.46309 17.2533 7.33791V10.1708C16.4269 9.5987 15.8319 9.13852 15.8319 9.13852L13.0395 10.8308L17.8203 14.8924L16.737 20.3969ZM11.3203 6.98584H14.6616C14.6616 6.98584 14.7871 8.37687 12.9594 8.37687C11.3203 6.98574 11.3203 6.98584 11.3203 6.98584Z"
-          className={className}
-          style={{ fillOpacity: 1 }} data-oid="10e83aa2ad" />
-        
-                </g>
-                <mask id="path-4-inside-1_2707_69355" fill="white" data-oid="ccee13cb61">
-                    <path d="M22.0078 11C22.0078 17.0751 17.0829 22 11.0078 22C4.93268 22 0.0078125 17.0751 0.0078125 11C0.0078125 4.92487 4.93268 0 11.0078 0C17.0829 0 22.0078 4.92487 22.0078 11Z" data-oid="74ac081d4d" />
-                </mask>
-            </g>
-            <defs data-oid="1cbcc04963">
-                <clipPath id="clip0_2707_69355" data-oid="f2c32b438b">
-                    <rect
-          width="22"
-          height="22"
-          fill="white"
-          style={{ fill: 'white', fillOpacity: 1 }} data-oid="6ba2a0f0f0" />
-        
-                </clipPath>
-            </defs>
-        </svg>,
+    <BrandSymbol className={className} {...props} />,
 
   OnlookTextLogo: ({ className, ...props }: IconProps) =>
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="139"
-    height="17"
-    viewBox="0 0 139 17"
-    fill="none"
-    className={cn('w-auto h-auto preserve-aspect-ratio dark:invert', className)}
-    {...props} data-oid="788a550a2f">
-    
-            <path
-      d="M26.7578 16.502V4.40195H28.7485L43.3051 15.4019H44.7981V3.30195"
-      stroke="black"
-      style={{ stroke: 'black', strokeOpacity: 1 }}
-      strokeWidth="2.73715" data-oid="7267c84ce3" />
-    
-            <path
-      d="M50.7734 3.30237V15.4023L67.0719 15.4023"
-      stroke="black"
-      style={{ stroke: 'black', strokeOpacity: 1 }}
-      strokeWidth="2.73715" data-oid="56eaeffe3f" />
-    
-            <rect
-      x="2"
-      y="4.62305"
-      width="19.4089"
-      height="10.56"
-      rx="5.27999"
-      stroke="black"
-      style={{ stroke: 'black', strokeOpacity: 1 }}
-      strokeWidth="2.73715" data-oid="4122e9cd35" />
-    
-            <rect
-      x="69.6797"
-      y="4.62305"
-      width="19.4089"
-      height="10.56"
-      rx="5.27999"
-      stroke="black"
-      style={{ stroke: 'black', strokeOpacity: 1 }}
-      strokeWidth="2.73715" data-oid="ec42043a2a" />
-    
-            <rect
-      x="94.0703"
-      y="4.62305"
-      width="19.4089"
-      height="10.56"
-      rx="5.27999"
-      stroke="black"
-      style={{ stroke: 'black', strokeOpacity: 1 }}
-      strokeWidth="2.73715" data-oid="d951fa55a9" />
-    
-            <path
-      fillRule="evenodd"
-      clipRule="evenodd"
-      d="M120.823 10.3906V16.502H118.086V9.022V3.30204H120.823V7.65343H128.075L133.781 3.30213H138.295L130.657 9.126L138.583 16.502H134.565L127.999 10.3906H120.823ZM137.735 0.442137L137.66 0.34375L137.531 0.442137H137.735Z"
-      fill="black"
-      style={{ fill: 'black', fillOpacity: 1 }} data-oid="3dfc630762" />
-    
-        </svg>,
+    <BrandWordmark className={className} {...props} />,
+
+  OnlookFullLogo: ({ className, ...props }: IconProps) =>
+    <BrandLogo className={className} {...props} />,
 
   GoogleLogo: ({ className, ...props }: IconProps) =>
   <svg

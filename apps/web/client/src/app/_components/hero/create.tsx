@@ -316,7 +316,7 @@ export const Create = observer(
                 <div
                     data-create-container
                     className={cn(
-                        'bg-background-primary w-[600px] max-w-full cursor-text flex-col rounded-xl border focus-within:border-transparent transition-colors duration-200',
+                        'bg-background-primary w-[600px] max-w-full cursor-text flex-col rounded-xl border focus-within:border-0 transition-colors duration-200',
                         '[&[data-dragging-image=true]]:bg-blue-500/40',
                         isDragging && 'cursor-copy bg-blue-500/40',
                     )}

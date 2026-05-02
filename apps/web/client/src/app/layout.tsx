@@ -86,7 +86,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                         <TelemetryProvider>
                             <ThemeProvider
                                 attribute="class"
-                                forcedTheme="dark"
+                                defaultTheme="system"
                                 enableSystem
                                 disableTransitionOnChange
                             >
