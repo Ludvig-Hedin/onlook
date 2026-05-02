@@ -1,19 +1,26 @@
 'use client';
 
+import type { FinishReason } from 'ai';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useChat as useAiChat } from '@ai-sdk/react';
+import { DefaultChatTransport, lastAssistantMessageIsCompleteWithToolCalls } from 'ai';
+import { usePostHog } from 'posthog-js/react';
+import { v4 as uuidv4 } from 'uuid';
+
+import type {
+    ChatMessage,
+    ChatModel,
+    GitMessageCheckpoint,
+    MessageContext,
+    QueuedMessage,
+} from '@onlook/models';
+import { ChatType } from '@onlook/models';
+import { jsonClone } from '@onlook/utility';
+
 import { useEditorEngine } from '@/components/store/editor';
 import { handleToolCall } from '@/components/tools';
 import { api } from '@/trpc/client';
-import { useChat as useAiChat } from '@ai-sdk/react';
-import { ChatType, type ChatMessage, type ChatModel, type GitMessageCheckpoint, type MessageContext, type QueuedMessage } from '@onlook/models';
-import { jsonClone } from '@onlook/utility';
-import { DefaultChatTransport, lastAssistantMessageIsCompleteWithToolCalls, type FinishReason } from 'ai';
-import { usePostHog } from 'posthog-js/react';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { v4 as uuidv4 } from 'uuid';
-import {
-    createCheckpointsForAllBranches,
-    getUserChatMessageFromString
-} from './utils';
+import { createCheckpointsForAllBranches, getUserChatMessageFromString } from './utils';
 
 export type SendMessage = (content: string, type: ChatType) => Promise<ChatMessage>;
 export type EditMessage = (
@@ -32,9 +39,16 @@ interface UseChatProps {
     projectId: string;
     initialMessages: ChatMessage[];
     model: ChatModel;
+    ollamaBaseUrl?: string;
 }
 
-export function useChat({ conversationId, projectId, initialMessages, model }: UseChatProps) {
+export function useChat({
+    conversationId,
+    projectId,
+    initialMessages,
+    model,
+    ollamaBaseUrl,
+}: UseChatProps) {
     const editorEngine = useEditorEngine();
     const posthog = usePostHog();
 
@@ -54,6 +68,7 @@ export function useChat({ conversationId, projectId, initialMessages, model }: U
                     conversationId,
                     projectId,
                     model,
+                    ollamaBaseUrl,
                 },
             }),
             onToolCall: async (toolCall) => {
@@ -82,8 +97,13 @@ export function useChat({ conversationId, projectId, initialMessages, model }: U
 
     const processMessage = useCallback(
         async (content: string, type: ChatType, context?: MessageContext[]) => {
-            const messageContext = context || await editorEngine.chat.context.getContextByChatType(type);
-            const newMessage = getUserChatMessageFromString(content, messageContext, conversationId);
+            const messageContext =
+                context || (await editorEngine.chat.context.getContextByChatType(type));
+            const newMessage = getUserChatMessageFromString(
+                content,
+                messageContext,
+                conversationId,
+            );
             setMessages(jsonClone([...messagesRef.current, newMessage]));
 
             void regenerate({
@@ -92,6 +112,7 @@ export function useChat({ conversationId, projectId, initialMessages, model }: U
                     conversationId,
                     context: messageContext,
                     model,
+                    ollamaBaseUrl,
                 },
             });
             void editorEngine.chat.conversation.generateTitle(content);
@@ -99,11 +120,13 @@ export function useChat({ conversationId, projectId, initialMessages, model }: U
         },
         [
             editorEngine.chat.context,
+            editorEngine.chat.conversation,
             messagesRef,
             setMessages,
             regenerate,
             conversationId,
             model,
+            ollamaBaseUrl,
         ],
     );
 
@@ -118,15 +141,15 @@ export function useChat({ conversationId, projectId, initialMessages, model }: U
                 content,
                 type,
                 timestamp: new Date(),
-                context
+                context,
             };
 
             if (isStreaming) {
                 // AI is running - add to bottom of queue (normal queueing)
-                setQueuedMessages(prev => [...prev, newMessage]);
+                setQueuedMessages((prev) => [...prev, newMessage]);
             } else if (queuedMessages.length > 0) {
                 // AI is stopped but there are queued messages - add to top of queue (priority)
-                setQueuedMessages(prev => [newMessage, ...prev]);
+                setQueuedMessages((prev) => [newMessage, ...prev]);
             } else {
                 // No queue and not streaming - send immediately
                 return processMessage(content, type);
@@ -134,7 +157,14 @@ export function useChat({ conversationId, projectId, initialMessages, model }: U
 
             return getUserChatMessageFromString(content, [], conversationId);
         },
-        [processMessage, posthog, editorEngine.chat.context, isStreaming, queuedMessages.length, conversationId],
+        [
+            processMessage,
+            posthog,
+            editorEngine.chat.context,
+            isStreaming,
+            queuedMessages.length,
+            conversationId,
+        ],
     );
 
     const processMessageEdit = useCallback(
@@ -142,7 +172,7 @@ export function useChat({ conversationId, projectId, initialMessages, model }: U
             const messageIndex = messagesRef.current.findIndex((m) => m.id === messageId);
             const message = messagesRef.current[messageIndex];
 
-            if (messageIndex === -1 || !message || message.role !== 'user') {
+            if (messageIndex === -1 || message?.role !== 'user') {
                 throw new Error('Message not found.');
             }
 
@@ -150,7 +180,8 @@ export function useChat({ conversationId, projectId, initialMessages, model }: U
 
             // For resubmitted messages, we want to keep the previous context and refresh if possible
             const previousContext = message.metadata?.context ?? [];
-            const updatedContext = await editorEngine.chat.context.getRefreshedContext(previousContext);
+            const updatedContext =
+                await editorEngine.chat.context.getRefreshedContext(previousContext);
 
             message.metadata = {
                 ...message.metadata,
@@ -168,21 +199,17 @@ export function useChat({ conversationId, projectId, initialMessages, model }: U
                     chatType,
                     conversationId,
                     model,
+                    ollamaBaseUrl,
                 },
             });
 
             return message;
         },
-        [
-            editorEngine.chat.context,
-            regenerate,
-            conversationId,
-            setMessages,
-        ],
+        [editorEngine.chat.context, regenerate, conversationId, setMessages, model, ollamaBaseUrl],
     );
 
     const removeFromQueue = useCallback((id: string) => {
-        setQueuedMessages(prev => prev.filter(msg => msg.id !== id));
+        setQueuedMessages((prev) => prev.filter((msg) => msg.id !== id));
     }, []);
 
     const processNextInQueue = useCallback(async () => {
@@ -194,11 +221,13 @@ export function useChat({ conversationId, projectId, initialMessages, model }: U
         isProcessingQueue.current = true;
 
         try {
-            const refreshedContext = await editorEngine.chat.context.getRefreshedContext(nextMessage.context);
+            const refreshedContext = await editorEngine.chat.context.getRefreshedContext(
+                nextMessage.context,
+            );
             await processMessage(nextMessage.content, nextMessage.type, refreshedContext);
 
             // Remove only after successful processing
-            setQueuedMessages(prev => prev.slice(1));
+            setQueuedMessages((prev) => prev.slice(1));
         } catch (error) {
             console.error('Failed to process queued message:', error);
         } finally {
@@ -258,10 +287,11 @@ export function useChat({ conversationId, projectId, initialMessages, model }: U
                 }
 
                 // Update message with all checkpoints
-                const oldCheckpoints = lastUserMessage.metadata?.checkpoints.map((checkpoint) => ({
-                    ...checkpoint,
-                    createdAt: new Date(checkpoint.createdAt),
-                })) ?? [];
+                const oldCheckpoints =
+                    lastUserMessage.metadata?.checkpoints.map((checkpoint) => ({
+                        ...checkpoint,
+                        createdAt: new Date(checkpoint.createdAt),
+                    })) ?? [];
 
                 lastUserMessage.metadata = {
                     ...lastUserMessage.metadata,
@@ -273,7 +303,7 @@ export function useChat({ conversationId, projectId, initialMessages, model }: U
 
                 // Save checkpoints to database (filter out legacy checkpoints without branchId)
                 const checkpointsWithBranchId = [...oldCheckpoints, ...checkpoints].filter(
-                    (cp): cp is GitMessageCheckpoint & { branchId: string } => !!cp.branchId
+                    (cp): cp is GitMessageCheckpoint & { branchId: string } => !!cp.branchId,
                 );
                 void api.chat.message.updateCheckpoints.mutate({
                     messageId: lastUserMessage.id,

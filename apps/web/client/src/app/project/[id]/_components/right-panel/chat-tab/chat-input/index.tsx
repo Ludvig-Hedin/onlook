@@ -6,7 +6,7 @@ import { useTranslations } from 'next-intl';
 import { v4 as uuidv4 } from 'uuid';
 import { z } from 'zod';
 
-import type { ChatMessage, ImageMessageContext, QueuedMessage } from '@onlook/models';
+import type { ChatMessage, ImageMessageContext, LocalModelOption, QueuedMessage } from '@onlook/models';
 import { ChatType } from '@onlook/models';
 import { MessageContextType } from '@onlook/models/chat';
 import { Button } from '@onlook/ui/button';
@@ -40,6 +40,8 @@ interface ChatInputProps {
     removeFromQueue: (id: string) => void;
     model: ChatModel;
     onModelChange: (model: ChatModel) => void;
+    localModels: LocalModelOption[];
+    localModelsLoading: boolean;
 }
 
 const imageDragDataSchema = z.object({
@@ -59,6 +61,8 @@ export const ChatInput = observer(
         removeFromQueue,
         model,
         onModelChange,
+        localModels,
+        localModelsLoading,
     }: ChatInputProps) => {
         const editorEngine = useEditorEngine();
         const t = useTranslations();
@@ -442,7 +446,7 @@ export const ChatInput = observer(
                             chatMode={chatMode}
                             onChatModeChange={handleChatModeChange}
                         />
-                        <ModelSelector value={model} onChange={onModelChange} />
+                        <ModelSelector value={model} onChange={onModelChange} localModels={localModels} localModelsLoading={localModelsLoading} />
                         {lastUsageMessage?.metadata?.usage && (
                             <ChatContextWindow usage={lastUsageMessage?.metadata?.usage} />
                         )}
