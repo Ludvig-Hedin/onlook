@@ -26,12 +26,16 @@ import {
 } from '@onlook/ui/dropdown-menu';
 import { Icons } from '@onlook/ui/icons';
 
+import type { StaticTemplate } from '../templates/static-templates';
 import type { ProjectFolder, ProjectListItem } from './project-card-utils';
+import { Create, type CreateSuggestion } from '@/app/_components/hero/create';
+import { CreateManagerProvider } from '@/components/store/create';
 import { useCreateBlankProject } from '@/hooks/use-create-blank-project';
+import { useImportLocalProject } from '@/hooks/use-import-local-project';
 import { api } from '@/trpc/react';
 import { getFileUrlFromStorage } from '@/utils/supabase/client';
-import { StaticTemplates, type StaticTemplate } from '../templates/static-templates';
 import { Templates } from '../templates';
+import { StaticTemplates } from '../templates/static-templates';
 import { TemplateModal } from '../templates/template-modal';
 import { CreateFolderDialog } from './create-folder-dialog';
 import { FolderCard } from './folder-card';
@@ -45,6 +49,14 @@ import {
 
 const STARRED_TEMPLATES_KEY = 'onlook_starred_templates';
 
+export const PROJECT_SUGGESTIONS: CreateSuggestion[] = [
+    { label: 'Personal Page', prompt: 'Create a personal page for ' },
+    { label: 'Landing Page', prompt: 'Create a landing page for ' },
+    { label: 'About Page', prompt: 'Create an about page for ' },
+    { label: 'Resume', prompt: 'Create a resume site for ' },
+    { label: 'Portfolio', prompt: 'Create a portfolio site for ' },
+];
+
 const STATIC_TEMPLATE_ALIASES: Record<StaticTemplate['id'], string[]> = {
     portfolio: ['portfolio', 'portfolio website', 'personal site'],
     saas: ['saas', 'landing', 'marketing'],
@@ -57,7 +69,10 @@ const STATIC_TEMPLATE_ALIASES: Record<StaticTemplate['id'], string[]> = {
 };
 
 function normalizeTemplateText(value: string): string {
-    return value.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+    return value
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, ' ')
+        .trim();
 }
 
 function resolveStaticTemplateProject(
@@ -109,8 +124,8 @@ function getStaticTemplateMatches(templateProjects: Project[]): Map<StaticTempla
     };
     const matches = new Map<StaticTemplate['id'], Project>();
 
-    for (const templateId of Object.keys(templateNames) as StaticTemplate['id'][]) {
-        const templateName = templateNames[templateId];
+    const entries = Object.entries(templateNames) as Array<[StaticTemplate['id'], string]>;
+    for (const [templateId, templateName] of entries) {
         if (!templateName) {
             continue;
         }
@@ -132,13 +147,21 @@ function getStaticTemplateMatches(templateProjects: Project[]): Map<StaticTempla
     return matches;
 }
 
-export const SelectProject = ({ externalSearchQuery }: { externalSearchQuery?: string } = {}) => {
+export const SelectProject = ({
+    externalSearchQuery,
+    onClearSearch,
+}: {
+    externalSearchQuery?: string;
+    onClearSearch?: () => void;
+} = {}) => {
     const utils = api.useUtils();
     const { data: user } = api.user.get.useQuery();
     const { data: fetchedProjects, isLoading, refetch } = api.project.list.useQuery();
     const { mutateAsync: removeTag } = api.project.removeTag.useMutation();
     const { mutateAsync: deleteProject } = api.project.delete.useMutation();
     const { handleStartBlankProject, isCreatingProject } = useCreateBlankProject();
+    const { handleImportLocalProject, isImporting } = useImportLocalProject();
+    const [isAiCreating, setIsAiCreating] = useState(false);
 
     const [internalQuery] = useState('');
     const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
@@ -182,13 +205,19 @@ export const SelectProject = ({ externalSearchQuery }: { externalSearchQuery?: s
     const shouldShowTemplate = templateProjects.length > 0;
 
     const persistFolders = async (nextFolders: ProjectFolder[]) => {
+        const previousFolders = folders;
         setFolders(nextFolders);
 
         try {
             await localforage.setItem(foldersStorageKey, nextFolders);
         } catch (error) {
             console.error('Failed to save folders:', error);
-            toast.error('Failed to save folder changes');
+            // Roll the optimistic state back so the UI matches what's actually
+            // persisted; otherwise a refresh will surprise the user.
+            setFolders(previousFolders);
+            toast.error('Failed to save folder changes', {
+                description: 'Your changes were undone. Please try again.',
+            });
         }
     };
 
@@ -444,8 +473,23 @@ export const SelectProject = ({ externalSearchQuery }: { externalSearchQuery?: s
 
         try {
             const results = await Promise.allSettled(ids.map((id) => deleteProject({ id })));
-            const deletedIds = ids.filter((_, i) => results[i]?.status === 'fulfilled');
-            const failedCount = ids.length - deletedIds.length;
+            const projectNameById = new Map(projects.map((project) => [project.id, project.name]));
+            const deletedIds: string[] = [];
+            const failures: { name: string; reason: string }[] = [];
+
+            results.forEach((result, index) => {
+                const id = ids[index];
+                if (!id) return;
+                if (result.status === 'fulfilled') {
+                    deletedIds.push(id);
+                    return;
+                }
+                const reason =
+                    result.reason instanceof Error
+                        ? result.reason.message
+                        : String(result.reason ?? 'Unknown error');
+                failures.push({ name: projectNameById.get(id) ?? id, reason });
+            });
 
             if (deletedIds.length > 0) {
                 const nextFolders = moveProjectIdsToFolder(folders, deletedIds, null);
@@ -457,12 +501,21 @@ export const SelectProject = ({ externalSearchQuery }: { externalSearchQuery?: s
             resetSelection();
             setShowDeleteSelectedDialog(false);
 
-            if (failedCount > 0 && deletedIds.length > 0) {
+            const failedNames = failures
+                .map((failure) => failure.name)
+                .slice(0, 3)
+                .join(', ');
+            const overflowSuffix = failures.length > 3 ? `, and ${failures.length - 3} more` : '';
+
+            if (failures.length > 0 && deletedIds.length > 0) {
                 toast.warning(
-                    `Deleted ${deletedIds.length} project${deletedIds.length === 1 ? '' : 's'}, failed to delete ${failedCount}`,
+                    `Deleted ${deletedIds.length} project${deletedIds.length === 1 ? '' : 's'}, failed to delete ${failures.length}`,
+                    { description: `Failed: ${failedNames}${overflowSuffix}` },
                 );
-            } else if (failedCount > 0) {
-                toast.error('Failed to delete selected projects');
+            } else if (failures.length > 0) {
+                toast.error('Failed to delete selected projects', {
+                    description: `Failed: ${failedNames}${overflowSuffix}`,
+                });
             } else {
                 toast.success(
                     `Deleted ${deletedIds.length} project${deletedIds.length === 1 ? '' : 's'}`,
@@ -470,7 +523,9 @@ export const SelectProject = ({ externalSearchQuery }: { externalSearchQuery?: s
             }
         } catch (error) {
             console.error('Failed to delete selected projects:', error);
-            toast.error('Failed to delete selected projects');
+            toast.error('Failed to delete selected projects', {
+                description: error instanceof Error ? error.message : String(error),
+            });
         } finally {
             setIsDeletingSelected(false);
         }
@@ -489,50 +544,84 @@ export const SelectProject = ({ externalSearchQuery }: { externalSearchQuery?: s
 
     if (projects.length === 0) {
         return (
-            <div className="mx-auto flex h-full w-full max-w-6xl flex-col items-center justify-center gap-10 px-6 py-8">
-                <div className="flex flex-col items-center gap-4">
-                    <div className="text-foreground-secondary text-xl">No projects found</div>
-                    <div className="text-md text-foreground-tertiary">
-                        Create a new project to get started
+            <CreateManagerProvider>
+                <div className="mx-auto flex h-full w-full max-w-6xl flex-col items-center gap-12 px-6 py-16">
+                    <div className="flex w-full flex-col items-center gap-6 text-center">
+                        <div className="flex flex-col items-center gap-3">
+                            <div className="text-foreground text-3xl font-normal tracking-tight">
+                                You have no projects
+                            </div>
+                            <div className="text-foreground-tertiary text-md">
+                                Start by describing what you want to build
+                            </div>
+                        </div>
+                        <Create
+                            cardKey={0}
+                            isCreatingProject={isAiCreating}
+                            setIsCreatingProject={setIsAiCreating}
+                            user={user ?? null}
+                            suggestions={PROJECT_SUGGESTIONS}
+                        />
+                        <div className="flex w-[600px] max-w-full items-center gap-3">
+                            <div className="h-px flex-1 bg-white/10" />
+                            <span className="text-foreground-tertiary text-xs uppercase tracking-[0.2em]">
+                                or
+                            </span>
+                            <div className="h-px flex-1 bg-white/10" />
+                        </div>
+                        <div className="flex flex-wrap justify-center gap-2">
+                            <Button
+                                onClick={() => void handleStartBlankProject()}
+                                disabled={isCreatingProject || isImporting || isAiCreating}
+                                variant="outline"
+                                className="border-white/10 bg-white/4 hover:bg-white/8"
+                            >
+                                {isCreatingProject ? (
+                                    <Icons.LoadingSpinner className="h-4 w-4 animate-spin" />
+                                ) : (
+                                    <Icons.Plus className="h-4 w-4" />
+                                )}
+                                Create blank project
+                            </Button>
+                            <Button
+                                onClick={() => void handleImportLocalProject()}
+                                disabled={isCreatingProject || isImporting || isAiCreating}
+                                variant="outline"
+                                className="border-white/10 bg-white/4 hover:bg-white/8"
+                            >
+                                {isImporting ? (
+                                    <Icons.LoadingSpinner className="h-4 w-4 animate-spin" />
+                                ) : (
+                                    <Icons.Directory className="h-4 w-4" />
+                                )}
+                                Open local folder
+                            </Button>
+                        </div>
                     </div>
-                    <div className="flex justify-center">
-                        <Button
-                            onClick={() => void handleStartBlankProject()}
-                            disabled={isCreatingProject}
-                            variant="default"
-                        >
-                            {isCreatingProject ? (
-                                <Icons.LoadingSpinner className="h-4 w-4 animate-spin" />
-                            ) : (
-                                <Icons.Plus className="h-4 w-4" />
-                            )}
-                            Create blank project
-                        </Button>
-                    </div>
+
+                    {shouldShowTemplate && (
+                        <div className="w-full">
+                            <Templates
+                                templateProjects={templateProjects}
+                                searchQuery={debouncedSearchQuery}
+                                onTemplateClick={handleTemplateClick}
+                                onToggleStar={handleToggleStar}
+                                starredTemplates={starredTemplates}
+                            />
+                        </div>
+                    )}
+
+                    {availableStaticTemplateIds.size > 0 && (
+                        <div className="w-full">
+                            <StaticTemplates
+                                onUseTemplate={handleStaticTemplateClick}
+                                isCreating={isCreatingProject}
+                                availableTemplateIds={availableStaticTemplateIds}
+                            />
+                        </div>
+                    )}
                 </div>
-
-                {shouldShowTemplate && (
-                    <div className="w-full">
-                        <Templates
-                            templateProjects={templateProjects}
-                            searchQuery={debouncedSearchQuery}
-                            onTemplateClick={handleTemplateClick}
-                            onToggleStar={handleToggleStar}
-                            starredTemplates={starredTemplates}
-                        />
-                    </div>
-                )}
-
-                {availableStaticTemplateIds.size > 0 && (
-                    <div className="w-full">
-                        <StaticTemplates
-                            onUseTemplate={handleStaticTemplateClick}
-                            isCreating={isCreatingProject}
-                            availableTemplateIds={availableStaticTemplateIds}
-                        />
-                    </div>
-                )}
-            </div>
+            </CreateManagerProvider>
         );
     }
 
@@ -735,8 +824,20 @@ export const SelectProject = ({ externalSearchQuery }: { externalSearchQuery?: s
                                         </AnimatePresence>
                                     </motion.div>
                                 ) : (
-                                    <div className="text-foreground-tertiary rounded-[22px] border border-dashed border-white/10 bg-black/10 p-6 text-sm">
-                                        No projects in this folder match your search yet.
+                                    <div className="text-foreground-tertiary flex flex-col items-start gap-3 rounded-[22px] border border-dashed border-white/10 bg-black/10 p-6 text-sm">
+                                        <span>
+                                            No projects in this folder match your search yet.
+                                        </span>
+                                        {debouncedSearchQuery && onClearSearch && (
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                className="border-white/10 bg-white/4 hover:bg-white/8"
+                                                onClick={() => onClearSearch()}
+                                            >
+                                                Clear search
+                                            </Button>
+                                        )}
                                     </div>
                                 )}
                             </div>
@@ -749,14 +850,20 @@ export const SelectProject = ({ externalSearchQuery }: { externalSearchQuery?: s
                         <h3 className="text-foreground-tertiary text-sm font-medium tracking-[0.18em] uppercase">
                             {folderViewModels.length > 0 ? 'Unfiled projects' : 'Projects'}
                         </h3>
-                        <span className="text-foreground-tertiary text-xs">
+                        <span className="text-foreground-tertiary flex items-center gap-2 text-xs">
+                            {searchQuery !== debouncedSearchQuery && (
+                                <span className="text-foreground-tertiary/80 flex items-center gap-1">
+                                    <Icons.LoadingSpinner className="h-3 w-3 animate-spin" />
+                                    Searching…
+                                </span>
+                            )}
                             {looseProjects.length} visible
                         </span>
                     </div>
 
                     {looseProjects.length === 0 ? (
                         <div className="flex w-full items-center justify-center rounded-[26px] border border-dashed border-white/8 bg-white/3 py-16">
-                            <div className="text-center">
+                            <div className="flex flex-col items-center gap-3 text-center">
                                 <div className="text-foreground-secondary text-base">
                                     No loose projects found
                                 </div>
@@ -765,6 +872,16 @@ export const SelectProject = ({ externalSearchQuery }: { externalSearchQuery?: s
                                         ? 'Try adjusting your search terms'
                                         : 'Move projects here or create a new one'}
                                 </div>
+                                {debouncedSearchQuery && onClearSearch && (
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        className="border-white/10 bg-white/4 hover:bg-white/8"
+                                        onClick={() => onClearSearch()}
+                                    >
+                                        Clear search
+                                    </Button>
+                                )}
                             </div>
                         </div>
                     ) : (

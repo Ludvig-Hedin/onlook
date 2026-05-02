@@ -10,7 +10,6 @@ import { v4 as uuidv4 } from 'uuid';
 import type { ImageMessageContext, User } from '@onlook/models';
 import { MessageContextType } from '@onlook/models';
 import { Button } from '@onlook/ui/button';
-import { Card, CardContent, CardHeader } from '@onlook/ui/card';
 import { Icons } from '@onlook/ui/icons';
 import { toast } from '@onlook/ui/sonner';
 import { Textarea } from '@onlook/ui/textarea';
@@ -22,9 +21,19 @@ import { useAuthContext } from '@/app/auth/auth-context';
 import { validateImageLimit } from '@/app/project/[id]/_components/right-panel/chat-tab/context-pills/helpers';
 import { ImagePill } from '@/app/project/[id]/_components/right-panel/chat-tab/context-pills/image-pill';
 import { useCreateManager } from '@/components/store/create';
+import { MicButton } from '@/components/transcribe/mic-button';
 import { Routes } from '@/utils/constants';
 
+export interface CreateSuggestion {
+    label: string;
+    prompt: string;
+}
+
 const SAVED_INPUT_KEY = 'create-input';
+const MIN_PROMPT_LENGTH = 10;
+// Drafts saved on auth-modal-open are recovered for up to 24h. After that they
+// almost certainly belong to a different intent and would surprise the user.
+const DRAFT_MAX_AGE_MS = 24 * 60 * 60 * 1000;
 interface CreateInputContext {
     prompt: string;
     images: ImageMessageContext[];
@@ -37,11 +46,13 @@ export const Create = observer(
         isCreatingProject,
         setIsCreatingProject,
         user,
+        suggestions,
     }: {
         cardKey: number;
         isCreatingProject: boolean;
         setIsCreatingProject: (isCreatingProject: boolean) => void;
         user: User | null;
+        suggestions?: CreateSuggestion[];
     }) => {
         const createManager = useCreateManager();
         const router = useRouter();
@@ -54,29 +65,45 @@ export const Create = observer(
         const [selectedImages, setSelectedImages] = useState<ImageMessageContext[]>([]);
         const [imageTooltipOpen, setImageTooltipOpen] = useState(false);
         const [isHandlingFile, setIsHandlingFile] = useState(false);
-        const isInputInvalid = !inputValue || inputValue.trim().length < 10;
+        const trimmedLength = inputValue.trim().length;
+        const isInputInvalid = trimmedLength < MIN_PROMPT_LENGTH;
+        const charactersRemaining = Math.max(0, MIN_PROMPT_LENGTH - trimmedLength);
         const [isComposing, setIsComposing] = useState(false);
 
-        // Restore draft from localStorage if exists
+        // Restore draft from localStorage if it exists and isn't stale.
+        // The draft is intentionally NOT deleted on restore: if the user
+        // submits and creation fails (network, sandbox 502, etc.), refreshing
+        // the page would otherwise lose the prompt entirely. Deletion happens
+        // only after a successful create or if the draft is stale.
         useEffect(() => {
             const getDraft = async () => {
-                const draft = await localforage.getItem<CreateInputContext>(SAVED_INPUT_KEY);
-                if (draft) {
-                    try {
-                        const { prompt, images } = draft;
-                        // Only restore if draft is less than 1 hour old
-                        setInputValue(prompt);
-                        setSelectedImages(images);
-
-                        // Clear the draft after restoring
+                try {
+                    const draft = await localforage.getItem<CreateInputContext>(SAVED_INPUT_KEY);
+                    if (!draft) return;
+                    const isStale =
+                        typeof draft.timestamp === 'number' &&
+                        Date.now() - draft.timestamp > DRAFT_MAX_AGE_MS;
+                    if (isStale) {
                         await localforage.removeItem(SAVED_INPUT_KEY);
-                    } catch (error) {
-                        console.error('Error restoring draft:', error);
+                        return;
                     }
+                    setInputValue(draft.prompt ?? '');
+                    setSelectedImages(draft.images ?? []);
+                } catch (error) {
+                    console.error('Error restoring draft:', error);
                 }
             };
             getDraft();
         }, []);
+
+        const saveDraft = (prompt: string, images: ImageMessageContext[]) => {
+            const createInputContext: CreateInputContext = {
+                prompt,
+                images,
+                timestamp: Date.now(),
+            };
+            void localforage.setItem(SAVED_INPUT_KEY, createInputContext);
+        };
 
         const handleSubmit = async () => {
             if (isInputInvalid) {
@@ -88,15 +115,7 @@ export const Create = observer(
 
         const createProject = async (prompt: string, images: ImageMessageContext[]) => {
             if (!user?.id) {
-                console.error('No user ID found');
-
-                const createInputContext: CreateInputContext = {
-                    prompt,
-                    images,
-                    timestamp: Date.now(),
-                };
-                localforage.setItem(SAVED_INPUT_KEY, createInputContext);
-                // Open the auth modal
+                saveDraft(prompt, images);
                 setIsAuthModalOpen(true);
                 return;
             }
@@ -107,10 +126,12 @@ export const Create = observer(
                 if (!project) {
                     throw new Error('Failed to create project: No project returned');
                 }
-                router.push(`${Routes.PROJECT}/${project.id}`);
                 await localforage.removeItem(SAVED_INPUT_KEY);
+                router.push(`${Routes.PROJECT}/${project.id}`);
             } catch (error) {
                 console.error('Error creating project:', error);
+                // Re-save so a refresh after a failed submit doesn't lose work.
+                saveDraft(prompt, images);
                 toast.error('Failed to create project', {
                     description: error instanceof Error ? error.message : String(error),
                 });
@@ -134,7 +155,7 @@ export const Create = observer(
             setIsDragging(false);
             setImageTooltipOpen(false);
             // Find and reset the container's data attribute
-            const container = e.currentTarget.closest('.bg-background-secondary');
+            const container = e.currentTarget.closest('[data-create-container]');
             if (container) {
                 container.setAttribute('data-dragging-image', 'false');
             }
@@ -227,7 +248,7 @@ export const Create = observer(
             if (hasImage) {
                 setIsDragging(isDragging);
                 // Find the container div with the bg-background-secondary class
-                const container = e.currentTarget.closest('.bg-background-secondary');
+                const container = e.currentTarget.closest('[data-create-container]');
                 if (container) {
                     container.setAttribute('data-dragging-image', isDragging.toString());
                 }
@@ -261,28 +282,49 @@ export const Create = observer(
             }
         };
 
+        const handleTranscript = (text: string) => {
+            const trimmed = text.trim();
+            if (!trimmed) return;
+            setInputValue((prev) => {
+                const base = prev.trimEnd();
+                const next = base.length === 0 ? trimmed : `${base} ${trimmed}`;
+                requestAnimationFrame(() => {
+                    adjustTextareaHeight();
+                    const textarea = textareaRef.current;
+                    if (textarea) {
+                        textarea.focus();
+                        textarea.setSelectionRange(next.length, next.length);
+                    }
+                });
+                return next;
+            });
+        };
+
+        const handleSuggestionClick = (suggestion: CreateSuggestion) => {
+            setInputValue(suggestion.prompt);
+            requestAnimationFrame(() => {
+                const textarea = textareaRef.current;
+                if (!textarea) return;
+                textarea.focus();
+                textarea.setSelectionRange(suggestion.prompt.length, suggestion.prompt.length);
+                adjustTextareaHeight();
+            });
+        };
+
         return (
-            <Card
-                key={cardKey}
-                className={cn(
-                    'bg-background/20 w-[600px] gap-1.5 overflow-hidden p-4 backdrop-blur-md',
-                    isDragging && 'bg-background/40',
-                )}
-            >
-                <CardHeader className="text-foreground-primary/80 p-0 text-start">{`Let's design a...`}</CardHeader>
-                <CardContent className="p-0">
-                    <div
-                        className={cn(
-                            'flex cursor-text flex-col gap-3 rounded p-0 transition-colors duration-200',
-                            'bg-background-secondary/80 backdrop-blur-sm',
-                            '[&[data-dragging-image=true]]:bg-blue-500/40',
-                            isDragging && 'cursor-copy bg-blue-500/40',
-                        )}
-                        onClick={handleContainerClick}
-                        onDragOver={handleDragOver}
-                        onDragLeave={handleDragLeave}
-                        onDrop={handleDrop}
-                    >
+            <div key={cardKey} className="flex w-full flex-col items-center gap-3">
+                <div
+                    data-create-container
+                    className={cn(
+                        'bg-background-primary w-[600px] max-w-full cursor-text flex-col rounded-xl border focus-within:border-transparent transition-colors duration-200',
+                        '[&[data-dragging-image=true]]:bg-blue-500/40',
+                        isDragging && 'cursor-copy bg-blue-500/40',
+                    )}
+                    onClick={handleContainerClick}
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    onDrop={handleDrop}
+                >
                         {!user?.id && (
                             <button
                                 type="button"
@@ -316,12 +358,13 @@ export const Create = observer(
                                 <Textarea
                                     ref={textareaRef}
                                     className={cn(
-                                        'text-small min-h-[60px] overflow-auto rounded-none border-0 caret-[#109BFF] shadow-none',
+                                        'border-none text-small min-h-[60px] overflow-auto rounded-none border-0 caret-[#109BFF] shadow-none',
                                         'text-foreground-primary selection:bg-[#109BFF]/30 selection:text-[#109BFF]',
                                         'placeholder:text-foreground-primary/50 cursor-text',
                                         'bg-transparent transition-[height] duration-300 ease-in-out focus-visible:ring-0 dark:bg-transparent',
                                     )}
-                                    placeholder="Paste a link, imagery, or more as inspiration"
+                                    placeholder="Describe what you want to build"
+                                    style={{ border: 'none !important' }}
                                     value={inputValue}
                                     onChange={(e) => {
                                         setInputValue(e.target.value);
@@ -364,6 +407,19 @@ export const Create = observer(
                                     style={{ resize: 'none' }}
                                 />
                             </div>
+                            <div
+                                className={cn(
+                                    'text-foreground-tertiary px-0.5 pt-1 text-[11px] transition-opacity duration-150',
+                                    inputValue.length > 0 && isInputInvalid
+                                        ? 'opacity-100'
+                                        : 'pointer-events-none h-0 opacity-0',
+                                )}
+                                aria-live="polite"
+                            >
+                                {charactersRemaining > 0
+                                    ? `${charactersRemaining} more character${charactersRemaining === 1 ? '' : 's'} to start designing`
+                                    : ''}
+                            </div>
                             <div className="flex w-full flex-row items-center justify-between px-0 pt-2 pb-2">
                                 <div className="flex flex-row justify-start gap-1.5">
                                     <Tooltip
@@ -405,47 +461,69 @@ export const Create = observer(
                                         </TooltipPortal>
                                     </Tooltip>
                                 </div>
-                                <Tooltip>
-                                    <TooltipTrigger asChild>
-                                        <Button
-                                            size="icon"
-                                            variant="secondary"
-                                            className={cn(
-                                                'text-smallPlus h-9 w-9 cursor-pointer',
-                                                isInputInvalid
-                                                    ? 'text-foreground-primary'
-                                                    : 'bg-foreground-primary hover:bg-foreground-hover text-white',
-                                            )}
-                                            disabled={isInputInvalid || isCreatingProject}
-                                            onClick={handleSubmit}
-                                        >
-                                            {isCreatingProject ? (
-                                                <Icons.LoadingSpinner className="text-background h-5 w-5 animate-pulse" />
-                                            ) : (
-                                                <Icons.ArrowRight
-                                                    className={cn(
-                                                        'h-5 w-5',
-                                                        !isInputInvalid
-                                                            ? 'text-background'
-                                                            : 'text-foreground-primary',
-                                                    )}
-                                                />
-                                            )}
-                                        </Button>
-                                    </TooltipTrigger>
-                                    {!user?.id && !isInputInvalid && (
-                                        <TooltipPortal>
-                                            <TooltipContent side="top" sideOffset={5}>
-                                                Sign in to design →
-                                            </TooltipContent>
-                                        </TooltipPortal>
-                                    )}
-                                </Tooltip>
+                                <div className="flex flex-row items-center gap-1.5">
+                                    <MicButton
+                                        onTranscript={handleTranscript}
+                                        disabled={isCreatingProject}
+                                        className="h-9 w-9"
+                                        iconClassName="h-5 w-5"
+                                    />
+                                    <Tooltip>
+                                        <TooltipTrigger asChild>
+                                            <Button
+                                                size="icon"
+                                                variant="secondary"
+                                                className={cn(
+                                                    'text-smallPlus h-9 w-9 cursor-pointer',
+                                                    isInputInvalid
+                                                        ? 'text-foreground-primary'
+                                                        : 'bg-foreground-primary hover:bg-foreground-hover text-white',
+                                                )}
+                                                disabled={isInputInvalid || isCreatingProject}
+                                                onClick={handleSubmit}
+                                            >
+                                                {isCreatingProject ? (
+                                                    <Icons.LoadingSpinner className="text-background h-5 w-5 animate-pulse" />
+                                                ) : (
+                                                    <Icons.ArrowRight
+                                                        className={cn(
+                                                            'h-5 w-5',
+                                                            !isInputInvalid
+                                                                ? 'text-background'
+                                                                : 'text-foreground-primary',
+                                                        )}
+                                                    />
+                                                )}
+                                            </Button>
+                                        </TooltipTrigger>
+                                        {!user?.id && !isInputInvalid && (
+                                            <TooltipPortal>
+                                                <TooltipContent side="top" sideOffset={5}>
+                                                    Sign in to design →
+                                                </TooltipContent>
+                                            </TooltipPortal>
+                                        )}
+                                    </Tooltip>
+                                </div>
                             </div>
                         </div>
+                </div>
+                {suggestions && suggestions.length > 0 && (
+                    <div className="flex flex-wrap justify-center gap-2">
+                        {suggestions.map((suggestion) => (
+                            <Button
+                                key={suggestion.label}
+                                variant="outline"
+                                size="sm"
+                                className="rounded-full text-xs"
+                                onClick={() => handleSuggestionClick(suggestion)}
+                            >
+                                {suggestion.label}
+                            </Button>
+                        ))}
                     </div>
-                </CardContent>
-            </Card>
+                )}
+            </div>
         );
     },
 );

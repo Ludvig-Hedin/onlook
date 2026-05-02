@@ -97,7 +97,7 @@ export const NewProjectMenu = observer(({ onShowCloneDialog }: NewProjectMenuPro
                 >
                     <div className="flex flex-row center items-center group">
                         <Icons.Copy className="mr-2" />
-                        Clone this project
+                        {t(transKeys.projects.actions.cloneProject)}
                     </div>
                 </DropdownMenuItem>
             </DropdownMenuSubContent>
