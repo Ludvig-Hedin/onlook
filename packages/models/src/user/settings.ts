@@ -9,6 +9,8 @@ export interface ChatSettings {
     autoApplyCode: boolean;
     expandCodeBlocks: boolean;
     showMiniChat: boolean;
+    defaultModel?: string;
+    ollamaBaseUrl?: string;
 }
 
 export interface EditorSettings {

@@ -11,5 +11,7 @@ export const createDefaultUserSettings = (userId: string): DbUserSettings => {
         showSuggestions: DefaultSettings.CHAT_SETTINGS.showSuggestions,
         showMiniChat: DefaultSettings.CHAT_SETTINGS.showMiniChat,
         shouldWarnDelete: DefaultSettings.EDITOR_SETTINGS.shouldWarnDelete,
+        defaultModel: null,
+        ollamaBaseUrl: null,
     };
 };

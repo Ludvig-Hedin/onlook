@@ -12,6 +12,8 @@ export const fromDbUserSettings = (settings: DbUserSettings): UserSettings => {
             showSuggestions:
                 settings.showSuggestions ?? DefaultSettings.CHAT_SETTINGS.showSuggestions,
             showMiniChat: settings.showMiniChat ?? DefaultSettings.CHAT_SETTINGS.showMiniChat,
+            defaultModel: settings.defaultModel ?? undefined,
+            ollamaBaseUrl: settings.ollamaBaseUrl ?? undefined,
         },
         editor: {
             shouldWarnDelete: settings.shouldWarnDelete ?? DefaultSettings.EDITOR_SETTINGS.shouldWarnDelete,
@@ -28,5 +30,7 @@ export const toDbUserSettings = (userId: string, settings: UserSettings): DbUser
         showSuggestions: settings.chat.showSuggestions,
         showMiniChat: settings.chat.showMiniChat,
         shouldWarnDelete: settings.editor.shouldWarnDelete,
+        defaultModel: settings.chat.defaultModel ?? null,
+        ollamaBaseUrl: settings.chat.ollamaBaseUrl ?? null,
     };
 };

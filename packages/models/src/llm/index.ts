@@ -2,7 +2,10 @@ import type { LanguageModel } from 'ai';
 
 export enum LLMProvider {
     OPENROUTER = 'openrouter',
+    OLLAMA = 'ollama',
 }
+
+export const OLLAMA_DEFAULT_BASE_URL = 'http://localhost:11434';
 
 export enum OPENROUTER_MODELS {
     // Generate object does not work for Anthropic models https://github.com/OpenRouterTeam/ai-sdk-provider/issues/165
@@ -19,14 +22,27 @@ export enum OPENROUTER_MODELS {
     OPEN_AI_GPT_5_NANO = 'openai/gpt-5-nano',
 }
 
+// Template literal type for Ollama model IDs (e.g. "ollama/llama3.2")
+export type OllamaModelId = `ollama/${string}`;
+
+export type LocalModelOption = {
+    label: string;
+    model: OllamaModelId;
+    /** Human-readable size string from Ollama (e.g. "4.7 GB") */
+    size?: string;
+};
+
 interface ModelMapping {
     [LLMProvider.OPENROUTER]: OPENROUTER_MODELS;
+    [LLMProvider.OLLAMA]: OllamaModelId;
 }
 
 export type InitialModelPayload = {
     [K in keyof ModelMapping]: {
         provider: K;
         model: ModelMapping[K];
+        /** Base URL for the Ollama server, required when provider is OLLAMA */
+        ollamaBaseUrl?: string;
     };
 }[keyof ModelMapping];
 
@@ -37,7 +53,7 @@ export type ModelConfig = {
     maxOutputTokens: number;
 };
 
-export const MODEL_MAX_TOKENS = {
+export const MODEL_MAX_TOKENS: Record<string, number> = {
     [OPENROUTER_MODELS.CLAUDE_4_5_SONNET]: 200000,
     [OPENROUTER_MODELS.CLAUDE_3_5_HAIKU]: 200000,
     [OPENROUTER_MODELS.OPEN_AI_GPT_5_5]: 400000,
@@ -49,7 +65,21 @@ export const MODEL_MAX_TOKENS = {
     [OPENROUTER_MODELS.OPEN_AI_GPT_5_NANO]: 400000,
     [OPENROUTER_MODELS.OPEN_AI_GPT_5_MINI]: 400000,
     [OPENROUTER_MODELS.OPEN_AI_GPT_5]: 400000,
-} as const;
+};
+
+/** Fallback context window for local models not present in MODEL_MAX_TOKENS */
+const OLLAMA_DEFAULT_MAX_TOKENS = 32768;
+
+/** Resolve max output tokens for any model, cloud or local */
+export function getMaxTokens(model: ChatModel): number {
+    return MODEL_MAX_TOKENS[model] ?? OLLAMA_DEFAULT_MAX_TOKENS;
+}
+
+/** Parse provider from a model ID string (e.g. "ollama/llama3.2" → OLLAMA) */
+export function getProviderFromModel(model: ChatModel): LLMProvider {
+    if (model.startsWith('ollama/')) return LLMProvider.OLLAMA;
+    return LLMProvider.OPENROUTER;
+}
 
 export const CHAT_MODEL_OPTIONS = [
     {
@@ -78,4 +108,4 @@ export const CHAT_MODEL_OPTIONS = [
     },
 ] as const;
 
-export type ChatModel = typeof CHAT_MODEL_OPTIONS[number]['model'];
+export type ChatModel = OPENROUTER_MODELS | OllamaModelId;

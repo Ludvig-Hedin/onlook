@@ -1,5 +1,5 @@
 import { relations } from 'drizzle-orm';
-import { boolean, pgTable, uuid } from 'drizzle-orm/pg-core';
+import { boolean, pgTable, text, uuid } from 'drizzle-orm/pg-core';
 import { createInsertSchema, createUpdateSchema } from 'drizzle-zod';
 import { users } from './user';
 
@@ -15,6 +15,8 @@ export const userSettings = pgTable("user_settings", {
     showSuggestions: boolean("show_suggestions").notNull().default(true),
     showMiniChat: boolean("show_mini_chat").notNull().default(false),
     shouldWarnDelete: boolean("should_warn_delete").notNull().default(true),
+    defaultModel: text("default_model"),
+    ollamaBaseUrl: text("ollama_base_url"),
 }).enableRLS();
 
 export const userSettingsRelations = relations(userSettings, ({ one }) => ({
