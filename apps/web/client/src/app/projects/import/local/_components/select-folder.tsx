@@ -351,7 +351,7 @@ export const NewSelectFolder = () => {
                 >
                     <div
                         className={`
-                            w-full h-20 rounded-lg border rounded-lg m-0
+                            w-full h-20 rounded-lg border m-0
                             flex flex-col items-center justify-center gap-4
                             duration-200 cursor-pointer
                             ${isDragging

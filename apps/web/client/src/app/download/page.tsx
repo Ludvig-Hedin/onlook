@@ -1,6 +1,7 @@
 'use client';
 
 import { ExternalRoutes } from '@/utils/constants';
+import { APP_NAME } from '@onlook/constants';
 import { Button } from '@onlook/ui/button';
 import { Icons } from '@onlook/ui/icons';
 import { cn } from '@onlook/ui/utils';
@@ -90,11 +91,11 @@ export default function DownloadPage() {
                     className="mb-12 flex flex-col items-center gap-3 text-center"
                 >
                     <h1 className="text-foreground-primary text-5xl !leading-[1] font-light">
-                        Download Weblab
+                        Download {APP_NAME}
                     </h1>
                     <p className="text-foreground-secondary max-w-xl text-base">
-                        The same Weblab, wrapped natively for your device. Sign in once and
-                        your session syncs with the web app.
+                        The same {APP_NAME}, wrapped natively for your device. Sign in once
+                        and your session syncs with the web app.
                     </p>
                 </motion.div>
 
