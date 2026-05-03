@@ -9,15 +9,15 @@ chat input, comments, projects/select, stores, tRPC, desktop release workflow.
 | CR-001 | auto-fixed |
 | CR-002 | open |
 | CR-003 | fixed (2026-05-04) |
-| CR-004 | open |
+| CR-004 | fixed (2026-05-04) |
 | CR-005 | fixed (2026-05-04) |
 | CR-006 | fixed (2026-05-03) |
-| CR-007 | open |
+| CR-007 | partial (2026-05-04) |
 | CR-008 | done (fixed in feature/settings-overhaul working tree) |
 | CR-009 | fixed (2026-05-04) |
-| CR-010 | open |
-| CR-011 | open |
-| CR-012 | open |
+| CR-010 | fixed (2026-05-04) |
+| CR-011 | fixed (2026-05-04) |
+| CR-012 | n/a — yml already uses bun install |
 | CR-013 | fixed (2026-05-03) |
 | CR-014 | fixed (2026-05-03) |
 | CR-015 | auto-fixed (2026-05-03 review) |
@@ -26,10 +26,13 @@ chat input, comments, projects/select, stores, tRPC, desktop release workflow.
 | CR-018 | fixed (2026-05-03) |
 | CR-019 | fixed (2026-05-03) |
 | CR-020 | fixed (2026-05-03) |
-| CR-021 | open (2026-05-03 review) |
-| CR-022 | open (2026-05-03 review) |
+| CR-021 | documented (2026-05-04) — TODO comment added; needs pkg version alignment |
+| CR-022 | fixed (2026-05-04) |
 | CR-023 | open (2026-05-03 review) |
 | CR-024 | discussion-only (2026-05-03 review) |
+| CR-025 | open (2026-05-04 review) |
+| CR-026 | open (2026-05-04 review) |
+| CR-027 | open (2026-05-04 review) |
 
 ---
 
@@ -271,6 +274,39 @@ Scope: 18 modified files + 4 unpushed commits + a large set of new untracked fil
 - **Risk:** medium (forgotten = runtime failure on first save)
 - **Summary:** Two new nullable text columns added to `user_settings`. RLS-enabled. No migration file is committed (the project uses `db:push`, not generated SQL), so columns won't exist in any environment until someone runs it.
 - **Suggested approach:** Run `bun db:push` against staging/prod (maintainer-only per CLAUDE.md). Confirm the existing `user_settings` RLS policies cover the new columns.
+
+# Review pass 2026-05-04
+
+Scope: 14 modified files + 2 new files (comment helpers, coderabbit artifact).
+Changes: CR-007/010/011 fixes, settings data layer expansion (13 new DB columns,
+4 new interface namespaces), light-mode color token migration, preload script update.
+
+## CR-025 — `DefaultSettings.AI_SETTINGS.defaultModel` hardcodes a model string
+
+- **Area:** [packages/constants/src/editor.ts](packages/constants/src/editor.ts)
+- **Type:** maintainability
+- **Impact:** user-facing
+- **Risk:** low
+- **Summary:** `AI_SETTINGS.defaultModel` is set to `'moonshotai/kimi-k2'` — same anti-pattern as the old CR-008 (`KIMI_K2_6` hardcode). The canonical default model lives in `CHAT_MODEL_OPTIONS[0].model` in `@onlook/models`, but `packages/constants` cannot import from `packages/models` without risking a circular dependency. Instead the string drifts independently.
+- **Suggested approach:** Either (a) move `AI_SETTINGS.defaultModel` to `packages/models` where `CHAT_MODEL_OPTIONS` is defined, or (b) define a shared `DEFAULT_CHAT_MODEL` constant in `packages/models` and import it from both constants and models. Remove the raw string.
+
+## CR-026 — `ChatSettings` and `AISettings` are overlapping interfaces; `toDbUserSettings` is inconsistent
+
+- **Area:** [packages/models/src/user/settings.ts](packages/models/src/user/settings.ts), [packages/db/src/mappers/user/settings.ts](packages/db/src/mappers/user/settings.ts)
+- **Type:** maintainability / design debt
+- **Impact:** internal
+- **Risk:** low (no runtime bug — upsert is a direct partial column update)
+- **Summary:** `AISettings` duplicates `autoApplyCode`, `expandCodeBlocks`, `showSuggestions`, `showMiniChat` from `ChatSettings`. `fromDbUserSettings` populates both namespaces from the same DB columns, so reads are consistent. `toDbUserSettings` now reads chat fields from `settings.ai.*` instead of `settings.chat.*`, but this function is not on the upsert hot path (the tRPC upsert does `db.update(userSettings).set(partialInput)` directly). Still, the dual namespace means future contributors must keep both in sync, and `toDbUserSettings` would produce wrong output if ever used for a full-object write.
+- **Suggested approach:** Deprecate the overlapping fields in `ChatSettings` and migrate all consumers to `settings.ai.*`. Or collapse `AISettings` into `ChatSettings` and remove the duplication.
+
+## CR-027 — 13 new `user_settings` columns require `bun db:push` *(extends CR-023)*
+
+- **Area:** [packages/db/src/schema/user/settings.ts](packages/db/src/schema/user/settings.ts)
+- **Type:** ops note
+- **Impact:** infra
+- **Risk:** medium (columns absent → upsert query fails on first write of any new field)
+- **Summary:** `maxImages`, `enableBunReplace`, `buildFlags`, `theme`, `accentColor`, `fontFamily`, `fontSize`, `uiDensity`, `locale`, `autoCommit`, `autoPush`, `commitMessageFormat`, `defaultBranchPattern`, `customShortcuts` added in this diff. Like CR-023, no migration file is committed. All new columns have `.notNull().default(…)` so existing rows get defaults on first query, but the columns must exist first.
+- **Suggested approach:** Run `bun db:push` against staging/prod before deploying. Check RLS policies cover the new columns.
 
 ## CR-024 — `/api/transcribe` 90s `AbortController` flagged for Workflow *(discussion-only)*
 
