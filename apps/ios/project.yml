@@ -1,0 +1,54 @@
+name: Weblab
+options:
+  bundleIdPrefix: build.weblab
+  deploymentTarget:
+    iOS: "16.0"
+  developmentLanguage: en
+
+settings:
+  base:
+    SWIFT_VERSION: "5.9"
+    DEVELOPMENT_TEAM: ""   # Fill with your Apple Team ID before archiving
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    CODE_SIGN_STYLE: Automatic
+    SUPPORTS_MACCATALYST: NO
+    TARGETED_DEVICE_FAMILY: "1,2"
+
+targets:
+  Weblab:
+    type: application
+    platform: iOS
+    sources:
+      - Weblab
+    info:
+      path: Weblab/Info.plist
+      properties:
+        CFBundleDisplayName: Weblab
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        UISupportedInterfaceOrientations~ipad:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        # Custom URL scheme for OAuth callbacks: weblab://auth/callback
+        CFBundleURLTypes:
+          - CFBundleURLName: build.weblab.app
+            CFBundleURLSchemes:
+              - weblab
+        # Universal Links — paired with apple-app-site-association on weblab.build
+        # so https://weblab.build links open in the app instead of Safari.
+        com.apple.developer.associated-domains:
+          - applinks:weblab.build
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: build.weblab.app
+        INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        ENABLE_USER_SCRIPT_SANDBOXING: NO
