@@ -1,146 +1,146 @@
 {
-  "version": 1,
-  "updatedAt": "2026-04-23T06:19:21.124Z",
-  "locations": [
-    {
-      "oid": "873900783a",
-      "relPath": "src/templates/invite-user.tsx",
-      "line": 33,
-      "col": 4,
-      "elementName": "Html"
-    },
-    {
-      "oid": "9c4942ef64",
-      "relPath": "src/templates/invite-user.tsx",
-      "line": 34,
-      "col": 12,
-      "elementName": "Head"
-    },
-    {
-      "oid": "e62715925a",
-      "relPath": "src/templates/invite-user.tsx",
-      "line": 35,
-      "col": 12,
-      "elementName": "Tailwind"
-    },
-    {
-      "oid": "de00219db1",
-      "relPath": "src/templates/invite-user.tsx",
-      "line": 36,
-      "col": 16,
-      "elementName": "Body"
-    },
-    {
-      "oid": "8f1551abeb",
-      "relPath": "src/templates/invite-user.tsx",
-      "line": 37,
-      "col": 20,
-      "elementName": "Preview"
-    },
-    {
-      "oid": "24c67e15a2",
-      "relPath": "src/templates/invite-user.tsx",
-      "line": 38,
-      "col": 20,
-      "elementName": "Container"
-    },
-    {
-      "oid": "edc4472282",
-      "relPath": "src/templates/invite-user.tsx",
-      "line": 39,
-      "col": 24,
-      "elementName": "Heading"
-    },
-    {
-      "oid": "bf89d32645",
-      "relPath": "src/templates/invite-user.tsx",
-      "line": 42,
-      "col": 24,
-      "elementName": "Text"
-    },
-    {
-      "oid": "b3a8612795",
-      "relPath": "src/templates/invite-user.tsx",
-      "line": 43,
-      "col": 24,
-      "elementName": "Text"
-    },
-    {
-      "oid": "97c905b918",
-      "relPath": "src/templates/invite-user.tsx",
-      "line": 44,
-      "col": 28,
-      "elementName": "Link"
-    },
-    {
-      "oid": "9569a024ee",
-      "relPath": "src/templates/invite-user.tsx",
-      "line": 48,
-      "col": 32,
-      "elementName": "strong"
-    },
-    {
-      "oid": "eb495cfaa1",
-      "relPath": "src/templates/invite-user.tsx",
-      "line": 50,
-      "col": 28,
-      "elementName": "span"
-    },
-    {
-      "oid": "386f8c8f26",
-      "relPath": "src/templates/invite-user.tsx",
-      "line": 51,
-      "col": 68,
-      "elementName": "strong"
-    },
-    {
-      "oid": "0e1e06a9db",
-      "relPath": "src/templates/invite-user.tsx",
-      "line": 54,
-      "col": 24,
-      "elementName": "Section"
-    },
-    {
-      "oid": "df9419d810",
-      "relPath": "src/templates/invite-user.tsx",
-      "line": 55,
-      "col": 28,
-      "elementName": "Button"
-    },
-    {
-      "oid": "7e3b2e1fbe",
-      "relPath": "src/templates/invite-user.tsx",
-      "line": 62,
-      "col": 24,
-      "elementName": "Text"
-    },
-    {
-      "oid": "23613de240",
-      "relPath": "src/templates/invite-user.tsx",
-      "line": 64,
-      "col": 28,
-      "elementName": "Link"
-    },
-    {
-      "oid": "96bbff08f8",
-      "relPath": "src/templates/invite-user.tsx",
-      "line": 68,
-      "col": 24,
-      "elementName": "Hr"
-    },
-    {
-      "oid": "62c7f7ce6b",
-      "relPath": "src/templates/invite-user.tsx",
-      "line": 69,
-      "col": 24,
-      "elementName": "Text"
-    },
-    {
-      "oid": "cb61f2cbb0",
-      "relPath": "src/templates/invite-user.tsx",
-      "line": 71,
-      "col": 28,
-      "elementName": "span"
-    }
-  ]
+    "version": 1,
+    "updatedAt": "2026-04-23T06:19:21.124Z",
+    "locations": [
+        {
+            "oid": "873900783a",
+            "relPath": "src/templates/invite-user.tsx",
+            "line": 33,
+            "col": 4,
+            "elementName": "Html"
+        },
+        {
+            "oid": "9c4942ef64",
+            "relPath": "src/templates/invite-user.tsx",
+            "line": 34,
+            "col": 12,
+            "elementName": "Head"
+        },
+        {
+            "oid": "e62715925a",
+            "relPath": "src/templates/invite-user.tsx",
+            "line": 35,
+            "col": 12,
+            "elementName": "Tailwind"
+        },
+        {
+            "oid": "de00219db1",
+            "relPath": "src/templates/invite-user.tsx",
+            "line": 36,
+            "col": 16,
+            "elementName": "Body"
+        },
+        {
+            "oid": "8f1551abeb",
+            "relPath": "src/templates/invite-user.tsx",
+            "line": 37,
+            "col": 20,
+            "elementName": "Preview"
+        },
+        {
+            "oid": "24c67e15a2",
+            "relPath": "src/templates/invite-user.tsx",
+            "line": 38,
+            "col": 20,
+            "elementName": "Container"
+        },
+        {
+            "oid": "edc4472282",
+            "relPath": "src/templates/invite-user.tsx",
+            "line": 39,
+            "col": 24,
+            "elementName": "Heading"
+        },
+        {
+            "oid": "bf89d32645",
+            "relPath": "src/templates/invite-user.tsx",
+            "line": 42,
+            "col": 24,
+            "elementName": "Text"
+        },
+        {
+            "oid": "b3a8612795",
+            "relPath": "src/templates/invite-user.tsx",
+            "line": 43,
+            "col": 24,
+            "elementName": "Text"
+        },
+        {
+            "oid": "97c905b918",
+            "relPath": "src/templates/invite-user.tsx",
+            "line": 44,
+            "col": 28,
+            "elementName": "Link"
+        },
+        {
+            "oid": "9569a024ee",
+            "relPath": "src/templates/invite-user.tsx",
+            "line": 48,
+            "col": 32,
+            "elementName": "strong"
+        },
+        {
+            "oid": "eb495cfaa1",
+            "relPath": "src/templates/invite-user.tsx",
+            "line": 50,
+            "col": 28,
+            "elementName": "span"
+        },
+        {
+            "oid": "386f8c8f26",
+            "relPath": "src/templates/invite-user.tsx",
+            "line": 51,
+            "col": 68,
+            "elementName": "strong"
+        },
+        {
+            "oid": "0e1e06a9db",
+            "relPath": "src/templates/invite-user.tsx",
+            "line": 54,
+            "col": 24,
+            "elementName": "Section"
+        },
+        {
+            "oid": "df9419d810",
+            "relPath": "src/templates/invite-user.tsx",
+            "line": 55,
+            "col": 28,
+            "elementName": "Button"
+        },
+        {
+            "oid": "7e3b2e1fbe",
+            "relPath": "src/templates/invite-user.tsx",
+            "line": 62,
+            "col": 24,
+            "elementName": "Text"
+        },
+        {
+            "oid": "23613de240",
+            "relPath": "src/templates/invite-user.tsx",
+            "line": 64,
+            "col": 28,
+            "elementName": "Link"
+        },
+        {
+            "oid": "96bbff08f8",
+            "relPath": "src/templates/invite-user.tsx",
+            "line": 68,
+            "col": 24,
+            "elementName": "Hr"
+        },
+        {
+            "oid": "62c7f7ce6b",
+            "relPath": "src/templates/invite-user.tsx",
+            "line": 69,
+            "col": 24,
+            "elementName": "Text"
+        },
+        {
+            "oid": "cb61f2cbb0",
+            "relPath": "src/templates/invite-user.tsx",
+            "line": 71,
+            "col": 28,
+            "elementName": "span"
+        }
+    ]
 }

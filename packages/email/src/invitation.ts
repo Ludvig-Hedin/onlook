@@ -1,7 +1,10 @@
-import { SUPPORT_EMAIL } from '@onlook/constants';
 import { render } from '@react-email/components';
-import { type InviteUserEmailProps, InviteUserEmail } from './templates';
+
+import { APP_NAME, SUPPORT_EMAIL } from '@onlook/constants';
+
+import type { InviteUserEmailProps } from './templates';
 import type { SendEmailParams } from './types/send-email';
+import { InviteUserEmail } from './templates';
 
 export const sendInvitationEmail = async (...params: SendEmailParams<InviteUserEmailProps>) => {
     const [client, inviteParams, { dryRun = false } = {}] = params;
@@ -14,9 +17,9 @@ export const sendInvitationEmail = async (...params: SendEmailParams<InviteUserE
     }
 
     return await client.emails.send({
-        from: `Onlook <${SUPPORT_EMAIL}>`,
+        from: `${APP_NAME} <${SUPPORT_EMAIL}>`,
         to: inviteeEmail,
-        subject: `Join ${invitedByName ?? invitedByEmail} on Onlook`,
+        subject: `Join ${invitedByName ?? invitedByEmail} on ${APP_NAME}`,
         react: InviteUserEmail(inviteParams),
     });
 };
