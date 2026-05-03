@@ -162,12 +162,12 @@ const UploadModal = observer(
 
                         <div className="flex flex-col px-6 pb-0 mb-0 flex-1 min-h-0">
                             <div
-                                className="flex flex-col items-center justify-center p-8 border border-dashed border-white/20 rounded-lg bg-black/20 cursor-pointer mb-6"
+                                className="flex flex-col items-center justify-center p-8 border border-dashed border-foreground/20 rounded-lg bg-foreground/5 cursor-pointer mb-6"
                                 onClick={() => fileInputRef.current?.click()}
                                 onDrop={handleDrop}
                                 onDragOver={handleDragOver}
                             >
-                                <div className="w-10 h-10 flex items-center justify-center rounded-md bg-black/30 border border-white/10 mb-4">
+                                <div className="w-10 h-10 flex items-center justify-center rounded-md bg-foreground/10 border border-foreground/10 mb-4">
                                     <svg
                                         className="h-5 w-5 text-primary"
                                         viewBox="0 0 24 24"

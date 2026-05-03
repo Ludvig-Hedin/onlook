@@ -50,7 +50,7 @@ export const ColorPopover = ({
         <Popover onOpenChange={(open) => !open && handleNameChange(editedName)} open={true}>
             <PopoverTrigger asChild>
                 <div
-                    className="w-full aspect-square rounded-lg cursor-pointer hover:ring-2 hover:ring-border-primary border border-white/10"
+                    className="w-full aspect-square rounded-lg cursor-pointer hover:ring-2 hover:ring-border-primary border border-foreground/10"
                     style={{ backgroundColor: editedColor.toHex() }}
                 />
             </PopoverTrigger>

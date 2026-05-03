@@ -351,12 +351,12 @@ export const NewSelectFolder = () => {
                 >
                     <div
                         className={`
-                            w-full h-20 rounded-lg bg-gray-900 border border-gray rounded-lg m-0
+                            w-full h-20 rounded-lg border rounded-lg m-0
                             flex flex-col items-center justify-center gap-4
                             duration-200 cursor-pointer
                             ${isDragging
-                                ? 'border-blue-400 bg-blue-50'
-                                : 'border-gray-300 bg-gray-50 hover:bg-gray-700'
+                                ? 'border-foreground-brand bg-background-positive'
+                                : 'border-border bg-background-secondary hover:bg-background-tertiary'
                             }
                             ${isUploading ? 'pointer-events-none opacity-50' : ''}
                         `}
@@ -368,16 +368,16 @@ export const NewSelectFolder = () => {
                         {isUploading ? (
                             <div className="text-center">
                                 <div className="flex items-center justify-center gap-2">
-                                    <Icons.LoadingSpinner className="w-4 h-4 text-gray-200 animate-spin" />
-                                    <p className="text-sm font-medium text-gray-200">
+                                    <Icons.LoadingSpinner className="w-4 h-4 text-foreground-secondary animate-spin" />
+                                    <p className="text-sm font-medium text-foreground-secondary">
                                         Uploading...
                                     </p>
                                 </div>
                             </div>
                         ) : (
                             <div className="flex gap-3">
-                                <Icons.DirectoryOpen className="w-5 h-5 text-gray-200" />
-                                <p className="text-sm font-medium text-gray-200">
+                                <Icons.DirectoryOpen className="w-5 h-5 text-foreground-secondary" />
+                                <p className="text-sm font-medium text-foreground-secondary">
                                     Click to select your folder
                                 </p>
                             </div>

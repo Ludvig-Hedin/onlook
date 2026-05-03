@@ -152,7 +152,7 @@ export const UserDeleteSection = observer(() => {
                         <Button
                             onClick={handleDeleteConfirm}
                             disabled={!canProceedWithDelete}
-                            className="order-1 sm:order-2 bg-red-600 hover:bg-red-700 text-white disabled:bg-gray-300 disabled:text-gray-500"
+                            className="order-1 sm:order-2 bg-red-600 hover:bg-red-700 text-white disabled:bg-muted disabled:text-muted-foreground"
                         >
                             {canProceedWithDelete ? 'Delete Account' : 'Locked'}
                         </Button>

@@ -274,7 +274,7 @@ const FontPanel = observer(() => {
                         {fontManager.hasMoreFonts && !searchQuery && (
                             <Button
                                 variant="ghost"
-                                className="w-full mt-4 h-9 text-sm text-muted-foreground hover:text-foreground bg-background-secondary hover:bg-background-secondary/70 rounded-lg border border-white/5"
+                                className="w-full mt-4 h-9 text-sm text-muted-foreground hover:text-foreground bg-background-secondary hover:bg-background-secondary/70 rounded-lg border border-foreground/10"
                                 onClick={handleLoadMore}
                                 disabled={isLoading}
                             >
@@ -296,7 +296,7 @@ const FontPanel = observer(() => {
             <div className="p-4 border-t border-border mt-auto">
                 <Button
                     variant="ghost"
-                    className="w-full h-11 text-sm text-muted-foreground hover:text-foreground bg-background-secondary hover:bg-background-secondary/70 rounded-lg border border-white/5"
+                    className="w-full h-11 text-sm text-muted-foreground hover:text-foreground bg-background-secondary hover:bg-background-secondary/70 rounded-lg border border-foreground/10"
                     onClick={handleUploadFont}
                 >
                     Upload a custom font

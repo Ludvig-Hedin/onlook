@@ -93,8 +93,8 @@ const ColorPanel = observer(() => {
                 <Button
                     variant={theme === SystemTheme.LIGHT ? 'default' : 'outline'}
                     className={cn(
-                        'hover:bg-background-secondary w-full flex-1 gap-2 border-none bg-transparent px-0 text-gray-200 shadow-none',
-                        theme === SystemTheme.LIGHT && 'bg-gray-900 text-white',
+                        'hover:bg-background-secondary w-full flex-1 gap-2 border-none bg-transparent px-0 text-muted-foreground shadow-none',
+                        theme === SystemTheme.LIGHT && 'bg-foreground text-background',
                     )}
                     onClick={() => setTheme(SystemTheme.LIGHT)}
                 >
@@ -104,8 +104,8 @@ const ColorPanel = observer(() => {
                 <Button
                     variant={theme === SystemTheme.DARK ? 'default' : 'outline'}
                     className={cn(
-                        'hover:bg-background-secondary w-full flex-1 gap-2 border-none bg-transparent px-0 text-gray-200 shadow-none',
-                        theme === SystemTheme.DARK && 'bg-gray-900 text-white',
+                        'hover:bg-background-secondary w-full flex-1 gap-2 border-none bg-transparent px-0 text-muted-foreground shadow-none',
+                        theme === SystemTheme.DARK && 'bg-foreground text-background',
                     )}
                     onClick={() => setTheme(SystemTheme.DARK)}
                 >

@@ -226,7 +226,7 @@ export const MetadataForm = ({
                     </div>
                     {showFavicon && (
                         <div className="grid grid-cols-2">
-                            <div className="text-gray-200 max-w-52">
+                            <div className="text-foreground-secondary max-w-52">
                                 <p className="text-regular font-medium">Favicon</p>
                                 <p className="text-small">
                                     This is the small icon that shows up in search engines and in

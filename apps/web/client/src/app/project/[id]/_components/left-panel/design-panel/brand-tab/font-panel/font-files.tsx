@@ -32,7 +32,7 @@ const FontFiles = observer(
                 {fontFiles.map((font, index) => (
                     <div
                         key={index}
-                        className="flex flex-col space-y-2 border border-white/10 rounded-lg p-3 bg-black/10"
+                        className="flex flex-col space-y-2 border border-foreground/10 rounded-lg p-3 bg-foreground/5"
                     >
                         <div className="flex items-center justify-between">
                             <div className="flex flex-col">
@@ -47,7 +47,7 @@ const FontFiles = observer(
                             <div className="flex items-center gap-2">
                                 <div className="relative">
                                     <select
-                                        className="appearance-none bg-black/20 border border-white/10 rounded-md text-sm p-2 pr-8 text-white cursor-pointer hover:bg-background-hover hover:text-accent-foreground hover:border-border-hover"
+                                        className="appearance-none bg-foreground/5 border border-foreground/10 rounded-md text-sm p-2 pr-8 text-foreground cursor-pointer hover:bg-background-hover hover:text-accent-foreground hover:border-border-hover"
                                         value={font.weight}
                                         onChange={(e) => onWeightChange(index, e.target.value)}
                                     >
@@ -65,7 +65,7 @@ const FontFiles = observer(
                                 <Button
                                     variant="ghost"
                                     size="icon"
-                                    className="h-9 w-9 border border-white/10 bg-black/20 rounded-md"
+                                    className="h-9 w-9 border border-foreground/10 bg-foreground/5 rounded-md"
                                     onClick={() => onRemoveFont(index)}
                                 >
                                     <Icons.Trash className="h-4 w-4 text-muted-foreground" />

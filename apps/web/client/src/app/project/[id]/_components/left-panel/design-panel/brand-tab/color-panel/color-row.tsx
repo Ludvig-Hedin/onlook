@@ -10,7 +10,7 @@ export const ColorRow = ({ label, colors }: ColorRowProps) => (
             {colors.map((color, index) => (
                 <div
                     key={`${label}-${index}`}
-                    className="w-full aspect-square rounded-lg cursor-pointer hover:ring-2 hover:ring-border-primary border border-white/10"
+                    className="w-full aspect-square rounded-lg cursor-pointer hover:ring-2 hover:ring-border-primary border border-foreground/10"
                     style={{ backgroundColor: color }}
                 />
             ))}
