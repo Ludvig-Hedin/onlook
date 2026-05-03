@@ -1,10 +1,10 @@
-import { describe, it, expect, beforeEach, afterEach, mock } from 'bun:test';
 import fs from 'node:fs';
 import path from 'node:path';
+import { afterEach, beforeEach, describe, expect, it, mock } from 'bun:test';
 
 // Import actual functions to test
-import { getDbEnvContent, generateBackendEnvContent, CLIENT_BACKEND_KEYS } from '../src/backend';
-import { parseEnvContent, buildEnvFileContent, writeEnvFile } from '../src/helpers';
+import { CLIENT_BACKEND_KEYS, generateBackendEnvContent, getDbEnvContent } from '../src/backend';
+import { buildEnvFileContent, parseEnvContent, writeEnvFile } from '../src/helpers';
 
 describe('comprehensive functionality tests', () => {
     const testDir = path.join(__dirname, 'temp-comprehensive');
@@ -44,7 +44,9 @@ SUPABASE_DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:54322/postgres`;
             expect(lines).toHaveLength(5);
             expect(lines[0]).toBe('NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321');
             expect(lines[1]).toBe(`NEXT_PUBLIC_SUPABASE_ANON_KEY=${mockKeys.anonKey}`);
-            expect(lines[2]).toBe(`NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=${mockKeys.publishableKey}`);
+            expect(lines[2]).toBe(
+                `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=${mockKeys.publishableKey}`,
+            );
             expect(lines[3]).toBe(`SUPABASE_SERVICE_ROLE_KEY=${mockKeys.serviceRoleKey}`);
             expect(lines[4]).toBe(
                 'SUPABASE_DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:54322/postgres',
@@ -333,8 +335,8 @@ ANOTHER_KEY=another`;
     describe('Key extraction', () => {
         it('should extract Supabase keys from output correctly', () => {
             const extractSupabaseKeys = (output: string) => {
-                const anonMatch = output.match(/anon key: (ey[A-Za-z0-9_-]+[^\r\n]*)/);
-                const roleMatch = output.match(/service_role key: (ey[A-Za-z0-9_-]+[^\r\n]*)/);
+                const anonMatch = /anon key: (ey[A-Za-z0-9_-]+[^\r\n]*)/.exec(output);
+                const roleMatch = /service_role key: (ey[A-Za-z0-9_-]+[^\r\n]*)/.exec(output);
 
                 const anonKey = anonMatch?.[1];
                 const serviceRoleKey = roleMatch?.[1];
@@ -783,10 +785,25 @@ SUPABASE_DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:54322/postgres`;
 
         it('should handle backend key generation with invalid or missing keys', () => {
             const invalidKeyScenarios = [
-                { anonKey: '', serviceRoleKey: 'valid_service_key', publishableKey: '', secretKey: '' }, // Empty anon key
-                { anonKey: 'valid_anon_key', serviceRoleKey: '', publishableKey: '', secretKey: '' }, // Empty service key
+                {
+                    anonKey: '',
+                    serviceRoleKey: 'valid_service_key',
+                    publishableKey: '',
+                    secretKey: '',
+                }, // Empty anon key
+                {
+                    anonKey: 'valid_anon_key',
+                    serviceRoleKey: '',
+                    publishableKey: '',
+                    secretKey: '',
+                }, // Empty service key
                 { anonKey: '', serviceRoleKey: '', publishableKey: '', secretKey: '' }, // All empty
-                { anonKey: 'invalid_key', serviceRoleKey: 'also_invalid', publishableKey: 'invalid_pub', secretKey: 'invalid_sec' }, // All invalid format
+                {
+                    anonKey: 'invalid_key',
+                    serviceRoleKey: 'also_invalid',
+                    publishableKey: 'invalid_pub',
+                    secretKey: 'invalid_sec',
+                }, // All invalid format
                 { anonKey: 'ey', serviceRoleKey: 'ey', publishableKey: 'ey', secretKey: 'ey' }, // All too short
                 {
                     anonKey: 'test_very_long_anon_key_placeholder_' + 'x'.repeat(100),
