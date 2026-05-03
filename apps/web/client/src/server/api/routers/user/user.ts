@@ -94,6 +94,29 @@ export const userRouter = createTRPCRouter({
 
             return user ?? null;
         }),
+    updateProfile: protectedProcedure
+        .input(
+            z.object({
+                firstName: z.string().optional(),
+                lastName: z.string().optional(),
+                displayName: z.string().optional(),
+                avatarUrl: z.string().optional(),
+            }),
+        )
+        .mutation(async ({ ctx, input }) => {
+            const [user] = await ctx.db
+                .update(users)
+                .set({ ...input, updatedAt: new Date() })
+                .where(eq(users.id, ctx.user.id))
+                .returning();
+            return user ?? null;
+        }),
+    disconnectGitHub: protectedProcedure.mutation(async ({ ctx }) => {
+        await ctx.db
+            .update(users)
+            .set({ githubInstallationId: null, updatedAt: new Date() })
+            .where(eq(users.id, ctx.user.id));
+    }),
     settings: userSettingsRouter,
     delete: protectedProcedure.mutation(async ({ ctx }) => {
         await ctx.db.delete(authUsers).where(eq(authUsers.id, ctx.user.id));

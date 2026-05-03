@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import localforage from 'localforage';
 import { toast } from 'sonner';
@@ -59,6 +59,9 @@ export function useImportLocalProject() {
 
         if (!user?.id) {
             await localforage.setItem(LocalForageKeys.RETURN_URL, window.location.pathname);
+            // Mark a pending import intent so the hook can re-trigger the picker
+            // automatically once the user returns from the auth flow.
+            await localforage.setItem(LocalForageKeys.PENDING_LOCAL_IMPORT, true);
             setIsAuthModalOpen(true);
             return;
         }
@@ -169,6 +172,23 @@ export function useImportLocalProject() {
             }
         }
     };
+
+    // After a successful sign-in redirect, re-open the folder picker if the user
+    // had clicked "Open local folder" while unauthenticated.
+    useEffect(() => {
+        if (!user?.id) return;
+        const resume = async () => {
+            const pending = await localforage.getItem<boolean>(
+                LocalForageKeys.PENDING_LOCAL_IMPORT,
+            );
+            if (!pending) return;
+            await localforage.removeItem(LocalForageKeys.PENDING_LOCAL_IMPORT);
+            void handleImportLocalProject();
+        };
+        void resume();
+        // handleImportLocalProject is recreated each render; user?.id is the real trigger.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [user?.id]);
 
     return {
         handleImportLocalProject,

@@ -6,6 +6,7 @@ export const Routes = {
     ABOUT: '/about',
     CAREERS: '/careers',
     SITEMAP: '/site-map',
+    DOWNLOAD: '/download',
     FEATURES: '/features',
     FEATURES_AI: '/features/ai',
     FEATURES_AI_FRONTEND: '/features/ai-for-frontend',
@@ -51,6 +52,9 @@ export const ExternalRoutes = {
     DOWNLOAD_MAC: 'https://github.com/weblab/weblab/releases/latest/download/Weblab.dmg',
     DOWNLOAD_WIN: 'https://github.com/weblab/weblab/releases/latest/download/Weblab-Setup.exe',
     DOWNLOAD_LINUX: 'https://github.com/weblab/weblab/releases/latest/download/Weblab.AppImage',
+    // iOS — placeholder until App Store listing is live. Until then point at
+    // the TestFlight invite URL or the GitHub release for the unsigned IPA.
+    DOWNLOAD_IOS: 'https://testflight.apple.com/join/PLACEHOLDER',
     DOWNLOAD_PAGE: 'https://github.com/weblab/weblab/releases/latest',
 };
 
@@ -61,4 +65,8 @@ export const Git = {
 
 export const LocalForageKeys = {
     RETURN_URL: 'returnUrl',
+    /** Set before opening the auth modal when the user clicks "Open local folder"
+     *  while signed out. Consumed by useImportLocalProject to re-open the picker
+     *  automatically after a successful sign-in. */
+    PENDING_LOCAL_IMPORT: 'pendingLocalImport',
 } as const;
