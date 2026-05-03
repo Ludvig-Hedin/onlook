@@ -1,46 +1,70 @@
-import { DefaultSettings } from '@onlook/constants';
 import type { UserSettings } from '@onlook/models';
+import { DefaultSettings } from '@onlook/constants';
+
 import type { UserSettings as DbUserSettings } from '../../schema';
 
 export const fromDbUserSettings = (settings: DbUserSettings): UserSettings => {
     return {
         id: settings.id,
+        // chat shares the four behaviour flags with ai (same DB columns).
+        // ai is the canonical write path (see toDbUserSettings), so we use
+        // AI_SETTINGS defaults here to keep fallback values consistent.
         chat: {
-            autoApplyCode: settings.autoApplyCode ?? DefaultSettings.CHAT_SETTINGS.autoApplyCode,
-            expandCodeBlocks: settings.expandCodeBlocks ?? DefaultSettings.CHAT_SETTINGS.expandCodeBlocks,
-            showSuggestions: settings.showSuggestions ?? DefaultSettings.CHAT_SETTINGS.showSuggestions,
-            showMiniChat: settings.showMiniChat ?? DefaultSettings.CHAT_SETTINGS.showMiniChat,
-            defaultModel: settings.defaultModel ?? undefined,
+            autoApplyCode: settings.autoApplyCode ?? DefaultSettings.AI_SETTINGS.autoApplyCode,
+            expandCodeBlocks:
+                settings.expandCodeBlocks ?? DefaultSettings.AI_SETTINGS.expandCodeBlocks,
+            showSuggestions:
+                settings.showSuggestions ?? DefaultSettings.AI_SETTINGS.showSuggestions,
+            showMiniChat: settings.showMiniChat ?? DefaultSettings.AI_SETTINGS.showMiniChat,
+            defaultModel: settings.defaultModel ?? DefaultSettings.AI_SETTINGS.defaultModel,
             ollamaBaseUrl: settings.ollamaBaseUrl ?? undefined,
         },
         editor: {
-            shouldWarnDelete: settings.shouldWarnDelete ?? DefaultSettings.EDITOR_SETTINGS.shouldWarnDelete,
-            enableBunReplace: settings.enableBunReplace ?? DefaultSettings.EDITOR_SETTINGS.enableBunReplace,
+            shouldWarnDelete:
+                settings.shouldWarnDelete ?? DefaultSettings.EDITOR_SETTINGS.shouldWarnDelete,
+            enableBunReplace:
+                settings.enableBunReplace ?? DefaultSettings.EDITOR_SETTINGS.enableBunReplace,
             buildFlags: settings.buildFlags ?? DefaultSettings.EDITOR_SETTINGS.buildFlags,
         },
         ai: {
             defaultModel: settings.defaultModel ?? DefaultSettings.AI_SETTINGS.defaultModel,
-            showSuggestions: settings.showSuggestions ?? DefaultSettings.AI_SETTINGS.showSuggestions,
+            showSuggestions:
+                settings.showSuggestions ?? DefaultSettings.AI_SETTINGS.showSuggestions,
             showMiniChat: settings.showMiniChat ?? DefaultSettings.AI_SETTINGS.showMiniChat,
             autoApplyCode: settings.autoApplyCode ?? DefaultSettings.AI_SETTINGS.autoApplyCode,
-            expandCodeBlocks: settings.expandCodeBlocks ?? DefaultSettings.AI_SETTINGS.expandCodeBlocks,
+            expandCodeBlocks:
+                settings.expandCodeBlocks ?? DefaultSettings.AI_SETTINGS.expandCodeBlocks,
             maxImages: settings.maxImages ?? DefaultSettings.AI_SETTINGS.maxImages,
         },
         appearance: {
-            theme: (settings.theme as UserSettings['appearance']['theme']) ?? DefaultSettings.APPEARANCE_SETTINGS.theme,
-            accentColor: (settings.accentColor as UserSettings['appearance']['accentColor']) ?? DefaultSettings.APPEARANCE_SETTINGS.accentColor,
-            fontFamily: (settings.fontFamily as UserSettings['appearance']['fontFamily']) ?? DefaultSettings.APPEARANCE_SETTINGS.fontFamily,
-            fontSize: (settings.fontSize as UserSettings['appearance']['fontSize']) ?? DefaultSettings.APPEARANCE_SETTINGS.fontSize,
-            uiDensity: (settings.uiDensity as UserSettings['appearance']['uiDensity']) ?? DefaultSettings.APPEARANCE_SETTINGS.uiDensity,
+            theme:
+                (settings.theme as UserSettings['appearance']['theme']) ??
+                DefaultSettings.APPEARANCE_SETTINGS.theme,
+            accentColor:
+                (settings.accentColor as UserSettings['appearance']['accentColor']) ??
+                DefaultSettings.APPEARANCE_SETTINGS.accentColor,
+            fontFamily:
+                (settings.fontFamily as UserSettings['appearance']['fontFamily']) ??
+                DefaultSettings.APPEARANCE_SETTINGS.fontFamily,
+            fontSize:
+                (settings.fontSize as UserSettings['appearance']['fontSize']) ??
+                DefaultSettings.APPEARANCE_SETTINGS.fontSize,
+            uiDensity:
+                (settings.uiDensity as UserSettings['appearance']['uiDensity']) ??
+                DefaultSettings.APPEARANCE_SETTINGS.uiDensity,
         },
         language: {
-            locale: (settings.locale as UserSettings['language']['locale']) ?? DefaultSettings.LANGUAGE_SETTINGS.locale,
+            locale:
+                (settings.locale as UserSettings['language']['locale']) ??
+                DefaultSettings.LANGUAGE_SETTINGS.locale,
         },
         git: {
             autoCommit: settings.autoCommit ?? DefaultSettings.GIT_SETTINGS.autoCommit,
             autoPush: settings.autoPush ?? DefaultSettings.GIT_SETTINGS.autoPush,
-            commitMessageFormat: settings.commitMessageFormat ?? DefaultSettings.GIT_SETTINGS.commitMessageFormat,
-            defaultBranchPattern: settings.defaultBranchPattern ?? DefaultSettings.GIT_SETTINGS.defaultBranchPattern,
+            commitMessageFormat:
+                settings.commitMessageFormat ?? DefaultSettings.GIT_SETTINGS.commitMessageFormat,
+            defaultBranchPattern:
+                settings.defaultBranchPattern ?? DefaultSettings.GIT_SETTINGS.defaultBranchPattern,
         },
         customShortcuts: (settings.customShortcuts as Record<string, string>) ?? {},
     };

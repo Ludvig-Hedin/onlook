@@ -1,4 +1,6 @@
-import { type DomainInfo, DomainType } from '@onlook/models';
+import type { DomainInfo } from '@onlook/models';
+import { DomainType } from '@onlook/models';
+
 import type { PreviewDomain, ProjectCustomDomain } from '../schema';
 
 export const toDomainInfoFromPreview = (previewDomain: PreviewDomain): DomainInfo => {

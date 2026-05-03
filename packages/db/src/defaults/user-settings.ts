@@ -1,6 +1,7 @@
-import { DefaultSettings } from '@onlook/constants';
-import type { UserSettings as DbUserSettings } from '@onlook/db';
 import { v4 as uuid } from 'uuid';
+
+import type { UserSettings as DbUserSettings } from '@onlook/db';
+import { DefaultSettings } from '@onlook/constants';
 
 export const createDefaultUserSettings = (userId: string): DbUserSettings => {
     return {

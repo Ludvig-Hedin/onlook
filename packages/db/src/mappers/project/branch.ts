@@ -1,4 +1,5 @@
 import type { Branch } from '@onlook/models';
+
 import type { Branch as DbBranch } from '../../schema';
 
 export const fromDbBranch = (dbBranch: DbBranch): Branch => {
@@ -11,14 +12,12 @@ export const fromDbBranch = (dbBranch: DbBranch): Branch => {
         updatedAt: dbBranch.updatedAt,
         isDefault: dbBranch.isDefault,
         git:
-            dbBranch.gitBranch ||
-                dbBranch.gitCommitSha ||
-                dbBranch.gitRepoUrl
+            dbBranch.gitBranch || dbBranch.gitCommitSha || dbBranch.gitRepoUrl
                 ? {
-                    branch: dbBranch.gitBranch,
-                    commitSha: dbBranch.gitCommitSha,
-                    repoUrl: dbBranch.gitRepoUrl,
-                }
+                      branch: dbBranch.gitBranch,
+                      commitSha: dbBranch.gitCommitSha,
+                      repoUrl: dbBranch.gitRepoUrl,
+                  }
                 : null,
         sandbox: {
             id: dbBranch.sandboxId,
