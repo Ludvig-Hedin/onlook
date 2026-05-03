@@ -73,5 +73,10 @@ function getOllamaProvider(modelId: OllamaModelId, baseUrl: string): LanguageMod
     // don't end up with a doubled /api/api path.
     const root = baseUrl.replace(/\/api\/?$/, '').replace(/\/$/, '');
     const ollama = createOllama({ baseURL: `${root}/api` });
+    // TODO (CR-021): `ollama-ai-provider-v2` exposes its own LanguageModel type
+    // that doesn't structurally satisfy `ai`'s LanguageModel (minor version
+    // mismatch). To remove this cast, align both packages to the same major
+    // release of the AI SDK LanguageModel interface, then verify the return type
+    // is assignable without assertion.
     return ollama(modelName) as unknown as LanguageModel;
 }
