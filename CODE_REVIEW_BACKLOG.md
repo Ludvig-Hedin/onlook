@@ -33,6 +33,12 @@ chat input, comments, projects/select, stores, tRPC, desktop release workflow.
 | CR-025 | open (2026-05-04 review) |
 | CR-026 | open (2026-05-04 review) |
 | CR-027 | open (2026-05-04 review) |
+| CR-028 | open (2026-05-04 review) |
+| CR-029 | open (2026-05-03 review) |
+| CR-030 | auto-fixed (2026-05-03 review) |
+| CR-031 | auto-fixed (2026-05-03 review) |
+| CR-032 | open (2026-05-03 review) |
+| CR-033 | auto-fixed (2026-05-03 review) |
 
 ---
 
@@ -307,6 +313,61 @@ Changes: CR-007/010/011 fixes, settings data layer expansion (13 new DB columns,
 - **Risk:** medium (columns absent → upsert query fails on first write of any new field)
 - **Summary:** `maxImages`, `enableBunReplace`, `buildFlags`, `theme`, `accentColor`, `fontFamily`, `fontSize`, `uiDensity`, `locale`, `autoCommit`, `autoPush`, `commitMessageFormat`, `defaultBranchPattern`, `customShortcuts` added in this diff. Like CR-023, no migration file is committed. All new columns have `.notNull().default(…)` so existing rows get defaults on first query, but the columns must exist first.
 - **Suggested approach:** Run `bun db:push` against staging/prod before deploying. Check RLS policies cover the new columns.
+
+# Review pass 2026-05-03 (this session)
+
+Scope: 3 latest commits + untracked `.claude/` directory.
+Changes: /download page (new), hero download-button simplification, color token
+migrations across brand-tab, editor-bar inputs, select-folder, settings-modal,
+preload script rebuild, .gitignore + backlog maintenance.
+
+## CR-029 — `ExternalRoutes.DOWNLOAD_IOS` is a placeholder URL; iOS users land on a broken TestFlight page
+
+- **Area:** [apps/web/client/src/utils/constants/index.ts](apps/web/client/src/utils/constants/index.ts), [apps/web/client/src/app/download/page.tsx](apps/web/client/src/app/download/page.tsx)
+- **Type:** bug
+- **Impact:** user-facing
+- **Risk:** medium (iPadOS users are auto-detected and presented the iOS card as "Recommended")
+- **Summary:** `DOWNLOAD_IOS` is set to `'https://testflight.apple.com/join/PLACEHOLDER'`. The new `/download` page exposes this as a live CTA and highlights it for any iPadOS or iPhone visitor. Clicking "Get on TestFlight" goes to a non-existent TestFlight page.
+- **Suggested approach:** Until a real URL exists, either (a) hide the iOS card entirely when `DOWNLOAD_IOS` contains `PLACEHOLDER`, or (b) replace the `<a>` with a "Coming soon" `<span>` and a disabled `Button` for iOS, or (c) get a real TestFlight/App Store URL committed before shipping the page.
+
+## CR-030 — `download/page.tsx` hardcoded "Download Weblab" instead of `APP_NAME` *(auto-fixed)*
+
+- **Area:** [apps/web/client/src/app/download/page.tsx](apps/web/client/src/app/download/page.tsx)
+- **Type:** brand compliance (CLAUDE.md rule)
+- **Impact:** user-facing
+- **Risk:** low
+- **Summary:** The H1 rendered the brand name as a raw string literal `"Download Weblab"`, violating the CLAUDE.md rule "never hardcode the name — always import `APP_NAME`."
+- **Fix applied:** Added `import { APP_NAME } from '@onlook/constants'` and changed the H1 to `Download {APP_NAME}`.
+- **Status:** auto-fixed (2026-05-03 review)
+
+## CR-031 — Duplicate `rounded-lg` class in `select-folder.tsx` drag-zone div *(auto-fixed)*
+
+- **Area:** [apps/web/client/src/app/projects/import/local/_components/select-folder.tsx](apps/web/client/src/app/projects/import/local/_components/select-folder.tsx)
+- **Type:** DX / cleanup
+- **Impact:** internal
+- **Risk:** low (harmless — Tailwind dedups)
+- **Summary:** The token-migration commit converted `rounded-lg bg-gray-900 border border-gray rounded-lg` to `rounded-lg border rounded-lg`, preserving the doubled class.
+- **Fix applied:** Removed the trailing duplicate `rounded-lg` from the className string.
+- **Status:** auto-fixed (2026-05-03 review)
+
+## CR-032 — `select-folder.tsx` missing `'use client'` directive (pre-existing)
+
+- **Area:** [apps/web/client/src/app/projects/import/local/_components/select-folder.tsx](apps/web/client/src/app/projects/import/local/_components/select-folder.tsx)
+- **Type:** style / Next.js correctness
+- **Impact:** internal (no runtime bug — verified)
+- **Risk:** low (verified: both consumers — `import-local-project.tsx` and `local/page.tsx` — declare `'use client'`, so the bundler treats this file as client by inheritance and the React hooks resolve)
+- **Suggested approach:** Add `'use client'` at line 1 anyway for self-documentation and to prevent regressions if the file is ever imported from a Server Component.
+
+## CR-033 — Second hardcoded "Weblab" in `download/page.tsx` body copy *(auto-fixed)*
+
+- **Area:** [apps/web/client/src/app/download/page.tsx](apps/web/client/src/app/download/page.tsx)
+- **Type:** brand compliance (CLAUDE.md rule)
+- **Impact:** user-facing
+- **Risk:** low
+- **Summary:** Sibling to CR-030. The hero `<p>` underneath the H1 still hardcoded "The same Weblab, wrapped natively for your device." The previous review pass only swept the H1.
+- **Fix applied:** Replaced the literal with `{APP_NAME}` (the import was already added in CR-030). Sentence reflowed to keep the line break visually consistent.
+- **Status:** auto-fixed (2026-05-03 review)
+- **Note:** The Linux note string `"chmod +x Weblab.AppImage  ·  ./Weblab.AppImage"` and Mac `.dmg` references were left as-is — those reflect actual on-disk file names of the GitHub release artifacts, not brand prose. Worth re-checking if the Apple Silicon installer is ever renamed.
 
 ## CR-024 — `/api/transcribe` 90s `AbortController` flagged for Workflow *(discussion-only)*
 
