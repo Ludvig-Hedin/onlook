@@ -1,4 +1,4 @@
-import { readFile, readdir, stat } from 'fs/promises';
+import { readdir, readFile, stat } from 'fs/promises';
 import { join } from 'path';
 import { z } from 'zod';
 
@@ -10,12 +10,7 @@ export const grepSchema = z.object({
     ignore_case: z.boolean().optional().default(false),
 });
 
-async function searchFile(
-    filePath: string,
-    regex: RegExp,
-    maxResults: number,
-    results: string[],
-) {
+async function searchFile(filePath: string, regex: RegExp, maxResults: number, results: string[]) {
     if (results.length >= maxResults) return;
     const text = await readFile(filePath, 'utf8').catch(() => null);
     if (!text) return;
@@ -28,7 +23,14 @@ async function searchFile(
     });
 }
 
-async function walk(dir: string, ext: string | undefined, ignore: Set<string>, results: string[], regex: RegExp, max: number) {
+async function walk(
+    dir: string,
+    ext: string | undefined,
+    ignore: Set<string>,
+    results: string[],
+    regex: RegExp,
+    max: number,
+) {
     if (results.length >= max) return;
     const entries = await readdir(dir).catch(() => [] as string[]);
     for (const name of entries) {

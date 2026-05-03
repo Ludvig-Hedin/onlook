@@ -21,8 +21,9 @@ export async function handleReadFile(args: z.infer<typeof readFileSchema>): Prom
     // Detect truncation when the returned slice doesn't reach the end of the file —
     // covers both an explicit limit and the hard 2000-line cap above.
     const sliceEnd = start + slice.length;
-    const truncated = sliceEnd < lines.length
-        ? `\n... (truncated, showing lines ${start + 1}–${sliceEnd} of ${lines.length})`
-        : '';
+    const truncated =
+        sliceEnd < lines.length
+            ? `\n... (truncated, showing lines ${start + 1}–${sliceEnd} of ${lines.length})`
+            : '';
     return numbered + truncated;
 }

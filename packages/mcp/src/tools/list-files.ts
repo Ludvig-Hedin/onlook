@@ -4,7 +4,11 @@ import { z } from 'zod';
 
 export const listFilesSchema = z.object({
     path: z.string().describe('Absolute directory path to list'),
-    show_hidden: z.boolean().optional().default(false).describe('Include hidden files (dot-prefixed)'),
+    show_hidden: z
+        .boolean()
+        .optional()
+        .default(false)
+        .describe('Include hidden files (dot-prefixed)'),
     ignore: z.array(z.string()).optional().describe('Exact directory or file names to exclude'),
 });
 
@@ -31,5 +35,8 @@ export async function handleListFiles(args: z.infer<typeof listFilesSchema>): Pr
         return a.path.localeCompare(b.path);
     });
 
-    return results.map(r => `${r.type === 'directory' ? 'd' : 'f'} ${r.path}`).join('\n') || '(empty)';
+    return (
+        results.map((r) => `${r.type === 'directory' ? 'd' : 'f'} ${r.path}`).join('\n') ||
+        '(empty)'
+    );
 }

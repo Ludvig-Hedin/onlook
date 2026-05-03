@@ -1,5 +1,5 @@
 import { spawn } from 'child_process';
-import { isAbsolute, relative, resolve as pathResolve } from 'path';
+import { isAbsolute, resolve as pathResolve, relative } from 'path';
 import { z } from 'zod';
 
 export const typecheckSchema = z.object({
@@ -34,8 +34,12 @@ export async function handleTypecheck(
 
         let stdout = '';
         let stderr = '';
-        child.stdout.on('data', (d: Buffer) => { stdout += d.toString(); });
-        child.stderr.on('data', (d: Buffer) => { stderr += d.toString(); });
+        child.stdout.on('data', (d: Buffer) => {
+            stdout += d.toString();
+        });
+        child.stderr.on('data', (d: Buffer) => {
+            stderr += d.toString();
+        });
 
         const timer = setTimeout(() => {
             child.kill('SIGTERM');
@@ -45,7 +49,11 @@ export async function handleTypecheck(
         child.on('close', (code) => {
             clearTimeout(timer);
             const output = [stdout, stderr].filter(Boolean).join('\n');
-            settle(code === 0 ? `✓ No type errors\n${output}`.trim() : `✗ Type errors found\n${output}`.trim());
+            settle(
+                code === 0
+                    ? `✓ No type errors\n${output}`.trim()
+                    : `✗ Type errors found\n${output}`.trim(),
+            );
         });
 
         child.on('error', () => {
@@ -57,8 +65,12 @@ export async function handleTypecheck(
                 stdio: ['ignore', 'pipe', 'pipe'],
             });
             let o = '';
-            tsc.stdout.on('data', (d: Buffer) => { o += d.toString(); });
-            tsc.stderr.on('data', (d: Buffer) => { o += d.toString(); });
+            tsc.stdout.on('data', (d: Buffer) => {
+                o += d.toString();
+            });
+            tsc.stderr.on('data', (d: Buffer) => {
+                o += d.toString();
+            });
 
             const tscTimer = setTimeout(() => {
                 tsc.kill('SIGTERM');

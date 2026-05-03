@@ -5,10 +5,16 @@ export const searchReplaceSchema = z.object({
     file_path: z.string().min(1).describe('Absolute path to the file to edit'),
     old_string: z.string().min(1).describe('Exact string to find (must be unique in the file)'),
     new_string: z.string().describe('Replacement string'),
-    replace_all: z.boolean().optional().default(false).describe('Replace all occurrences instead of just the first'),
+    replace_all: z
+        .boolean()
+        .optional()
+        .default(false)
+        .describe('Replace all occurrences instead of just the first'),
 });
 
-export async function handleSearchReplace(args: z.infer<typeof searchReplaceSchema>): Promise<string> {
+export async function handleSearchReplace(
+    args: z.infer<typeof searchReplaceSchema>,
+): Promise<string> {
     const content = await readFile(args.file_path, 'utf8').catch((err: NodeJS.ErrnoException) => {
         throw new Error(`Cannot read ${args.file_path}: ${err.message}`);
     });

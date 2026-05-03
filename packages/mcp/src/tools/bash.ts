@@ -1,5 +1,5 @@
 import { spawn } from 'child_process';
-import { isAbsolute, relative, resolve as pathResolve } from 'path';
+import { isAbsolute, resolve as pathResolve, relative } from 'path';
 import { z } from 'zod';
 
 const MAX_OUTPUT_BYTES = 1024 * 1024; // 1 MB cap per stream
@@ -7,7 +7,11 @@ const MAX_OUTPUT_BYTES = 1024 * 1024; // 1 MB cap per stream
 export const bashSchema = z.object({
     command: z.string().min(1).describe('Shell command to execute'),
     cwd: z.string().optional().describe('Working directory (defaults to project root)'),
-    timeout_ms: z.number().optional().default(30000).describe('Timeout in milliseconds (default 30s)'),
+    timeout_ms: z
+        .number()
+        .optional()
+        .default(30000)
+        .describe('Timeout in milliseconds (default 30s)'),
 });
 
 export async function handleBash(

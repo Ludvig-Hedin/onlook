@@ -1,15 +1,17 @@
-import { readFile, readdir, stat } from 'fs/promises';
-import { join } from 'path';
 import { spawn } from 'child_process';
+import { readdir, readFile, stat } from 'fs/promises';
+import { join } from 'path';
 
 async function gitBranch(cwd: string): Promise<string> {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
         const child = spawn('git', ['rev-parse', '--abbrev-ref', 'HEAD'], {
             cwd,
             stdio: ['ignore', 'pipe', 'ignore'],
         });
         let out = '';
-        child.stdout.on('data', (d: Buffer) => { out += d.toString(); });
+        child.stdout.on('data', (d: Buffer) => {
+            out += d.toString();
+        });
         child.on('close', () => resolve(out.trim() || 'unknown'));
         child.on('error', () => resolve('unknown'));
     });
@@ -29,10 +31,7 @@ async function topLevelFiles(dir: string): Promise<string[]> {
 }
 
 export async function getProjectInfo(projectRoot: string): Promise<string> {
-    const [branch, files] = await Promise.all([
-        gitBranch(projectRoot),
-        topLevelFiles(projectRoot),
-    ]);
+    const [branch, files] = await Promise.all([gitBranch(projectRoot), topLevelFiles(projectRoot)]);
 
     let name = 'unknown';
     const pkgPath = join(projectRoot, 'package.json');
@@ -40,13 +39,19 @@ export async function getProjectInfo(projectRoot: string): Promise<string> {
     if (pkgRaw) {
         try {
             name = (JSON.parse(pkgRaw) as { name?: string }).name ?? 'unknown';
-        } catch { /* ignore */ }
+        } catch {
+            /* ignore */
+        }
     }
 
-    return JSON.stringify({
-        project: name,
-        root: projectRoot,
-        branch,
-        files,
-    }, null, 2);
+    return JSON.stringify(
+        {
+            project: name,
+            root: projectRoot,
+            branch,
+            files,
+        },
+        null,
+        2,
+    );
 }
