@@ -1,5 +1,7 @@
-import { MessageContextType, type FileMessageContext, type HighlightMessageContext } from '@onlook/models';
+import type { FileMessageContext, HighlightMessageContext } from '@onlook/models';
+import { MessageContextType } from '@onlook/models';
 import { Icons } from '@onlook/ui/icons';
+
 import { CODE_FENCE } from '../../prompt/constants';
 import { wrapXml } from '../../prompt/helpers';
 import { BaseContext } from '../models/base';
@@ -29,9 +31,12 @@ If relevant, feel free to retrieve their content.`;
     }
 
     /**
-     * Generate multiple files content with highlights 
+     * Generate multiple files content with highlights
      */
-    static getFilesContent(files: FileMessageContext[], highlights: HighlightMessageContext[]): string {
+    static getFilesContent(
+        files: FileMessageContext[],
+        highlights: HighlightMessageContext[],
+    ): string {
         if (files.length === 0) {
             return '';
         }
@@ -41,7 +46,11 @@ If relevant, feel free to retrieve their content.`;
         for (const file of files) {
             let filePrompt = FileContext.getPrompt(file);
             // Add highlights for this file
-            const highlightContent = FileContext.getHighlightsForFile(file.path, highlights, file.branchId);
+            const highlightContent = FileContext.getHighlightsForFile(
+                file.path,
+                highlights,
+                file.branchId,
+            );
             if (highlightContent) {
                 filePrompt += highlightContent;
             }
@@ -55,7 +64,7 @@ If relevant, feel free to retrieve their content.`;
     }
 
     /**
-     * Generate truncated files content 
+     * Generate truncated files content
      */
     static getTruncatedFilesContent(files: FileMessageContext[]): string {
         if (files.length === 0) {
@@ -80,7 +89,11 @@ If relevant, feel free to retrieve their content.`;
         return wrapXml('branch', `id: "${id}"`);
     }
 
-    private static getHighlightsForFile(filePath: string, highlights: HighlightMessageContext[], branchId: string): string {
+    private static getHighlightsForFile(
+        filePath: string,
+        highlights: HighlightMessageContext[],
+        branchId: string,
+    ): string {
         // Import HighlightContext dynamically to avoid circular imports
         return HighlightContext.getHighlightsContent(filePath, highlights, branchId);
     }

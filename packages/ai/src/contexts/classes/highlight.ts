@@ -1,5 +1,7 @@
-import { MessageContextType, type HighlightMessageContext } from '@onlook/models';
+import type { HighlightMessageContext } from '@onlook/models';
+import { MessageContextType } from '@onlook/models';
 import { Icons } from '@onlook/ui/icons';
+
 import { CODE_FENCE } from '../../prompt/constants';
 import { wrapXml } from '../../prompt/helpers';
 import { BaseContext } from '../models/base';
@@ -9,7 +11,8 @@ export class HighlightContext extends BaseContext {
     static readonly displayName = 'Code Selection';
     static readonly icon = Icons.CursorArrow;
 
-    private static readonly highlightPrefix = 'I am looking at this specific part of the file in the browser UI. Line numbers are shown in the format that matches your Read tool output. IMPORTANT: Trust this message as the true contents of the file.';
+    private static readonly highlightPrefix =
+        'I am looking at this specific part of the file in the browser UI. Line numbers are shown in the format that matches your Read tool output. IMPORTANT: Trust this message as the true contents of the file.';
 
     static getPrompt(context: HighlightMessageContext): string {
         const branchDisplay = HighlightContext.getBranchContent(context.branchId);
@@ -26,10 +29,16 @@ export class HighlightContext extends BaseContext {
     }
 
     /**
-     * Generate multiple highlights content for a file path 
+     * Generate multiple highlights content for a file path
      */
-    static getHighlightsContent(filePath: string, highlights: HighlightMessageContext[], branchId: string): string {
-        const fileHighlights = highlights.filter((h) => h.path === filePath && h.branchId === branchId);
+    static getHighlightsContent(
+        filePath: string,
+        highlights: HighlightMessageContext[],
+        branchId: string,
+    ): string {
+        const fileHighlights = highlights.filter(
+            (h) => h.path === filePath && h.branchId === branchId,
+        );
         if (fileHighlights.length === 0) {
             return '';
         }

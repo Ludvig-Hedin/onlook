@@ -1,9 +1,14 @@
-import { MessageContextType, type AgentRuleMessageContext } from '@onlook/models';
 import { describe, expect, test } from 'bun:test';
+
+import type { AgentRuleMessageContext } from '@onlook/models';
+import { MessageContextType } from '@onlook/models';
+
 import { AgentRuleContext } from '../../src/contexts/classes/agent-rule';
 
 describe('AgentRuleContext', () => {
-    const createMockAgentRuleContext = (overrides: Partial<AgentRuleMessageContext> = {}): AgentRuleMessageContext => ({
+    const createMockAgentRuleContext = (
+        overrides: Partial<AgentRuleMessageContext> = {},
+    ): AgentRuleMessageContext => ({
         type: MessageContextType.AGENT_RULE,
         content: `## Project Guidelines
 
@@ -104,7 +109,8 @@ describe('AgentRuleContext', () => {
         });
 
         test('should handle very long file paths', () => {
-            const longPath = '/very/deep/nested/folder/structure/with/many/levels/agent-rules-and-guidelines.md';
+            const longPath =
+                '/very/deep/nested/folder/structure/with/many/levels/agent-rules-and-guidelines.md';
             const context = createMockAgentRuleContext({
                 path: longPath,
             });

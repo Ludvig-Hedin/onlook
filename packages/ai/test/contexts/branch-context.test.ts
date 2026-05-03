@@ -1,5 +1,8 @@
-import { MessageContextType, type Branch, type BranchMessageContext } from '@onlook/models';
 import { describe, expect, test } from 'bun:test';
+
+import type { Branch, BranchMessageContext } from '@onlook/models';
+import { MessageContextType } from '@onlook/models';
+
 import { BranchContext } from '../../src/contexts/classes/branch';
 
 describe('BranchContext', () => {
@@ -22,7 +25,9 @@ describe('BranchContext', () => {
         ...overrides,
     });
 
-    const createMockBranchContext = (overrides: Partial<BranchMessageContext> = {}): BranchMessageContext => ({
+    const createMockBranchContext = (
+        overrides: Partial<BranchMessageContext> = {},
+    ): BranchMessageContext => ({
         type: MessageContextType.BRANCH,
         content: 'Working on user authentication flow with OAuth integration',
         displayName: 'Authentication Branch',
@@ -50,7 +55,9 @@ describe('BranchContext', () => {
             const prompt = BranchContext.getPrompt(context);
 
             expect(prompt).toContain('Branch: feature/user-authentication (branch-123)');
-            expect(prompt).toContain('Description: Working on user authentication flow with OAuth integration');
+            expect(prompt).toContain(
+                'Description: Working on user authentication flow with OAuth integration',
+            );
         });
 
         test('should handle branch with null description', () => {
@@ -87,7 +94,8 @@ describe('BranchContext', () => {
         });
 
         test('should handle very long branch names', () => {
-            const longName = 'feature/very-long-branch-name-that-describes-complex-functionality-in-great-detail';
+            const longName =
+                'feature/very-long-branch-name-that-describes-complex-functionality-in-great-detail';
             const context = createMockBranchContext({
                 branch: createMockBranch({ name: longName }),
             });
@@ -98,7 +106,8 @@ describe('BranchContext', () => {
 
         test('should handle multiline content description', () => {
             const context = createMockBranchContext({
-                content: 'Multi-line description:\n- Add login form\n- Implement OAuth\n- Add validation',
+                content:
+                    'Multi-line description:\n- Add login form\n- Implement OAuth\n- Add validation',
             });
             const prompt = BranchContext.getPrompt(context);
 
@@ -237,11 +246,13 @@ describe('BranchContext', () => {
         });
 
         test('should handle very long branch ID lists', () => {
-            const branches = Array(20).fill(0).map((_, i) =>
-                createMockBranchContext({
-                    branch: createMockBranch({ id: `branch-${i}` }),
-                })
-            );
+            const branches = Array(20)
+                .fill(0)
+                .map((_, i) =>
+                    createMockBranchContext({
+                        branch: createMockBranch({ id: `branch-${i}` }),
+                    }),
+                );
             const content = BranchContext.getBranchesContent(branches);
 
             expect(content).toContain('branch-0');

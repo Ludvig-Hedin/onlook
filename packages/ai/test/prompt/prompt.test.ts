@@ -1,9 +1,11 @@
-import { MessageContextType } from '@onlook/models';
-import { describe, expect, test } from 'bun:test';
 import path from 'path';
+import { describe, expect, test } from 'bun:test';
+
+import { MessageContextType } from '@onlook/models';
+
+import type { HydrateMessageOptions } from '../../src/prompt/provider';
 import { FileContext, HighlightContext } from '../../src/contexts/classes';
 import {
-    type HydrateMessageOptions,
     getCreatePageSystemPrompt,
     getHydratedUserMessage,
     getSummaryPrompt,
@@ -157,26 +159,30 @@ describe('Prompt', () => {
     test('Highlights should be the same', async () => {
         const highlightsPath = path.resolve(__dirname, './data/highlights.txt');
 
-        const prompt = HighlightContext.getHighlightsContent('test.txt', [
-            {
-                path: 'test.txt',
-                start: 1,
-                end: 2,
-                content: 'test',
-                type: MessageContextType.HIGHLIGHT,
-                displayName: 'test.txt',
-                branchId: 'test',
-            },
-            {
-                path: 'test.txt',
-                start: 3,
-                end: 4,
-                content: 'test2',
-                type: MessageContextType.HIGHLIGHT,
-                displayName: 'test.txt',
-                branchId: 'test',
-            },
-        ], 'test');
+        const prompt = HighlightContext.getHighlightsContent(
+            'test.txt',
+            [
+                {
+                    path: 'test.txt',
+                    start: 1,
+                    end: 2,
+                    content: 'test',
+                    type: MessageContextType.HIGHLIGHT,
+                    displayName: 'test.txt',
+                    branchId: 'test',
+                },
+                {
+                    path: 'test.txt',
+                    start: 3,
+                    end: 4,
+                    content: 'test2',
+                    type: MessageContextType.HIGHLIGHT,
+                    displayName: 'test.txt',
+                    branchId: 'test',
+                },
+            ],
+            'test',
+        );
         if (SHOULD_WRITE_HIGHLIGHTS) {
             await Bun.write(highlightsPath, prompt);
         }

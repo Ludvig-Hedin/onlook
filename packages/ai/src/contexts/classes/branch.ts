@@ -1,5 +1,7 @@
-import { MessageContextType, type BranchMessageContext } from '@onlook/models';
+import type { BranchMessageContext } from '@onlook/models';
+import { MessageContextType } from '@onlook/models';
 import { Icons } from '@onlook/ui/icons';
+
 import { wrapXml } from '../../prompt/helpers';
 import { BaseContext } from '../models/base';
 
@@ -17,7 +19,7 @@ export class BranchContext extends BaseContext {
     }
 
     /**
-     * Generate multiple branches content 
+     * Generate multiple branches content
      */
     static getBranchesContent(branches: BranchMessageContext[]): string {
         let prompt = `I'm working on the following branches: \n`;

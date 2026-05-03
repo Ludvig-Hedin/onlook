@@ -1,9 +1,14 @@
-import { MessageContextType, type FileMessageContext, type HighlightMessageContext } from '@onlook/models';
 import { describe, expect, test } from 'bun:test';
+
+import type { FileMessageContext, HighlightMessageContext } from '@onlook/models';
+import { MessageContextType } from '@onlook/models';
+
 import { FileContext } from '../../src/contexts/classes/file';
 
 describe('FileContext', () => {
-    const createMockFileContext = (overrides: Partial<FileMessageContext> = {}): FileMessageContext => ({
+    const createMockFileContext = (
+        overrides: Partial<FileMessageContext> = {},
+    ): FileMessageContext => ({
         type: MessageContextType.FILE,
         path: 'src/components/Button.tsx',
         content: 'export const Button = () => <button>Click me</button>;',
@@ -12,7 +17,9 @@ describe('FileContext', () => {
         ...overrides,
     });
 
-    const createMockHighlightContext = (overrides: Partial<HighlightMessageContext> = {}): HighlightMessageContext => ({
+    const createMockHighlightContext = (
+        overrides: Partial<HighlightMessageContext> = {},
+    ): HighlightMessageContext => ({
         type: MessageContextType.HIGHLIGHT,
         path: 'src/components/Button.tsx',
         start: 1,
@@ -100,7 +107,9 @@ describe('FileContext', () => {
             });
             const prompt = FileContext.getPrompt(context);
 
-            expect(prompt).toContain('<path>src/very/deep/nested/folder/structure/with/many/levels/Component.tsx</path>');
+            expect(prompt).toContain(
+                '<path>src/very/deep/nested/folder/structure/with/many/levels/Component.tsx</path>',
+            );
         });
 
         test('should handle branch IDs with special characters', () => {

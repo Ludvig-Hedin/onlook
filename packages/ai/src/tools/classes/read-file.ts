@@ -1,13 +1,16 @@
-import { Icons } from '@onlook/ui/icons';
-import type { EditorEngine } from '@onlook/web-client/src/components/store/editor/engine';
 import { z } from 'zod';
+
+import type { EditorEngine } from '@onlook/web-client/src/components/store/editor/engine';
+import { Icons } from '@onlook/ui/icons';
+
 import { ClientTool } from '../models/client';
 import { getFileSystem } from '../shared/helpers/files';
 import { BRANCH_ID_SCHEMA } from '../shared/type';
 
 export class ReadFileTool extends ClientTool {
     static readonly toolName = 'read_file';
-    static readonly description = "Reads a file from the local filesystem. You can access any file directly by using this tool. By default, it reads up to 2000 lines starting from the beginning of the file. You can optionally specify a line offset and limit (especially handy for long files), but it's recommended to read the whole file by not providing these parameters. Results are returned using cat -n format, with line numbers starting at 1. Supports fuzzy path matching when exact paths are not found.";
+    static readonly description =
+        "Reads a file from the local filesystem. You can access any file directly by using this tool. By default, it reads up to 2000 lines starting from the beginning of the file. You can optionally specify a line offset and limit (especially handy for long files), but it's recommended to read the whole file by not providing these parameters. Results are returned using cat -n format, with line numbers starting at 1. Supports fuzzy path matching when exact paths are not found.";
     static readonly parameters = z.object({
         file_path: z
             .string()
@@ -31,13 +34,16 @@ export class ReadFileTool extends ClientTool {
     });
     static readonly icon = Icons.EyeOpen;
 
-    async handle(args: z.infer<typeof ReadFileTool.parameters>, editorEngine: EditorEngine): Promise<{
+    async handle(
+        args: z.infer<typeof ReadFileTool.parameters>,
+        editorEngine: EditorEngine,
+    ): Promise<{
         content: string;
         lines: number;
     }> {
         try {
             const fileSystem = await getFileSystem(args.branchId, editorEngine);
-            let file = await fileSystem.readFile(args.file_path);
+            const file = await fileSystem.readFile(args.file_path);
             if (typeof file !== 'string') {
                 throw new Error(`Cannot read file ${args.file_path}: file is not text`);
             }
@@ -51,7 +57,9 @@ export class ReadFileTool extends ClientTool {
                 const selectedLines = lines.slice(start, end);
 
                 return {
-                    content: selectedLines.map((line: string, index: number) => `${start + index + 1}→${line}`).join('\n'),
+                    content: selectedLines
+                        .map((line: string, index: number) => `${start + index + 1}→${line}`)
+                        .join('\n'),
                     lines: selectedLines.length,
                 };
             }
@@ -61,17 +69,25 @@ export class ReadFileTool extends ClientTool {
             if (lines.length > maxLines) {
                 const selectedLines = lines.slice(0, maxLines);
                 return {
-                    content: selectedLines.map((line: string, index: number) => `${index + 1}→${line}`).join('\n') + `\n... (truncated, showing first ${maxLines} of ${totalLines} lines)`,
+                    content:
+                        selectedLines
+                            .map((line: string, index: number) => `${index + 1}→${line}`)
+                            .join('\n') +
+                        `\n... (truncated, showing first ${maxLines} of ${totalLines} lines)`,
                     lines: maxLines,
                 };
             }
 
             return {
-                content: lines.map((line: string, index: number) => `${index + 1}→${line}`).join('\n'),
+                content: lines
+                    .map((line: string, index: number) => `${index + 1}→${line}`)
+                    .join('\n'),
                 lines: lines.length,
             };
         } catch (error) {
-            throw new Error(`Cannot read file ${args.file_path}: ${error instanceof Error ? error.message : String(error)}`);
+            throw new Error(
+                `Cannot read file ${args.file_path}: ${error instanceof Error ? error.message : String(error)}`,
+            );
         }
     }
 

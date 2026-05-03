@@ -1,15 +1,26 @@
-import { MessageContextType, type MessageContext } from '@onlook/models';
-import { AgentRuleContext, BranchContext, ErrorContext, FileContext, HighlightContext, ImageContext } from './classes';
-import type { ContextClass } from './models';
+import type { MessageContext } from '@onlook/models';
+import { MessageContextType } from '@onlook/models';
 
-const CONTEXT_CLASSES_MAP: Map<string, ContextClass> = new Map(Object.entries({
-    [MessageContextType.FILE]: FileContext,
-    [MessageContextType.HIGHLIGHT]: HighlightContext,
-    [MessageContextType.ERROR]: ErrorContext,
-    [MessageContextType.BRANCH]: BranchContext,
-    [MessageContextType.IMAGE]: ImageContext,
-    [MessageContextType.AGENT_RULE]: AgentRuleContext,
-}));
+import type { ContextClass } from './models';
+import {
+    AgentRuleContext,
+    BranchContext,
+    ErrorContext,
+    FileContext,
+    HighlightContext,
+    ImageContext,
+} from './classes';
+
+const CONTEXT_CLASSES_MAP = new Map<string, ContextClass>(
+    Object.entries({
+        [MessageContextType.FILE]: FileContext,
+        [MessageContextType.HIGHLIGHT]: HighlightContext,
+        [MessageContextType.ERROR]: ErrorContext,
+        [MessageContextType.BRANCH]: BranchContext,
+        [MessageContextType.IMAGE]: ImageContext,
+        [MessageContextType.AGENT_RULE]: AgentRuleContext,
+    }),
+);
 
 export function getContextClass(type: MessageContextType) {
     return CONTEXT_CLASSES_MAP.get(type);

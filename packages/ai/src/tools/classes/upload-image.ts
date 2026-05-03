@@ -80,7 +80,7 @@ export class UploadImageTool extends ClientTool {
             if (imageContext.source === 'local') {
                 throw new Error(
                     `Image "${imageContext.displayName}" already exists in the project at ${imageContext.path}. ` +
-                    `Reference it directly in your code without uploading.`
+                        `Reference it directly in your code without uploading.`,
                 );
             }
 

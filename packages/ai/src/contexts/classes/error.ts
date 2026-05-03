@@ -1,5 +1,7 @@
-import { MessageContextType, type ErrorMessageContext } from '@onlook/models';
+import type { ErrorMessageContext } from '@onlook/models';
+import { MessageContextType } from '@onlook/models';
 import { Icons } from '@onlook/ui/icons';
+
 import { wrapXml } from '../../prompt/helpers';
 import { BaseContext } from '../models/base';
 
@@ -34,7 +36,7 @@ NEVER SUGGEST THE "bun run dev" command. Assume the user is already running the 
     }
 
     /**
-     * Generate multiple errors content 
+     * Generate multiple errors content
      */
     static getErrorsContent(errors: ErrorMessageContext[]): string {
         if (errors.length === 0) {

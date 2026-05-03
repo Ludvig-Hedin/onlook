@@ -1,26 +1,28 @@
-import {
-    MessageContextType,
-    type MessageContext,
-    type FileMessageContext,
-    type HighlightMessageContext,
-    type ErrorMessageContext,
-    type BranchMessageContext,
-    type ImageMessageContext,
-    type AgentRuleMessageContext,
-    type Branch,
-} from '@onlook/models';
 import { describe, expect, test } from 'bun:test';
 import { v4 as uuidv4 } from 'uuid';
+
+import type {
+    AgentRuleMessageContext,
+    Branch,
+    BranchMessageContext,
+    ErrorMessageContext,
+    FileMessageContext,
+    HighlightMessageContext,
+    ImageMessageContext,
+    MessageContext,
+} from '@onlook/models';
+import { MessageContextType } from '@onlook/models';
+
 import {
-    getContextPrompt,
-    getContextLabel,
-    getContextClass,
-    FileContext,
-    HighlightContext,
-    ErrorContext,
-    BranchContext,
-    ImageContext,
     AgentRuleContext,
+    BranchContext,
+    ErrorContext,
+    FileContext,
+    getContextClass,
+    getContextLabel,
+    getContextPrompt,
+    HighlightContext,
+    ImageContext,
 } from '../../src/contexts';
 
 describe('Context Index', () => {
@@ -44,7 +46,7 @@ describe('Context Index', () => {
             displayName: 'test.ts',
             branchId: 'branch-123',
         } as FileMessageContext,
-        
+
         highlight: {
             type: MessageContextType.HIGHLIGHT,
             path: 'src/test.ts',
@@ -54,21 +56,21 @@ describe('Context Index', () => {
             displayName: 'test.ts',
             branchId: 'branch-123',
         } as HighlightMessageContext,
-        
+
         error: {
             type: MessageContextType.ERROR,
             content: 'TypeError: Cannot read property',
             displayName: 'Runtime Error',
             branchId: 'branch-123',
         } as ErrorMessageContext,
-        
+
         branch: {
             type: MessageContextType.BRANCH,
             content: 'Working on feature implementation',
             displayName: 'Feature Branch',
             branch: createMockBranch(),
         } as BranchMessageContext,
-        
+
         image: {
             type: MessageContextType.IMAGE,
             content: 'data:image/png;base64,test-data',
@@ -76,7 +78,7 @@ describe('Context Index', () => {
             mimeType: 'image/png',
             id: uuidv4(),
         } as ImageMessageContext,
-        
+
         agentRule: {
             type: MessageContextType.AGENT_RULE,
             content: '# Project Rules\nUse TypeScript',
@@ -140,11 +142,11 @@ describe('Context Index', () => {
 
         test('should handle mixed context types in sequence', () => {
             const contexts = createMockContexts();
-            
+
             const filePrompt = getContextPrompt(contexts.file);
             const highlightPrompt = getContextPrompt(contexts.highlight);
             const errorPrompt = getContextPrompt(contexts.error);
-            
+
             expect(filePrompt).toContain('```ts');
             expect(highlightPrompt).toContain('#L1:L5');
             expect(errorPrompt).toContain('<error>');
@@ -152,20 +154,20 @@ describe('Context Index', () => {
 
         test('should produce same result as direct context class usage', () => {
             const contexts = createMockContexts();
-            
+
             // Compare generic function with direct class usage
-            expect(getContextPrompt(contexts.file))
-                .toBe(FileContext.getPrompt(contexts.file));
-            expect(getContextPrompt(contexts.highlight))
-                .toBe(HighlightContext.getPrompt(contexts.highlight));
-            expect(getContextPrompt(contexts.error))
-                .toBe(ErrorContext.getPrompt(contexts.error));
-            expect(getContextPrompt(contexts.branch))
-                .toBe(BranchContext.getPrompt(contexts.branch));
-            expect(getContextPrompt(contexts.image))
-                .toBe(ImageContext.getPrompt(contexts.image));
-            expect(getContextPrompt(contexts.agentRule))
-                .toBe(AgentRuleContext.getPrompt(contexts.agentRule));
+            expect(getContextPrompt(contexts.file)).toBe(FileContext.getPrompt(contexts.file));
+            expect(getContextPrompt(contexts.highlight)).toBe(
+                HighlightContext.getPrompt(contexts.highlight),
+            );
+            expect(getContextPrompt(contexts.error)).toBe(ErrorContext.getPrompt(contexts.error));
+            expect(getContextPrompt(contexts.branch)).toBe(
+                BranchContext.getPrompt(contexts.branch),
+            );
+            expect(getContextPrompt(contexts.image)).toBe(ImageContext.getPrompt(contexts.image));
+            expect(getContextPrompt(contexts.agentRule)).toBe(
+                AgentRuleContext.getPrompt(contexts.agentRule),
+            );
         });
     });
 
@@ -214,30 +216,28 @@ describe('Context Index', () => {
 
         test('should produce same result as direct context class usage', () => {
             const contexts = createMockContexts();
-            
+
             // Compare generic function with direct class usage
-            expect(getContextLabel(contexts.file))
-                .toBe(FileContext.getLabel(contexts.file));
-            expect(getContextLabel(contexts.highlight))
-                .toBe(HighlightContext.getLabel(contexts.highlight));
-            expect(getContextLabel(contexts.error))
-                .toBe(ErrorContext.getLabel(contexts.error));
-            expect(getContextLabel(contexts.branch))
-                .toBe(BranchContext.getLabel(contexts.branch));
-            expect(getContextLabel(contexts.image))
-                .toBe(ImageContext.getLabel(contexts.image));
-            expect(getContextLabel(contexts.agentRule))
-                .toBe(AgentRuleContext.getLabel(contexts.agentRule));
+            expect(getContextLabel(contexts.file)).toBe(FileContext.getLabel(contexts.file));
+            expect(getContextLabel(contexts.highlight)).toBe(
+                HighlightContext.getLabel(contexts.highlight),
+            );
+            expect(getContextLabel(contexts.error)).toBe(ErrorContext.getLabel(contexts.error));
+            expect(getContextLabel(contexts.branch)).toBe(BranchContext.getLabel(contexts.branch));
+            expect(getContextLabel(contexts.image)).toBe(ImageContext.getLabel(contexts.image));
+            expect(getContextLabel(contexts.agentRule)).toBe(
+                AgentRuleContext.getLabel(contexts.agentRule),
+            );
         });
 
         test('should handle fallback scenarios', () => {
             const contexts = createMockContexts();
-            
+
             // Test with empty displayNames
             const fileWithoutLabel = { ...contexts.file, displayName: '' };
             const errorWithoutLabel = { ...contexts.error, displayName: '' };
             const imageWithoutLabel = { ...contexts.image, displayName: '' };
-            
+
             expect(getContextLabel(fileWithoutLabel)).toBe('test.ts');
             expect(getContextLabel(errorWithoutLabel)).toBe('Error');
             expect(getContextLabel(imageWithoutLabel)).toBe('Image');
@@ -279,15 +279,15 @@ describe('Context Index', () => {
             const fileClass = getContextClass(MessageContextType.FILE);
             const highlightClass = getContextClass(MessageContextType.HIGHLIGHT);
             const errorClass = getContextClass(MessageContextType.ERROR);
-            
+
             expect(fileClass.contextType).toBe(MessageContextType.FILE);
             expect(fileClass.displayName).toBe('File');
             expect(fileClass.icon).toBeDefined();
-            
+
             expect(highlightClass.contextType).toBe(MessageContextType.HIGHLIGHT);
             expect(highlightClass.displayName).toBe('Code Selection');
             expect(highlightClass.icon).toBeDefined();
-            
+
             expect(errorClass.contextType).toBe(MessageContextType.ERROR);
             expect(errorClass.displayName).toBe('Error');
             expect(errorClass.icon).toBeDefined();
@@ -326,12 +326,12 @@ describe('Context Index', () => {
                 contexts.agentRule,
             ];
 
-            const prompts = contextArray.map(context => getContextPrompt(context));
-            const labels = contextArray.map(context => getContextLabel(context));
+            const prompts = contextArray.map((context) => getContextPrompt(context));
+            const labels = contextArray.map((context) => getContextLabel(context));
 
             expect(prompts).toHaveLength(6);
             expect(labels).toHaveLength(6);
-            
+
             expect(prompts[0]).toContain('```ts');
             expect(prompts[1]).toContain('#L1:L5');
             expect(prompts[2]).toContain('<error>');
@@ -342,12 +342,12 @@ describe('Context Index', () => {
 
         test('should maintain context type consistency', () => {
             const contexts = createMockContexts();
-            
+
             Object.entries(contexts).forEach(([key, context]) => {
                 const contextClass = getContextClass(context.type);
                 const genericPrompt = getContextPrompt(context);
                 const directPrompt = contextClass.getPrompt(context as any);
-                
+
                 expect(genericPrompt).toBe(directPrompt);
             });
         });
@@ -369,7 +369,7 @@ describe('Context Index', () => {
 
         test('should work with actual message context union type', () => {
             const contexts = createMockContexts();
-            
+
             // Test that the functions work with the union type
             const messageContexts: MessageContext[] = [
                 contexts.file,
@@ -380,7 +380,7 @@ describe('Context Index', () => {
                 contexts.agentRule,
             ];
 
-            messageContexts.forEach(context => {
+            messageContexts.forEach((context) => {
                 expect(() => getContextPrompt(context)).not.toThrow();
                 expect(() => getContextLabel(context)).not.toThrow();
                 expect(() => getContextClass(context.type)).not.toThrow();
@@ -398,7 +398,7 @@ describe('Context Index', () => {
                     displayName: '',
                     branchId: '',
                 } as FileMessageContext,
-                
+
                 error: {
                     type: MessageContextType.ERROR,
                     content: 'Error message',
@@ -409,7 +409,7 @@ describe('Context Index', () => {
 
             expect(getContextPrompt(minimalContexts.file)).toContain('test.js');
             expect(getContextLabel(minimalContexts.file)).toBe('test.js');
-            
+
             expect(getContextPrompt(minimalContexts.error)).toContain('Error message');
             expect(getContextLabel(minimalContexts.error)).toBe('Error');
         });
@@ -417,16 +417,16 @@ describe('Context Index', () => {
         test('should handle context switching performance', () => {
             const contexts = createMockContexts();
             const contextTypes = Object.values(MessageContextType);
-            
+
             // Test multiple rapid context type switches
             const start = Date.now();
             for (let i = 0; i < 100; i++) {
-                contextTypes.forEach(type => {
+                contextTypes.forEach((type) => {
                     getContextClass(type);
                 });
             }
             const end = Date.now();
-            
+
             // Should complete quickly (arbitrary threshold)
             expect(end - start).toBeLessThan(100);
         });

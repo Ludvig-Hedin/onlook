@@ -1,11 +1,23 @@
-import {
-    MessageContextType,
-    type ChatMessage,
-    type MessageContext
-} from '@onlook/models';
 import type { FileUIPart } from 'ai';
-import { AgentRuleContext, BranchContext, ErrorContext, FileContext, ImageContext } from '../contexts/classes';
-import { ASK_MODE_SYSTEM_PROMPT, CREATE_NEW_PAGE_SYSTEM_PROMPT, SHELL_PROMPT, SUGGESTION_SYSTEM_PROMPT, SUMMARY_PROMPTS, SYSTEM_PROMPT } from './constants';
+
+import type { ChatMessage, MessageContext } from '@onlook/models';
+import { MessageContextType } from '@onlook/models';
+
+import {
+    AgentRuleContext,
+    BranchContext,
+    ErrorContext,
+    FileContext,
+    ImageContext,
+} from '../contexts/classes';
+import {
+    ASK_MODE_SYSTEM_PROMPT,
+    CREATE_NEW_PAGE_SYSTEM_PROMPT,
+    SHELL_PROMPT,
+    SUGGESTION_SYSTEM_PROMPT,
+    SUMMARY_PROMPTS,
+    SYSTEM_PROMPT,
+} from './constants';
 import { wrapXml } from './helpers';
 
 export interface HydrateMessageOptions {
@@ -63,7 +75,9 @@ export function getHydratedUserMessage(
     const files = context.filter((c) => c.type === MessageContextType.FILE).map((c) => c);
     const highlights = context.filter((c) => c.type === MessageContextType.HIGHLIGHT).map((c) => c);
     const errors = context.filter((c) => c.type === MessageContextType.ERROR).map((c) => c);
-    const agentRules = context.filter((c) => c.type === MessageContextType.AGENT_RULE).map((c) => c);
+    const agentRules = context
+        .filter((c) => c.type === MessageContextType.AGENT_RULE)
+        .map((c) => c);
     const allImages = context.filter((c) => c.type === MessageContextType.IMAGE).map((c) => c);
     const externalImages = allImages.filter((img) => img.source === 'external');
     const localImages = allImages.filter((img) => img.source === 'local');
@@ -106,8 +120,10 @@ export function getHydratedUserMessage(
         const localImageList = localImages
             .map((img) => `- ${img.displayName}: ${img.path} (branch: ${img.branchId})`)
             .join('\n');
-        prompt += wrapXml('local-images',
-            'These images already exist in the project at the specified paths. Reference them directly in your code without uploading:\n' + localImageList
+        prompt += wrapXml(
+            'local-images',
+            'These images already exist in the project at the specified paths. Reference them directly in your code without uploading:\n' +
+                localImageList,
         );
     }
 
@@ -115,8 +131,10 @@ export function getHydratedUserMessage(
         const imageList = externalImages
             .map((img, idx) => `${idx + 1}. ${img.displayName} (ID: ${img.id || 'unknown'})`)
             .join('\n');
-        prompt += wrapXml('available-images',
-            'These are new images that need to be uploaded to the project using the upload_image tool:\n' + imageList
+        prompt += wrapXml(
+            'available-images',
+            'These are new images that need to be uploaded to the project using the upload_image tool:\n' +
+                imageList,
         );
     }
 

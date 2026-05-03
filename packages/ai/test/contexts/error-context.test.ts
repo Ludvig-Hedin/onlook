@@ -1,11 +1,17 @@
-import { MessageContextType, type ErrorMessageContext } from '@onlook/models';
 import { describe, expect, test } from 'bun:test';
+
+import type { ErrorMessageContext } from '@onlook/models';
+import { MessageContextType } from '@onlook/models';
+
 import { ErrorContext } from '../../src/contexts/classes/error';
 
 describe('ErrorContext', () => {
-    const createMockErrorContext = (overrides: Partial<ErrorMessageContext> = {}): ErrorMessageContext => ({
+    const createMockErrorContext = (
+        overrides: Partial<ErrorMessageContext> = {},
+    ): ErrorMessageContext => ({
         type: MessageContextType.ERROR,
-        content: 'TypeError: Cannot read property "length" of undefined\n    at Button.tsx:15:20\n    at render',
+        content:
+            'TypeError: Cannot read property "length" of undefined\n    at Button.tsx:15:20\n    at render',
         displayName: 'Runtime Error',
         branchId: 'main-branch-123',
         ...overrides,
@@ -277,9 +283,10 @@ describe('ErrorContext', () => {
         });
 
         test('should handle very deep stack traces', () => {
-            const deepTrace = Array(50).fill(0).map((_, i) =>
-                `    at function${i} (/path/to/file${i}.ts:${i + 1}:5)`
-            ).join('\n');
+            const deepTrace = Array(50)
+                .fill(0)
+                .map((_, i) => `    at function${i} (/path/to/file${i}.ts:${i + 1}:5)`)
+                .join('\n');
             const context = createMockErrorContext({
                 content: `Error: Deep stack\n${deepTrace}`,
             });

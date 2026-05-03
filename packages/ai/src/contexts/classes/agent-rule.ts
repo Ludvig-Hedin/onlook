@@ -1,5 +1,7 @@
-import { MessageContextType, type AgentRuleMessageContext } from '@onlook/models';
+import type { AgentRuleMessageContext } from '@onlook/models';
+import { MessageContextType } from '@onlook/models';
 import { Icons } from '@onlook/ui/icons';
+
 import { wrapXml } from '../../prompt/helpers';
 import { BaseContext } from '../models/base';
 
@@ -19,11 +21,11 @@ export class AgentRuleContext extends BaseContext {
     }
 
     /**
-     * Generate multiple agent rules content 
+     * Generate multiple agent rules content
      */
     static getAgentRulesContent(agentRules: AgentRuleMessageContext[]): string {
         let content = `${AgentRuleContext.agentRulesContextPrefix}\n`;
-        const rulePrompts = agentRules.map(agentRule => AgentRuleContext.getPrompt(agentRule));
+        const rulePrompts = agentRules.map((agentRule) => AgentRuleContext.getPrompt(agentRule));
         content += rulePrompts.join('\n');
         return wrapXml('agent-rules', content);
     }

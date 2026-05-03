@@ -1,5 +1,7 @@
-import type { ChatMessage } from '@onlook/models';
 import { describe, expect, test } from 'bun:test';
+
+import type { ChatMessage } from '@onlook/models';
+
 import {
     convertToStreamMessages,
     ensureToolCallResults,
