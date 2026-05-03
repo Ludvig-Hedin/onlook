@@ -225,7 +225,7 @@ export const TreeNode = memo(
                         'bg-purple-300/30 dark:bg-purple-900/30': isParentSelected?.data.instanceId,
                         'bg-purple-300/50 dark:bg-purple-900/50':
                             hovered && isParentSelected?.data.instanceId,
-                        'dark:text-primary text-white':
+                        'dark:text-primary text-foreground-primary':
                             (!node.data.instanceId && selected) || isWindowSelected,
                         'bg-[#109BFF]': isWindowSelected,
                     }),
@@ -385,7 +385,7 @@ export const TreeNode = memo(
                                             <LayerBadge
                                                 className={cn(
                                                     selected
-                                                        ? 'border-white/30 bg-white/10 text-white'
+                                                        ? 'border-foreground/30 bg-foreground/10 text-foreground'
                                                         : 'border-border text-foreground-secondary',
                                                 )}
                                             >
@@ -396,7 +396,7 @@ export const TreeNode = memo(
                                             <LayerBadge
                                                 className={cn(
                                                     selected
-                                                        ? 'border-white/30 bg-white/10 text-white'
+                                                        ? 'border-foreground/30 bg-foreground/10 text-foreground'
                                                         : 'border-border text-foreground-secondary',
                                                 )}
                                             >
@@ -407,7 +407,7 @@ export const TreeNode = memo(
                                             <LayerBadge
                                                 className={cn(
                                                     selected
-                                                        ? 'border-white/30 bg-white/10 text-white'
+                                                        ? 'border-foreground/30 bg-foreground/10 text-foreground'
                                                         : 'border-[#109BFF]/30 bg-[#109BFF]/10 text-[#109BFF]',
                                                 )}
                                             >

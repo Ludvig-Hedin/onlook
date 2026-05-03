@@ -155,7 +155,7 @@ export const Margin = observer(() => {
                     >
                         <MarginIcon className="h-4 min-h-4 w-4 min-w-4" />
                         {marginValue && (
-                            <span className="text-small !text-foreground-primary data-[state=open]:!text-white">{marginValue}</span>
+                            <span className="text-small !text-foreground-primary data-[state=open]:!text-foreground">{marginValue}</span>
                         )}
                     </ToolbarButton>
                 </DropdownMenuTrigger>

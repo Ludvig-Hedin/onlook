@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { observer } from 'mobx-react-lite';
 
@@ -36,14 +36,15 @@ export const Main = observer(() => {
         leftPanelRef,
         rightPanelRef,
     );
-    // Lazy initialiser reads window synchronously on first client render so
-    // there is no undefined→boolean transition and no blank-flash frame.
-    const [isMobile, setIsMobile] = useState<boolean>(
-        () => (typeof window !== 'undefined' ? window.innerWidth < 768 : false),
-    );
+    // Initialize false (SSR-safe) so SSR and client hydration output the same
+    // markup. useLayoutEffect then sets the correct value synchronously before
+    // the browser paints, eliminating the hydration mismatch that arose when
+    // the lazy initialiser diverged between server (false) and mobile client (true).
+    const [isMobile, setIsMobile] = useState<boolean>(false);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         const check = () => setIsMobile(window.innerWidth < 768);
+        check(); // Sync immediately before first paint
         window.addEventListener('resize', check);
         return () => window.removeEventListener('resize', check);
     }, []);

@@ -417,7 +417,7 @@ export const ChatInput = observer(
                     }
                 }}
             >
-                <div className="@container bg-background-primary flex w-full flex-col rounded-xl border">
+                <div className="@container bg-background-primary flex w-full flex-col rounded-xl border focus-within:border-0">
                 <div className="flex w-full flex-col px-2 pt-2">
                     <QueueItems queuedMessages={queuedMessages} removeFromQueue={removeFromQueue} />
                     <InputContextPills />

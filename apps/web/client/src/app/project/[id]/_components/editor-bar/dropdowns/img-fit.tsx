@@ -58,7 +58,7 @@ export const ImgFit = () => {
                             <button
                                 onClick={() => handleFitChange('cover')}
                                 className={`flex-1 text-sm px-3 py-1 rounded-md ${objectFit === 'cover'
-                                        ? 'bg-background-tertiary/20 text-white'
+                                        ? 'bg-background-tertiary/20 text-foreground'
                                         : 'text-muted-foreground hover:bg-background-tertiary/10'
                                     }`}
                             >
@@ -67,7 +67,7 @@ export const ImgFit = () => {
                             <button
                                 onClick={() => handleFitChange('contain')}
                                 className={`flex-1 text-sm px-3 py-1 rounded-md ${objectFit === 'contain'
-                                        ? 'bg-background-tertiary/20 text-white'
+                                        ? 'bg-background-tertiary/20 text-foreground'
                                         : 'text-muted-foreground hover:bg-background-tertiary/10'
                                     }`}
                             >
@@ -76,7 +76,7 @@ export const ImgFit = () => {
                             <button
                                 onClick={() => handleFitChange('fill')}
                                 className={`flex-1 text-sm px-3 py-1 rounded-md ${objectFit === 'fill'
-                                        ? 'bg-background-tertiary/20 text-white'
+                                        ? 'bg-background-tertiary/20 text-foreground'
                                         : 'text-muted-foreground hover:bg-background-tertiary/10'
                                     }`}
                             >

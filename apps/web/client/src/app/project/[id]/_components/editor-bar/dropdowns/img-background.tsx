@@ -6,7 +6,7 @@ export const ImageBackground = () => {
     return (
         <Button
             variant="ghost"
-            className="flex items-center justify-center px-2 flex-col gap-0.5 text-muted-foreground border border-border/0 cursor-pointer rounded-lg hover:bg-background-tertiary/20 hover:text-white hover:border hover:border-border focus-visible:ring-0 focus-visible:ring-offset-0 focus:outline-none focus-visible:outline-none active:bg-background-tertiary/20 active:text-white active:border active:border-border"
+            className="flex items-center justify-center px-2 flex-col gap-0.5 text-muted-foreground border border-border/0 cursor-pointer rounded-lg hover:bg-background-tertiary/20 hover:text-foreground hover:border hover:border-border focus-visible:ring-0 focus-visible:ring-offset-0 focus:outline-none focus-visible:outline-none active:bg-background-tertiary/20 active:text-foreground active:border active:border-border"
         >
             <div className="h-5 w-5 rounded-sm relative">
                 <div

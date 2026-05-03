@@ -129,8 +129,8 @@ export const FontSizeSelector = () => {
                         <button
                             key={size}
                             onClick={() => handleSizeSelect(size)}
-                            className={`cursor-pointer text-muted-foreground data-[highlighted]:bg-background-tertiary/10 border-border/0 data-[highlighted]:border-border justify-center rounded-md border px-2 py-1 text-sm data-[highlighted]:text-white ${size === textState.fontSize
-                                ? 'bg-background-tertiary/20 border-border border text-white'
+                            className={`cursor-pointer text-muted-foreground data-[highlighted]:bg-background-tertiary/10 border-border/0 data-[highlighted]:border-border justify-center rounded-md border px-2 py-1 text-sm data-[highlighted]:text-foreground ${size === textState.fontSize
+                                ? 'bg-background-tertiary/20 border-border border text-foreground'
                                 : ''
                                 }`}
                         >

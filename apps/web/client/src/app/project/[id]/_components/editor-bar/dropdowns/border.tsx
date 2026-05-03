@@ -77,9 +77,9 @@ export const Border = observer(() => {
                         isOpen={isOpen}
                         className={cn('flex items-center gap-1 min-w-9', borderValue && '!text-foreground-primary [&_*]:!text-foreground-primary')}
                     >
-                        <Icons.BorderEdit className={cn('h-4 w-4 min-h-4 min-w-4', borderExists && 'text-white')} />
+                        <Icons.BorderEdit className={cn('h-4 w-4 min-h-4 min-w-4', borderExists && 'text-foreground')} />
                         {borderValue && (
-                            <span className="text-xs !text-white data-[state=open]:!text-foreground-primary">
+                            <span className="text-xs !text-foreground data-[state=open]:!text-foreground-primary">
                                 {borderValue}
                             </span>
                         )}

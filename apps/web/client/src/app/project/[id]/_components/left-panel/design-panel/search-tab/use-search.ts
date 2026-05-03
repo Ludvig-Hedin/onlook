@@ -125,18 +125,19 @@ export const useSearch = (query: string, filter: SearchFilter, scope: SearchScop
     const editorEngine = useEditorEngine();
     const [debounced, setDebounced] = useState(query);
     const [activeIndex, setActiveIndex] = useState(0);
+
+    // Derive stable primitive keys from MobX-tracked frame data so the search
+    // memo only re-runs when the actual layer tree or selection changes — not on
+    // every render where .filter()/.map() would produce fresh array references.
+    // String comparison via Object.is() is value-based, so React correctly
+    // detects "no change" when the content is the same.
     const allFrames = editorEngine.frames.getAll();
-    const selectedFrameIds = allFrames
-        .filter((frameData) => frameData.selected)
-        .map((frameData) => frameData.frame.id);
-    const layerRoots = allFrames.map((frameData) => {
-        const metadata = editorEngine.ast.mappings.getMetadata(frameData.frame.id);
-        return metadata?.rootNode ?? null;
-    });
-    const layerSizes = allFrames.map((frameData) => {
-        const metadata = editorEngine.ast.mappings.getMetadata(frameData.frame.id);
-        return metadata?.domIdToLayerNode.size ?? 0;
-    });
+    const selectionKey = allFrames
+        .map((f) => `${f.frame.id}:${f.selected ? '1' : '0'}`)
+        .join(',');
+    const layerSizesKey = allFrames
+        .map((f) => editorEngine.ast.mappings.getMetadata(f.frame.id)?.domIdToLayerNode.size ?? 0)
+        .join(',');
 
     useEffect(() => {
         const handle = setTimeout(() => setDebounced(query), DEBOUNCE_MS);
@@ -148,10 +149,16 @@ export const useSearch = (query: string, filter: SearchFilter, scope: SearchScop
             return { results: [] as SearchResult[], totalCount: 0, truncated: false };
         }
 
+        // Re-read frames inside the memo to get fresh data now that the stable
+        // keys above have changed and forced recomputation.
+        const currentFrames = editorEngine.frames.getAll();
+        const selectedIds = new Set(
+            currentFrames.filter((f) => f.selected).map((f) => f.frame.id),
+        );
         const frames =
             scope === 'frame'
-                ? allFrames.filter((frameData) => selectedFrameIds.includes(frameData.frame.id))
-                : allFrames;
+                ? currentFrames.filter((f) => selectedIds.has(f.frame.id))
+                : currentFrames;
 
         const out: (SearchResult & { seqIndex: number })[] = [];
         let total = 0;
@@ -163,9 +170,12 @@ export const useSearch = (query: string, filter: SearchFilter, scope: SearchScop
             if (!root) continue;
 
             const frameName = frameDisplayName(frameData.frame.url, 'Frame');
+            // pop() gives O(1) DFS instead of shift()'s O(n) BFS. Results are
+            // sorted by relevance afterward so traversal order doesn't affect
+            // quality; it only influences which items fill MAX_RESULTS.
             const stack: LayerNode[] = [root];
             while (stack.length) {
-                const node = stack.shift()!;
+                const node = stack.pop()!;
                 const m = matchLayer(node, debounced, filter);
                 if (m) {
                     total++;
@@ -192,7 +202,10 @@ export const useSearch = (query: string, filter: SearchFilter, scope: SearchScop
         out.sort(smartSortComparator(debounced));
         const stripped: SearchResult[] = out.map(({ seqIndex: _seq, ...r }) => r);
         return { results: stripped, totalCount: total, truncated: total > MAX_RESULTS };
-    }, [allFrames, debounced, editorEngine, filter, layerRoots, layerSizes, scope, selectedFrameIds]);
+        // layerSizesKey / selectionKey are the MobX-change signals; editorEngine
+        // is a stable ref used for fresh reads inside the memo.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [debounced, editorEngine, filter, layerSizesKey, scope, selectionKey]);
 
     useEffect(() => {
         setActiveIndex(0);

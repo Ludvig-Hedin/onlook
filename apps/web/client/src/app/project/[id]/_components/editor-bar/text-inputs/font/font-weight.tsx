@@ -48,8 +48,8 @@ export const FontWeightSelector = observer(
                         <DropdownMenuItem
                             key={weight.value}
                             onClick={() => handleFontWeightChange(weight.value)}
-                            className={`text-muted-foreground data-[highlighted]:bg-background-tertiary/10 border-border/0 data-[highlighted]:border-border flex items-center justify-between rounded-md border px-2 py-1.5 text-sm data-[highlighted]:text-white cursor-pointer transition-colors duration-150 hover:bg-background-tertiary/20 hover:text-foreground ${textState.fontWeight === weight.value
-                                ? 'bg-background-tertiary/20 border-border border text-white'
+                            className={`text-muted-foreground data-[highlighted]:bg-background-tertiary/10 border-border/0 data-[highlighted]:border-border flex items-center justify-between rounded-md border px-2 py-1.5 text-sm data-[highlighted]:text-foreground cursor-pointer transition-colors duration-150 hover:bg-background-tertiary/20 hover:text-foreground ${textState.fontWeight === weight.value
+                                ? 'bg-background-tertiary/20 border-border border text-foreground'
                                 : ''
                                 }`}
                         >

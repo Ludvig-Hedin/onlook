@@ -24,7 +24,7 @@ export const ToolbarButton = forwardRef<HTMLButtonElement, ToolbarButtonProps>(
             // Hover styles
             'hover:bg-background-tertiary/20',
             'hover:border-border',
-            'hover:text-white',
+            'hover:text-foreground',
         ];
 
         const focusClasses = enableFocusStyles ? [
@@ -34,7 +34,7 @@ export const ToolbarButton = forwardRef<HTMLButtonElement, ToolbarButtonProps>(
             'focus:outline-none',
             'focus-within:bg-background-tertiary/20',
             'focus-within:border-border',
-            'focus-within:text-white',
+            'focus-within:text-foreground',
             'focus-visible:ring-0',
             'focus-visible:ring-offset-0',
         ] : [];
@@ -42,7 +42,7 @@ export const ToolbarButton = forwardRef<HTMLButtonElement, ToolbarButtonProps>(
         const openClasses = isOpen ? [
             'bg-background-tertiary/20',
             'border-border',
-            'text-white'
+            'text-foreground'
         ] : [];
 
         const allClasses = cn(

@@ -65,7 +65,7 @@ export const TextAlignSelector = observer(
                             key={value}
                             onClick={() => handleTextAlignChange(value)}
                             className={`text-muted-foreground data-[highlighted]:bg-background-tertiary/10 border-border/0 data-[highlighted]:border-border rounded-md border px-2 py-1.5 data-[highlighted]:text-foreground cursor-pointer transition-colors duration-150 hover:bg-background-tertiary/20 hover:text-foreground ${textState.textAlign === value
-                                ? 'bg-background-tertiary/20 border-border border text-white'
+                                ? 'bg-background-tertiary/20 border-border border text-foreground'
                                 : ''
                                 }`}
                         >
