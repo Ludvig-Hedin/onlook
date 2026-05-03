@@ -1,4 +1,4 @@
-const { app, BrowserWindow, shell, Menu, ipcMain } = require('electron');
+const { app, BrowserWindow, shell, Menu, ipcMain, session } = require('electron');
 const { autoUpdater } = require('electron-updater');
 const path = require('path');
 
@@ -7,15 +7,106 @@ const APP_DOMAIN = process.env.NEXT_PUBLIC_APP_DOMAIN || 'weblab.build';
 const APP_URL = process.env.NEXT_PUBLIC_SITE_URL || `https://${APP_DOMAIN}`;
 const APP_ORIGIN = new URL(APP_URL).origin;
 
-ipcMain.on('onlook:get-version', (event) => {
-    event.returnValue = app.getVersion();
-});
+// Custom URL scheme used for OAuth deep-link callbacks: weblab://auth/callback?code=...
+const PROTOCOL = 'weblab';
+
+// OAuth provider hosts that block embedded webviews — we route these through
+// the user's default browser instead of the BrowserWindow.
+const BLOCKED_OAUTH_HOSTS = new Set([
+    'accounts.google.com',
+    'appleid.apple.com',
+]);
+
 const WINDOW_WIDTH = 1400;
 const WINDOW_HEIGHT = 900;
 
 let mainWindow;
 
-function createWindow() {
+ipcMain.on('onlook:get-version', (event) => {
+    event.returnValue = app.getVersion();
+});
+
+// Renderer can ask the main process to open an OAuth URL in the system browser.
+ipcMain.handle('weblab:open-oauth', async (_event, url) => {
+    try {
+        const parsed = new URL(url);
+        if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') return false;
+        await shell.openExternal(url);
+        return true;
+    } catch {
+        return false;
+    }
+});
+
+// --- Single-instance + custom protocol registration ---------------------------
+// On Windows / Linux, deep links come in as command-line arguments to a second
+// instance of the app, so we need a single-instance lock and forward URLs.
+const gotLock = app.requestSingleInstanceLock();
+if (!gotLock) {
+    app.quit();
+} else {
+    app.on('second-instance', (_event, argv) => {
+        const url = argv.find((a) => a.startsWith(`${PROTOCOL}://`));
+        if (url) handleDeepLink(url);
+        if (mainWindow) {
+            if (mainWindow.isMinimized()) mainWindow.restore();
+            mainWindow.focus();
+        }
+    });
+}
+
+if (process.defaultApp) {
+    if (process.argv.length >= 2) {
+        app.setAsDefaultProtocolClient(PROTOCOL, process.execPath, [
+            path.resolve(process.argv[1]),
+        ]);
+    }
+} else {
+    app.setAsDefaultProtocolClient(PROTOCOL);
+}
+
+// macOS delivers deep links via this event.
+app.on('open-url', (event, url) => {
+    event.preventDefault();
+    handleDeepLink(url);
+});
+
+/**
+ * Convert `weblab://auth/callback?code=...` into
+ * `https://weblab.build/auth/callback?code=...&native=1` and load it inside
+ * the BrowserWindow. The existing server-side `/auth/callback` handler then
+ * exchanges the code for a session — using the PKCE code_verifier cookie that
+ * is already in this WebContents' cookie jar — and sets the session cookies
+ * here, where they persist.
+ */
+function handleDeepLink(rawUrl) {
+    let parsed;
+    try {
+        parsed = new URL(rawUrl);
+    } catch {
+        return;
+    }
+    if (parsed.protocol !== `${PROTOCOL}:`) return;
+
+    // weblab://auth/callback → /auth/callback
+    // For weblab:// URLs, the "host" is actually the first path segment.
+    const pathname = `/${parsed.host}${parsed.pathname}`.replace(/\/+/g, '/');
+    const target = new URL(pathname, APP_URL);
+    parsed.searchParams.forEach((value, key) => {
+        target.searchParams.set(key, value);
+    });
+    target.searchParams.set('native', '1');
+
+    if (!mainWindow) {
+        createWindow(target.toString());
+    } else {
+        mainWindow.loadURL(target.toString());
+        if (mainWindow.isMinimized()) mainWindow.restore();
+        mainWindow.focus();
+    }
+}
+
+function createWindow(initialURL) {
     mainWindow = new BrowserWindow({
         width: WINDOW_WIDTH,
         height: WINDOW_HEIGHT,
@@ -26,28 +117,51 @@ function createWindow() {
             preload: path.join(__dirname, 'preload.js'),
             nodeIntegration: false,
             contextIsolation: true,
+            // Use a partition so cookies persist across launches under a
+            // predictable name. (Default would also persist, but being
+            // explicit makes the intent clear.)
+            partition: 'persist:weblab',
         },
         icon: path.join(__dirname, 'assets', 'icon.png'),
         show: false,
     });
 
-    mainWindow.loadURL(APP_URL);
+    mainWindow.loadURL(initialURL || APP_URL);
 
     mainWindow.once('ready-to-show', () => {
         mainWindow.show();
     });
 
-    // Open external links in the system browser
+    // Open external links in the system browser. Also: if the WebContents
+    // tries to navigate to a known-blocked OAuth provider, route through
+    // the system browser so OAuth actually completes.
     mainWindow.webContents.setWindowOpenHandler(({ url }) => {
         try {
-            if (new URL(url).origin === APP_ORIGIN) {
+            const parsed = new URL(url);
+            if (parsed.origin === APP_ORIGIN) {
                 return { action: 'allow' };
+            }
+            if (BLOCKED_OAUTH_HOSTS.has(parsed.host)) {
+                shell.openExternal(url);
+                return { action: 'deny' };
             }
         } catch {
             // Invalid URL — fall through to deny.
         }
         shell.openExternal(url);
         return { action: 'deny' };
+    });
+
+    mainWindow.webContents.on('will-navigate', (event, url) => {
+        try {
+            const parsed = new URL(url);
+            if (BLOCKED_OAUTH_HOSTS.has(parsed.host)) {
+                event.preventDefault();
+                shell.openExternal(url);
+            }
+        } catch {
+            // ignore
+        }
     });
 
     mainWindow.on('closed', () => {
@@ -118,7 +232,15 @@ function buildMenu() {
 app.whenReady().then(() => {
     app.setName(APP_NAME);
     buildMenu();
-    createWindow();
+
+    // Pick up a deep link that launched the app on Windows/Linux.
+    const launchUrl = process.argv.find((a) => a.startsWith(`${PROTOCOL}://`));
+    if (launchUrl) {
+        handleDeepLink(launchUrl);
+    } else {
+        createWindow();
+    }
+
     autoUpdater.checkForUpdatesAndNotify();
 
     app.on('activate', () => {
