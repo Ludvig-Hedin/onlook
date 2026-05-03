@@ -563,18 +563,18 @@ export const SelectProject = ({
                             suggestions={PROJECT_SUGGESTIONS}
                         />
                         <div className="flex w-[600px] max-w-full items-center gap-3">
-                            <div className="h-px flex-1 bg-white/10" />
+                            <div className="h-px flex-1 bg-foreground/10" />
                             <span className="text-foreground-tertiary text-xs uppercase tracking-[0.2em]">
                                 or
                             </span>
-                            <div className="h-px flex-1 bg-white/10" />
+                            <div className="h-px flex-1 bg-foreground/10" />
                         </div>
                         <div className="flex flex-wrap justify-center gap-2">
                             <Button
                                 onClick={() => void handleStartBlankProject()}
                                 disabled={isCreatingProject || isImporting || isAiCreating}
                                 variant="outline"
-                                className="border-white/10 bg-white/4 hover:bg-white/8"
+                                className="border-foreground/10 bg-foreground/4 hover:bg-foreground/8"
                             >
                                 {isCreatingProject ? (
                                     <Icons.LoadingSpinner className="h-4 w-4 animate-spin" />
@@ -587,7 +587,7 @@ export const SelectProject = ({
                                 onClick={() => void handleImportLocalProject()}
                                 disabled={isCreatingProject || isImporting || isAiCreating}
                                 variant="outline"
-                                className="border-white/10 bg-white/4 hover:bg-white/8"
+                                className="border-foreground/10 bg-foreground/4 hover:bg-foreground/8"
                             >
                                 {isImporting ? (
                                     <Icons.LoadingSpinner className="h-4 w-4 animate-spin" />
@@ -651,7 +651,7 @@ export const SelectProject = ({
                             <Button
                                 variant="outline"
                                 size="sm"
-                                className="border-white/10 bg-white/4 hover:bg-white/8"
+                                className="border-foreground/10 bg-foreground/4 hover:bg-foreground/8"
                                 onClick={() => setShowCreateFolderDialog(true)}
                             >
                                 <Icons.MoveToFolder className="h-4 w-4" />
@@ -661,7 +661,7 @@ export const SelectProject = ({
                             <Button
                                 variant="ghost"
                                 size="sm"
-                                className={`border ${selectionMode ? 'text-foreground border-white/14 bg-white/10' : 'text-foreground-tertiary hover:text-foreground border-transparent hover:border-white/10 hover:bg-white/6'}`}
+                                className={`border ${selectionMode ? 'text-foreground border-foreground/14 bg-foreground/10' : 'text-foreground-tertiary hover:text-foreground border-transparent hover:border-foreground/10 hover:bg-foreground/6'}`}
                                 onClick={() => {
                                     if (selectionMode) {
                                         resetSelection();
@@ -674,14 +674,14 @@ export const SelectProject = ({
                                 {selectionMode ? 'Done selecting' : 'Select'}
                             </Button>
 
-                            <div className="flex items-center gap-1 rounded-full border border-white/8 bg-white/4 p-1">
+                            <div className="flex items-center gap-1 rounded-full border border-foreground/8 bg-foreground/4 p-1">
                                 {sortOptions.map((option) => (
                                     <button
                                         key={option.value}
                                         onClick={() => setFilesSortBy(option.value)}
                                         className={`rounded-full px-3 py-1.5 text-xs transition-colors ${
                                             filesSortBy === option.value
-                                                ? 'text-foreground bg-white/12'
+                                                ? 'text-foreground bg-foreground/12'
                                                 : 'text-foreground-tertiary hover:text-foreground'
                                         }`}
                                     >
@@ -693,9 +693,9 @@ export const SelectProject = ({
                     </div>
 
                     {selectionMode && (
-                        <div className="flex flex-col gap-3 rounded-[22px] border border-white/8 bg-white/4 p-4 backdrop-blur-xl lg:flex-row lg:items-center lg:justify-between">
+                        <div className="flex flex-col gap-3 rounded-[22px] border border-foreground/8 bg-foreground/4 p-4 backdrop-blur-xl lg:flex-row lg:items-center lg:justify-between">
                             <div className="text-foreground-secondary flex items-center gap-2 text-sm">
-                                <span className="text-foreground rounded-full border border-white/8 bg-white/8 px-2.5 py-1 text-xs">
+                                <span className="text-foreground rounded-full border border-foreground/8 bg-foreground/8 px-2.5 py-1 text-xs">
                                     {selectedCount}
                                 </span>
                                 {selectedCount === 1 ? 'project selected' : 'projects selected'}
@@ -707,7 +707,7 @@ export const SelectProject = ({
                                         <Button
                                             variant="outline"
                                             size="sm"
-                                            className="border-white/10 bg-white/4 hover:bg-white/8"
+                                            className="border-foreground/10 bg-foreground/4 hover:bg-foreground/8"
                                             disabled={selectedCount === 0}
                                         >
                                             <Icons.MoveToFolder className="h-4 w-4" />
@@ -788,7 +788,7 @@ export const SelectProject = ({
                         </motion.div>
 
                         {openFolder && (
-                            <div className="mt-6 rounded-[28px] border border-white/8 bg-white/3 p-5 backdrop-blur-xl">
+                            <div className="mt-6 rounded-[28px] border border-foreground/8 bg-foreground/3 p-5 backdrop-blur-xl">
                                 <div className="mb-4 flex items-center justify-between">
                                     <div>
                                         <h4 className="text-foreground text-base font-medium">
@@ -824,7 +824,7 @@ export const SelectProject = ({
                                         </AnimatePresence>
                                     </motion.div>
                                 ) : (
-                                    <div className="text-foreground-tertiary flex flex-col items-start gap-3 rounded-[22px] border border-dashed border-white/10 bg-black/10 p-6 text-sm">
+                                    <div className="text-foreground-tertiary flex flex-col items-start gap-3 rounded-[22px] border border-dashed border-foreground/10 bg-foreground/5 p-6 text-sm">
                                         <span>
                                             No projects in this folder match your search yet.
                                         </span>
@@ -832,7 +832,7 @@ export const SelectProject = ({
                                             <Button
                                                 variant="outline"
                                                 size="sm"
-                                                className="border-white/10 bg-white/4 hover:bg-white/8"
+                                                className="border-foreground/10 bg-foreground/4 hover:bg-foreground/8"
                                                 onClick={() => onClearSearch()}
                                             >
                                                 Clear search
@@ -862,7 +862,7 @@ export const SelectProject = ({
                     </div>
 
                     {looseProjects.length === 0 ? (
-                        <div className="flex w-full items-center justify-center rounded-[26px] border border-dashed border-white/8 bg-white/3 py-16">
+                        <div className="flex w-full items-center justify-center rounded-[26px] border border-dashed border-foreground/8 bg-foreground/3 py-16">
                             <div className="flex flex-col items-center gap-3 text-center">
                                 <div className="text-foreground-secondary text-base">
                                     No loose projects found
@@ -876,7 +876,7 @@ export const SelectProject = ({
                                     <Button
                                         variant="outline"
                                         size="sm"
-                                        className="border-white/10 bg-white/4 hover:bg-white/8"
+                                        className="border-foreground/10 bg-foreground/4 hover:bg-foreground/8"
                                         onClick={() => onClearSearch()}
                                     >
                                         Clear search

@@ -4,11 +4,11 @@ import Link from 'next/link';
 
 export default function AuthCodeErrorPage() {
     return (
-        <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-black via-zinc-950 to-zinc-900 px-6">
-            <div className="w-full max-w-md rounded-2xl border border-white/10 bg-zinc-950/80 p-8 text-center shadow-2xl">
-                <p className="text-sm uppercase tracking-[0.2em] text-zinc-400">Authentication error</p>
-                <h1 className="mt-3 text-3xl font-semibold text-white">We could not finish sign in</h1>
-                <p className="mt-4 text-sm leading-6 text-zinc-300">
+        <div className="flex min-h-screen items-center justify-center bg-background px-6">
+            <div className="w-full max-w-md rounded-2xl border border-border bg-card p-8 text-center shadow-2xl">
+                <p className="text-sm uppercase tracking-[0.2em] text-foreground-tertiary">Authentication error</p>
+                <h1 className="mt-3 text-3xl font-semibold text-foreground">We could not finish sign in</h1>
+                <p className="mt-4 text-sm leading-6 text-foreground-secondary">
                     The OAuth callback failed. Check that your Railway URL is set in Supabase,
                     and that the callback URL is allowed in your Supabase Auth redirect settings.
                 </p>

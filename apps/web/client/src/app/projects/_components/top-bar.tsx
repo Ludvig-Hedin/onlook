@@ -8,6 +8,7 @@ import { motion } from 'motion/react';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
+import { BrandLogo } from '@onlook/ui/brand';
 import { DEFAULT_NEW_PROJECT_TEMPLATE } from '@onlook/constants';
 import { Button } from '@onlook/ui/button';
 import {
@@ -170,7 +171,7 @@ export const TopBar = ({ searchQuery, onSearchChange }: TopBarProps) => {
     return (
         <div className="text-small text-foreground-secondary mx-auto flex w-full max-w-6xl items-center justify-between gap-6 p-4">
             <Link href={Routes.HOME} className="mt-0 flex items-center justify-start py-3">
-                <Icons.OnlookTextLogo className="w-24" />
+                <BrandLogo className="h-4" />
             </Link>
 
             {typeof onSearchChange === 'function' ? (

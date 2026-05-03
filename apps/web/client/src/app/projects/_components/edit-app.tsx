@@ -44,10 +44,10 @@ export const EditAppButton = observer(({ project, onClick, ...props }: EditAppBu
     return (
         <ButtonMotion
             size="default"
-            className={cn('gap-2 border border-gray-300 w-auto cursor-pointer',
+            className={cn('gap-2 border border-border w-auto cursor-pointer',
                 isLoading
-                    ? 'bg-gray-200 text-gray-800'
-                    : 'bg-white text-black hover:bg-gray-100'
+                    ? 'bg-background-secondary text-foreground-secondary'
+                    : 'bg-background text-foreground hover:bg-background-secondary'
             )}
             {...props}
 

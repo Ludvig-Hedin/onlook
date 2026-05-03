@@ -30,7 +30,7 @@ export const ConnectGithub = () => {
                 <div className="p-3">{icon}</div>
                 <div className="flex flex-col w-full">
                     <p className="font-medium">{title}</p>
-                    <p className="text-gray-200">{description}</p>
+                    <p className="text-foreground-secondary">{description}</p>
                 </div>
             </div>
         );
@@ -40,11 +40,11 @@ export const ConnectGithub = () => {
         <>
             <StepHeader>
                 <div className="flex items-center gap-3">
-                    <div className="p-3 bg-gray-700 rounded-lg">
-                        <Icons.OnlookLogo className="w-6 h-6" />
+                    <div className="p-3 bg-background-tertiary rounded-lg">
+                        <Icons.WeblabLogo className="w-6 h-6" />
                     </div>
                     <Icons.DotsHorizontal className="w-6 h-6" />
-                    <div className="p-3 bg-gray-700 rounded-lg">
+                    <div className="p-3 bg-background-tertiary rounded-lg">
                         <Icons.GitHubLogo className="w-6 h-6" />
                     </div>
                 </div>

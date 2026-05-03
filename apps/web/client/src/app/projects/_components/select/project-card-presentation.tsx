@@ -166,7 +166,7 @@ export function ProjectCardPresentation({
                         <Button
                             size="default"
                             onClick={handleEdit}
-                            className="gap-2 border border-gray-300 w-auto cursor-pointer bg-white text-black hover:bg-gray-100"
+                            className="gap-2 border border-border w-auto cursor-pointer bg-background text-foreground hover:bg-background-secondary"
                         >
                             <Icons.PencilPaper />
                             <p>Edit App</p>

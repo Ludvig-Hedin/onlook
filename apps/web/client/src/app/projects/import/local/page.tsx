@@ -2,6 +2,7 @@
 
 import { useGetBackground } from '@/hooks/use-get-background';
 import { Routes } from '@/utils/constants';
+import { BrandLogo } from '@onlook/ui/brand';
 import { Icons } from '@onlook/ui/icons';
 import { MotionCard } from '@onlook/ui/motion-card';
 import { AnimatePresence, motion, MotionConfig } from 'motion/react';
@@ -39,7 +40,7 @@ const Page = () => {
         >
             <div className="flex items-center justify-between px-12 py-4">
                 <Link href={Routes.HOME}>
-                    <Icons.OnlookTextLogo className="h-3" />
+                    <BrandLogo className="h-4" />
                 </Link>
                 <CancelButton />
             </div>

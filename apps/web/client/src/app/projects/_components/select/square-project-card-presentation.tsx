@@ -67,7 +67,7 @@ export function SquareProjectCardPresentation({
                                 e.stopPropagation();
                                 handleClick();
                             }}
-                            className="gap-2 border border-gray-300 w-auto cursor-pointer bg-white text-black hover:bg-gray-100 px-4 py-2 rounded"
+                            className="gap-2 border border-border w-auto cursor-pointer bg-background text-foreground hover:bg-background-secondary px-4 py-2 rounded"
                         >
                             ✏️ Edit
                         </button>

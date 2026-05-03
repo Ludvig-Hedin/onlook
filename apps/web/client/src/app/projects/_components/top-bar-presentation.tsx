@@ -10,6 +10,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@onlook/ui/dropdown-menu';
+import { BrandLogo } from '@onlook/ui/brand';
 import { Icons } from '@onlook/ui/icons';
 import { Input } from '@onlook/ui/input';
 import { cn } from '@onlook/ui/utils';
@@ -88,7 +89,7 @@ export const TopBarPresentation = ({
     return (
         <div className="w-full max-w-6xl mx-auto flex items-center justify-between p-4 text-small text-foreground-secondary gap-6">
             <Link href={homeRoute} className="flex items-center justify-start mt-0 py-3">
-                <Icons.OnlookTextLogo className="w-24" viewBox="0 0 139 17" />
+                <BrandLogo className="h-4" />
             </Link>
 
             {typeof onSearchChange === 'function' ? (

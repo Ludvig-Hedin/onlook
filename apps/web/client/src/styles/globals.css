@@ -16,3 +16,24 @@ body {
 .top-bar {
     view-transition-name: top-bar;
 }
+
+/* ── Appearance system ──────────────────────────────────────────────── */
+
+/* Accent colors */
+[data-accent='blue']    { --accent: oklch(0.623 0.214 255); --accent-foreground: oklch(1 0 0); }
+[data-accent='red']     { --accent: oklch(0.637 0.237 25.3); --accent-foreground: oklch(1 0 0); }
+[data-accent='green']   { --accent: oklch(0.723 0.19 142.5); --accent-foreground: oklch(1 0 0); }
+[data-accent='neutral'] { --accent: oklch(0.556 0 0); --accent-foreground: oklch(1 0 0); }
+
+/* UI density */
+[data-density='compact']     { --spacing-unit: 0.75; }
+[data-density='comfortable'] { --spacing-unit: 1; }
+
+/* Font size */
+html[data-font-size='small']  { font-size: 13px; }
+html[data-font-size='medium'] { font-size: 14px; }
+html[data-font-size='large']  { font-size: 16px; }
+
+/* Font family */
+html[data-font-family='sans']  { font-family: var(--font-sans, ui-sans-serif, system-ui, sans-serif); }
+html[data-font-family='serif'] { font-family: Georgia, 'Times New Roman', serif; }
