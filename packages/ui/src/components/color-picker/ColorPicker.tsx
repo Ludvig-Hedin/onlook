@@ -1,8 +1,10 @@
-import styled from '@emotion/styled';
-import { Color, mod } from '@onlook/utility';
 import type React from 'react';
 import { useCallback, useEffect, useState } from 'react';
+import styled from '@emotion/styled';
 import tw from 'tailwind-styled-components';
+
+import { Color, mod } from '@onlook/utility';
+
 import { cn } from '../../utils';
 import { DraftableInput } from '../draftable-input';
 import { InputGroup } from '../input-group';
@@ -17,188 +19,220 @@ const Input = tw(DraftableInput)`
 type SliderMode = 'hsl' | 'hsv' | 'rgb' | 'hex';
 
 const InputsRow = ({
-  color,
-  onChangeEnd,
-  onChange
+    color,
+    onChangeEnd,
+    onChange,
+}: {
+    color: Color;
+    onChangeEnd?: (color: Color) => void;
+    onChange?: (color: Color) => void;
+}) => {
+    const [mode, setMode] = useState<SliderMode>('hex');
 
+    const rgbColor = color.rgb;
+    const hslColor = color.hsl;
 
-
-
-}: {color: Color;onChangeEnd?: (color: Color) => void;onChange?: (color: Color) => void;}) => {
-  const [mode, setMode] = useState<SliderMode>('hex');
-
-  const rgbColor = color.rgb;
-  const hslColor = color.hsl;
-
-  return (
-    <div className="z-50 grid grid-cols-[48px_1fr_1fr_1fr_46px] gap-1 text-mini" data-oid="058888a75d">
-            <div className="flex items-center justify-center gap-1 min-w-0 " data-oid="6d584b467d">
+    return (
+        <div
+            className="text-mini z-50 grid grid-cols-[48px_1fr_1fr_1fr_46px] gap-1"
+            data-oid="058888a75d"
+        >
+            <div className="flex min-w-0 items-center justify-center gap-1" data-oid="6d584b467d">
                 <label
-          className="text-small text-foreground-primary cursor-pointer hover:text-foreground-hover bg-background-secondary border-[0.5px] border-foreground-tertiary/50 hover:bg-background-hover w-full flex rounded-sm justify-center py-[0.5px] select-none"
-          onClick={() =>
-          mode === 'hsl' ?
-          setMode('hsv') :
-          mode === 'hsv' ?
-          setMode('rgb') :
-          mode === 'rgb' ?
-          setMode('hex') :
-          setMode('hsl')
-          } data-oid="ba20677736">
-          
+                    className="text-small text-foreground-primary hover:text-foreground-hover bg-background-secondary border-foreground-tertiary/50 hover:bg-background-hover flex w-full cursor-pointer justify-center rounded-sm border-[0.5px] py-[0.5px] select-none"
+                    onClick={() =>
+                        mode === 'hsl'
+                            ? setMode('hsv')
+                            : mode === 'hsv'
+                              ? setMode('rgb')
+                              : mode === 'rgb'
+                                ? setMode('hex')
+                                : setMode('hsl')
+                    }
+                    data-oid="ba20677736"
+                >
                     {mode.toUpperCase()}
                 </label>
             </div>
-            {mode === 'hsl' ?
-      <InputGroup className="grid grid-cols-subgrid col-span-3 gap-[1px]" data-oid="0982f04eaf">
+            {mode === 'hsl' ? (
+                <InputGroup
+                    className="col-span-3 grid grid-cols-subgrid gap-[1px]"
+                    data-oid="0982f04eaf"
+                >
                     <Input
-          value={Math.round(hslColor['h'] * 100).toString()}
-          onChangeValue={(valueString) => {
-            const value = mod(Number.parseInt(valueString) / 100, 1);
-            const newColor = Color.hsl({
-              ...hslColor,
-              h: value
-            });
-            onChangeEnd?.(newColor);
-            onChange?.(newColor);
-            return true;
-          }} data-oid="09dc95f6f0" />
-        
-                    <Input
-          value={Math.round(hslColor['s'] * 100).toString()}
-          onChangeValue={(valueString) => {
-            const value = mod(Number.parseInt(valueString) / 100, 1);
-            const newColor = Color.hsl({
-              ...hslColor,
-              s: value
-            });
-            onChangeEnd?.(newColor);
-            onChange?.(newColor);
-            return true;
-          }} data-oid="a8abc170ce" />
-        
-                    <Input
-          value={Math.round(hslColor['l'] * 100).toString()}
-          onChangeValue={(valueString) => {
-            const value = mod(Number.parseInt(valueString) / 100, 1);
-            const newColor = Color.hsl({
-              ...hslColor,
-              l: value
-            });
-            onChangeEnd?.(newColor);
-            onChange?.(newColor);
-            return true;
-          }} data-oid="6d531da511" />
-        
-                </InputGroup> :
-      mode === 'hsv' ?
-      <InputGroup className="grid grid-cols-subgrid col-span-3 gap-[1px]" data-oid="91b8e6afa7">
-                    <Input
-          value={Math.round(color.h * 360).toString()}
-          onChangeValue={(hString) => {
-            const h = mod(Number.parseInt(hString) / 360, 1);
-            const newColor = new Color({ ...color, h });
-            onChangeEnd?.(newColor);
-            onChange?.(newColor);
-            return true;
-          }} data-oid="378d4f0327" />
-        
-                    <Input
-          value={Math.round(color['s'] * 100).toString()}
-          onChangeValue={(valueString) => {
-            const value = mod(Number.parseInt(valueString) / 100, 1);
-            const newColor = new Color({ ...color, s: value });
-            onChangeEnd?.(newColor);
-            onChange?.(newColor);
-            return true;
-          }} data-oid="4b43c14aa9" />
-        
-                    <Input
-          value={Math.round(color['v'] * 100).toString()}
-          onChangeValue={(valueString) => {
-            const value = mod(Number.parseInt(valueString) / 100, 1);
-            const newColor = new Color({ ...color, v: value });
-            onChangeEnd?.(newColor);
-            onChange?.(newColor);
-            return true;
-          }} data-oid="db6dd20ec0" />
-        
-                </InputGroup> :
-      mode === 'rgb' ?
-      <InputGroup className="grid grid-cols-subgrid col-span-3 gap-[1px]" data-oid="c4f16fa517">
-                    <Input
-          value={Math.round(rgbColor['r'] * 255).toString()}
-          onChangeValue={(valueString) => {
-            const value = mod(Number.parseInt(valueString) / 255, 1);
-            const newColor = Color.rgb({
-              ...rgbColor,
-              r: value
-            });
-            onChangeEnd?.(newColor);
-            onChange?.(newColor);
-            return true;
-          }} data-oid="289adcafe7" />
-        
-                    <Input
-          value={Math.round(rgbColor['g'] * 255).toString()}
-          onChangeValue={(valueString) => {
-            const value = mod(Number.parseInt(valueString) / 255, 1);
-            const newColor = Color.rgb({
-              ...rgbColor,
-              g: value
-            });
-            onChangeEnd?.(newColor);
-            onChange?.(newColor);
-            return true;
-          }} data-oid="eb69d7151c" />
-        
-                    <Input
-          value={Math.round(rgbColor['b'] * 255).toString()}
-          onChangeValue={(valueString) => {
-            const value = mod(Number.parseInt(valueString) / 255, 1);
-            const newColor = Color.rgb({
-              ...rgbColor,
-              b: value
-            });
-            onChangeEnd?.(newColor);
-            onChange?.(newColor);
-            return true;
-          }} data-oid="09bdb4ff6d" />
-        
-                </InputGroup> :
+                        value={Math.round(hslColor.h * 100).toString()}
+                        onChangeValue={(valueString) => {
+                            const value = mod(Number.parseInt(valueString) / 100, 1);
+                            const newColor = Color.hsl({
+                                ...hslColor,
+                                h: value,
+                            });
+                            onChangeEnd?.(newColor);
+                            onChange?.(newColor);
+                            return true;
+                        }}
+                        data-oid="09dc95f6f0"
+                    />
 
-      <InputGroup className="col-span-3" data-oid="96965f6311">
                     <Input
-          value={color.toHex6()}
-          onChangeValue={(hexString) => {
-            const newColor = Color.from(hexString);
-            onChange?.(newColor);
-            onChangeEnd?.(newColor);
-            return true;
-          }} data-oid="e166519f24" />
-        
+                        value={Math.round(hslColor.s * 100).toString()}
+                        onChangeValue={(valueString) => {
+                            const value = mod(Number.parseInt(valueString) / 100, 1);
+                            const newColor = Color.hsl({
+                                ...hslColor,
+                                s: value,
+                            });
+                            onChangeEnd?.(newColor);
+                            onChange?.(newColor);
+                            return true;
+                        }}
+                        data-oid="a8abc170ce"
+                    />
+
+                    <Input
+                        value={Math.round(hslColor.l * 100).toString()}
+                        onChangeValue={(valueString) => {
+                            const value = mod(Number.parseInt(valueString) / 100, 1);
+                            const newColor = Color.hsl({
+                                ...hslColor,
+                                l: value,
+                            });
+                            onChangeEnd?.(newColor);
+                            onChange?.(newColor);
+                            return true;
+                        }}
+                        data-oid="6d531da511"
+                    />
                 </InputGroup>
-      }
+            ) : mode === 'hsv' ? (
+                <InputGroup
+                    className="col-span-3 grid grid-cols-subgrid gap-[1px]"
+                    data-oid="91b8e6afa7"
+                >
+                    <Input
+                        value={Math.round(color.h * 360).toString()}
+                        onChangeValue={(hString) => {
+                            const h = mod(Number.parseInt(hString) / 360, 1);
+                            const newColor = new Color({ ...color, h });
+                            onChangeEnd?.(newColor);
+                            onChange?.(newColor);
+                            return true;
+                        }}
+                        data-oid="378d4f0327"
+                    />
+
+                    <Input
+                        value={Math.round(color.s * 100).toString()}
+                        onChangeValue={(valueString) => {
+                            const value = mod(Number.parseInt(valueString) / 100, 1);
+                            const newColor = new Color({ ...color, s: value });
+                            onChangeEnd?.(newColor);
+                            onChange?.(newColor);
+                            return true;
+                        }}
+                        data-oid="4b43c14aa9"
+                    />
+
+                    <Input
+                        value={Math.round(color.v * 100).toString()}
+                        onChangeValue={(valueString) => {
+                            const value = mod(Number.parseInt(valueString) / 100, 1);
+                            const newColor = new Color({ ...color, v: value });
+                            onChangeEnd?.(newColor);
+                            onChange?.(newColor);
+                            return true;
+                        }}
+                        data-oid="db6dd20ec0"
+                    />
+                </InputGroup>
+            ) : mode === 'rgb' ? (
+                <InputGroup
+                    className="col-span-3 grid grid-cols-subgrid gap-[1px]"
+                    data-oid="c4f16fa517"
+                >
+                    <Input
+                        value={Math.round(rgbColor.r * 255).toString()}
+                        onChangeValue={(valueString) => {
+                            const value = mod(Number.parseInt(valueString) / 255, 1);
+                            const newColor = Color.rgb({
+                                ...rgbColor,
+                                r: value,
+                            });
+                            onChangeEnd?.(newColor);
+                            onChange?.(newColor);
+                            return true;
+                        }}
+                        data-oid="289adcafe7"
+                    />
+
+                    <Input
+                        value={Math.round(rgbColor.g * 255).toString()}
+                        onChangeValue={(valueString) => {
+                            const value = mod(Number.parseInt(valueString) / 255, 1);
+                            const newColor = Color.rgb({
+                                ...rgbColor,
+                                g: value,
+                            });
+                            onChangeEnd?.(newColor);
+                            onChange?.(newColor);
+                            return true;
+                        }}
+                        data-oid="eb69d7151c"
+                    />
+
+                    <Input
+                        value={Math.round(rgbColor.b * 255).toString()}
+                        onChangeValue={(valueString) => {
+                            const value = mod(Number.parseInt(valueString) / 255, 1);
+                            const newColor = Color.rgb({
+                                ...rgbColor,
+                                b: value,
+                            });
+                            onChangeEnd?.(newColor);
+                            onChange?.(newColor);
+                            return true;
+                        }}
+                        data-oid="09bdb4ff6d"
+                    />
+                </InputGroup>
+            ) : (
+                <InputGroup className="col-span-3" data-oid="96965f6311">
+                    <Input
+                        value={color.toHex6()}
+                        onChangeValue={(hexString) => {
+                            const newColor = Color.from(hexString);
+                            onChange?.(newColor);
+                            onChangeEnd?.(newColor);
+                            return true;
+                        }}
+                        data-oid="e166519f24"
+                    />
+                </InputGroup>
+            )}
             <div className="relative w-full" data-oid="6e90954c26">
                 <Input
-          value={Math.round(color.a * 100).toString()}
-          onChangeValue={(aString) => {
-            const a = mod(Number.parseInt(aString.replace('%', '')) / 100, 1);
-            const newColor = new Color({ ...color, a });
-            onChangeEnd?.(newColor);
-            onChange?.(newColor);
-            return true;
-          }}
-          className="pr-3" data-oid="4a65e01bf1" />
-        
+                    value={Math.round(color.a * 100).toString()}
+                    onChangeValue={(aString) => {
+                        const a = mod(Number.parseInt(aString.replace('%', '')) / 100, 1);
+                        const newColor = new Color({ ...color, a });
+                        onChangeEnd?.(newColor);
+                        onChange?.(newColor);
+                        return true;
+                    }}
+                    className="pr-3"
+                    data-oid="4a65e01bf1"
+                />
+
                 <span
-          className="absolute right-[5px] top-1/2 transform -translate-y-1/2 text-foreground-tertiary"
-          style={{ userSelect: 'none' }} data-oid="a17da7d1f5">
-          
+                    className="text-foreground-tertiary absolute top-1/2 right-[5px] -translate-y-1/2 transform"
+                    style={{ userSelect: 'none' }}
+                    data-oid="a17da7d1f5"
+                >
                     %
                 </span>
             </div>
-        </div>);
-
+        </div>
+    );
 };
 
 const EyeDropperBox = styled.div`
@@ -221,149 +255,160 @@ const EyeDropperBox = styled.div`
 `;
 
 export const ColorPicker: React.FC<{
-  color: Color;
-  onChangeEnd?: (color: Color) => void;
-  onChange?: (color: Color) => void;
-  onMouseDown?: (color: Color) => void;
-  className?: string;
+    color: Color;
+    onChangeEnd?: (color: Color) => void;
+    onChange?: (color: Color) => void;
+    onMouseDown?: (color: Color) => void;
+    className?: string;
 }> = ({ color, onChangeEnd, onChange, onMouseDown, className }) => {
-  const [activeHue, setActiveHue] = useState(color.h);
-  const [localColor, setLocalColor] = useState(color);
+    const [activeHue, setActiveHue] = useState(color.h);
+    const [localColor, setLocalColor] = useState(color);
 
-  useEffect(() => {
-    if (color.s > 0.01) {
-      setActiveHue(color.h);
-    }
-    setLocalColor(color);
-  }, [color]);
+    useEffect(() => {
+        if (color.s > 0.01) {
+            setActiveHue(color.h);
+        }
+        setLocalColor(color);
+    }, [color]);
 
-  const handleHueChange = useCallback(
-    (h: number) => {
-      const newHue = mod(h, 1);
-      setActiveHue(newHue);
+    const handleHueChange = useCallback(
+        (h: number) => {
+            const newHue = mod(h, 1);
+            setActiveHue(newHue);
 
-      const newColor = new Color({
-        ...localColor,
-        h: newHue
-      });
+            const newColor = new Color({
+                ...localColor,
+                h: newHue,
+            });
 
-      setLocalColor(newColor);
-      onChange?.(newColor);
-    },
-    [localColor, onChange]
-  );
+            setLocalColor(newColor);
+            onChange?.(newColor);
+        },
+        [localColor, onChange],
+    );
 
-  const handleSVChange = useCallback(
-    (newColor: Color) => {
-      const updatedColor = new Color({
-        h: activeHue,
-        s: newColor.s,
-        v: newColor.v,
-        a: localColor.a
-      });
+    const handleSVChange = useCallback(
+        (newColor: Color) => {
+            const updatedColor = new Color({
+                h: activeHue,
+                s: newColor.s,
+                v: newColor.v,
+                a: localColor.a,
+            });
 
-      setLocalColor(updatedColor);
-      onChange?.(updatedColor);
-    },
-    [activeHue, localColor.a, onChange]
-  );
+            setLocalColor(updatedColor);
+            onChange?.(updatedColor);
+        },
+        [activeHue, localColor.a, onChange],
+    );
 
-  return (
-    <div className={cn('w-[224px] flex flex-col gap-1.5 p-2', className)} data-oid="62b362e8b1">
+    return (
+        <div className={cn('flex w-[224px] flex-col gap-1.5 p-2', className)} data-oid="62b362e8b1">
             <SVPicker
-        width={208}
-        height={160}
-        handleSize={16}
-        color={new Color({ ...localColor, h: activeHue, a: 1 })}
-        onChangeEnd={(newColor) => {
-          const updatedColor = new Color({
-            h: activeHue,
-            s: newColor.s,
-            v: newColor.v,
-            a: localColor.a
-          });
-          setLocalColor(updatedColor);
-          onChangeEnd?.(updatedColor);
-        }}
-        onChange={handleSVChange}
-        onMouseDown={(newColor) => {
-          const updatedColor = new Color({
-            h: activeHue,
-            s: newColor.s,
-            v: newColor.v,
-            a: localColor.a
-          });
-          setLocalColor(updatedColor);
-          onMouseDown?.(updatedColor);
-        }} data-oid="d90c394ba2" />
-      
-            <div className="z-50 flex justify-between items-center" data-oid="1f75c30fb6">
+                width={208}
+                height={160}
+                handleSize={16}
+                color={new Color({ ...localColor, h: activeHue, a: 1 })}
+                onChangeEnd={(newColor) => {
+                    const updatedColor = new Color({
+                        h: activeHue,
+                        s: newColor.s,
+                        v: newColor.v,
+                        a: localColor.a,
+                    });
+                    setLocalColor(updatedColor);
+                    onChangeEnd?.(updatedColor);
+                }}
+                onChange={handleSVChange}
+                onMouseDown={(newColor) => {
+                    const updatedColor = new Color({
+                        h: activeHue,
+                        s: newColor.s,
+                        v: newColor.v,
+                        a: localColor.a,
+                    });
+                    setLocalColor(updatedColor);
+                    onMouseDown?.(updatedColor);
+                }}
+                data-oid="d90c394ba2"
+            />
+
+            <div className="z-50 flex items-center justify-between" data-oid="1f75c30fb6">
                 <EyeDropperBox data-oid="69ea620abd">
                     <EyeDropperButton
-            onColorSelect={(newColor) => {
-              setActiveHue(newColor.h);
-              setLocalColor(newColor);
-              onChangeEnd?.(newColor);
-            }} data-oid="26b1a814f3" />
-          
+                        onColorSelect={(newColor) => {
+                            setActiveHue(newColor.h);
+                            setLocalColor(newColor);
+                            onChangeEnd?.(newColor);
+                        }}
+                        data-oid="26b1a814f3"
+                    />
                 </EyeDropperBox>
                 <div className="flex flex-col gap-1" data-oid="4102d458ae">
                     <ColorSlider
-            direction="right"
-            length={165}
-            handleSize={16}
-            railWidth={13}
-            color={new Color({ h: activeHue, s: 1, v: 1 }).toHex()}
-            colorStops={[
-            '#FF0000',
-            '#FFFF00',
-            '#00FF00',
-            '#00FFFF',
-            '#0000FF',
-            '#FF00FF',
-            '#FF0000']
-            }
-            value={activeHue}
-            onChangeEnd={(h) => {
-              setActiveHue(mod(h, 1));
-              const newColor = new Color({ ...localColor, h: mod(h, 1) });
-              setLocalColor(newColor);
-              onChangeEnd?.(newColor);
-            }}
-            onChange={handleHueChange}
-            onMouseDown={(h) => {
-              setActiveHue(mod(h, 1));
-              setLocalColor(new Color({ ...localColor, h: mod(h, 1) }));
-              onMouseDown?.(new Color({ ...localColor, h: mod(h, 1) }));
-            }} data-oid="a5f6eaa1d4" />
-          
+                        direction="right"
+                        length={165}
+                        handleSize={16}
+                        railWidth={13}
+                        color={new Color({ h: activeHue, s: 1, v: 1 }).toHex()}
+                        colorStops={[
+                            '#FF0000',
+                            '#FFFF00',
+                            '#00FF00',
+                            '#00FFFF',
+                            '#0000FF',
+                            '#FF00FF',
+                            '#FF0000',
+                        ]}
+                        value={activeHue}
+                        onChangeEnd={(h) => {
+                            setActiveHue(mod(h, 1));
+                            const newColor = new Color({ ...localColor, h: mod(h, 1) });
+                            setLocalColor(newColor);
+                            onChangeEnd?.(newColor);
+                        }}
+                        onChange={handleHueChange}
+                        onMouseDown={(h) => {
+                            setActiveHue(mod(h, 1));
+                            setLocalColor(new Color({ ...localColor, h: mod(h, 1) }));
+                            onMouseDown?.(new Color({ ...localColor, h: mod(h, 1) }));
+                        }}
+                        data-oid="a5f6eaa1d4"
+                    />
+
                     <ColorSlider
-            direction="right"
-            length={165}
-            handleSize={16}
-            railWidth={13}
-            color={new Color({ ...localColor, a: 1 }).toHex()}
-            colorStops={[
-            new Color({ ...localColor, a: 0 }).toHex(),
-            new Color({ ...localColor, a: 1 }).toHex()]
-            }
-            value={localColor.a}
-            onChangeEnd={(a) => {
-              setLocalColor(new Color({ ...localColor, a }));
-              onChangeEnd?.(new Color({ ...localColor, a }));
-            }}
-            onChange={(a) => {
-              setLocalColor(new Color({ ...localColor, a }));
-              onChange?.(new Color({ ...localColor, a }));
-            }}
-            onMouseDown={(a) => {
-              setLocalColor(new Color({ ...localColor, a }));
-              onMouseDown?.(new Color({ ...localColor, a }));
-            }} data-oid="7864f9ba8a" />
-          
+                        direction="right"
+                        length={165}
+                        handleSize={16}
+                        railWidth={13}
+                        color={new Color({ ...localColor, a: 1 }).toHex()}
+                        colorStops={[
+                            new Color({ ...localColor, a: 0 }).toHex(),
+                            new Color({ ...localColor, a: 1 }).toHex(),
+                        ]}
+                        value={localColor.a}
+                        onChangeEnd={(a) => {
+                            setLocalColor(new Color({ ...localColor, a }));
+                            onChangeEnd?.(new Color({ ...localColor, a }));
+                        }}
+                        onChange={(a) => {
+                            setLocalColor(new Color({ ...localColor, a }));
+                            onChange?.(new Color({ ...localColor, a }));
+                        }}
+                        onMouseDown={(a) => {
+                            setLocalColor(new Color({ ...localColor, a }));
+                            onMouseDown?.(new Color({ ...localColor, a }));
+                        }}
+                        data-oid="7864f9ba8a"
+                    />
                 </div>
             </div>
-            <InputsRow color={color} onChange={onChange} onChangeEnd={onChangeEnd} data-oid="6511fcc2f8" />
-        </div>);
-
+            <InputsRow
+                color={color}
+                onChange={onChange}
+                onChangeEnd={onChangeEnd}
+                data-oid="6511fcc2f8"
+            />
+        </div>
+    );
 };
