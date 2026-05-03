@@ -193,7 +193,7 @@ function getDragElement(): HTMLElement | undefined {
     if (!el) {
         return;
     }
-    return el;
+    return el as HTMLElement;
 }
 
 function cleanUpElementAfterDragging(el: HTMLElement) {

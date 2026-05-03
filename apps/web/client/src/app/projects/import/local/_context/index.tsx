@@ -9,6 +9,7 @@ import { CodeProvider, createCodeProviderClient } from '@onlook/code-provider';
 import { NEXT_JS_FILE_EXTENSIONS, SandboxTemplates, Templates } from '@onlook/constants';
 import { RouterType } from '@onlook/models';
 import { isTargetFile } from '@onlook/utility';
+import type { FrameworkId } from '@onlook/framework';
 
 import type { NextJsProjectValidation, ProcessedFile } from '@/app/projects/types';
 import { ProcessedFileType } from '@/app/projects/types';
@@ -28,6 +29,11 @@ interface ProjectCreationContextValue {
     direction: number;
     isFinalizing: boolean;
     totalSteps: number;
+
+    // Framework
+    framework: FrameworkId;
+    setFramework: (id: FrameworkId) => void;
+    isMultiFrameworkEnabled: boolean;
 
     // Actions
     error: string | null;
@@ -98,6 +104,8 @@ export const ProjectCreationProvider = ({ children, totalSteps }: ProjectCreatio
     const [error, setError] = useState<string | null>(null);
     const [direction, setDirection] = useState(0);
     const [isFinalizing, setIsFinalizing] = useState(false);
+    const [framework, setFramework] = useState<FrameworkId>('nextjs');
+    const isMultiFrameworkEnabled = process.env.NEXT_PUBLIC_MULTI_FRAMEWORK_ENABLED === 'true';
     const { data: user } = api.user.get.useQuery();
     const { mutateAsync: createProject } = api.project.create.useMutation();
     const { mutateAsync: forkSandbox } = api.sandbox.fork.useMutation();
@@ -287,6 +295,9 @@ export const ProjectCreationProvider = ({ children, totalSteps }: ProjectCreatio
         direction,
         isFinalizing,
         totalSteps,
+        framework,
+        setFramework,
+        isMultiFrameworkEnabled,
         error,
         setProjectData,
         nextStep,
