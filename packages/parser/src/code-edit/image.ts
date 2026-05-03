@@ -20,4 +20,4 @@ function writeImageToFile(action: CodeInsertImage): string | null {
     return null;
 }
 
-export function removeImageFromNode(path: NodePath<T.JSXElement>, action: CodeRemoveImage): void { }
+export function removeImageFromNode(path: NodePath<T.JSXElement>, action: CodeRemoveImage): void {}

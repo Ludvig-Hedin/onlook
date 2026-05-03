@@ -1,6 +1,8 @@
 import { describe, expect, test } from 'bun:test';
+
 import { RouterType } from '@onlook/models';
 
+import type { ProjectFile } from '../src';
 import {
     astroAdapter,
     DEFAULT_FRAMEWORK_ADAPTER,
@@ -13,10 +15,12 @@ import {
     staticHtmlAdapter,
     tanstackStartAdapter,
     viteReactAdapter,
-    type ProjectFile,
 } from '../src';
 
-function packageJson(deps: Record<string, string>, devDeps: Record<string, string> = {}): ProjectFile {
+function packageJson(
+    deps: Record<string, string>,
+    devDeps: Record<string, string> = {},
+): ProjectFile {
     return {
         path: 'package.json',
         content: JSON.stringify({ dependencies: deps, devDependencies: devDeps }),
@@ -67,7 +71,9 @@ describe('nextjsAdapter.validate', () => {
     });
 
     test('rejects when react is missing', async () => {
-        const result = await nextjsAdapter.validate([packageJson({ next: '15', tailwindcss: '3' })]);
+        const result = await nextjsAdapter.validate([
+            packageJson({ next: '15', tailwindcss: '3' }),
+        ]);
         expect(result.isValid).toBe(false);
     });
 
@@ -113,9 +119,7 @@ describe('viteReactAdapter.validate', () => {
     });
 
     test('rejects without index.html', async () => {
-        const result = await viteReactAdapter.validate([
-            packageJson({ vite: '5', react: '19' }),
-        ]);
+        const result = await viteReactAdapter.validate([packageJson({ vite: '5', react: '19' })]);
         expect(result.isValid).toBe(false);
         if (!result.isValid) expect(result.error).toContain('index.html');
     });

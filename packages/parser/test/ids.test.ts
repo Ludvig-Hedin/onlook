@@ -1,6 +1,6 @@
-import { describe, expect, test } from 'bun:test';
 import fs from 'fs';
 import path from 'path';
+import { describe, expect, test } from 'bun:test';
 import { addOidsToAst, getAstFromContent, getContentFromAst } from 'src';
 
 const __dirname = import.meta.dir;
@@ -149,7 +149,7 @@ describe('addOidsToAst', () => {
 
             // Extract just the OID values
             const oidValues =
-                oidMatches?.map((match) => match.match(/data-oid="([^"]*)"/)?.[1]) || [];
+                oidMatches?.map((match) => /data-oid="([^"]*)"/.exec(match)?.[1]) || [];
             const uniqueOids = new Set(oidValues);
 
             expect(uniqueOids.size).toBe(4); // All OIDs should be unique
@@ -196,7 +196,7 @@ describe('addOidsToAst', () => {
 
             // Extract just the OID values
             const oidValues =
-                oidMatches?.map((match) => match.match(/data-oid="([^"]*)"/)?.[1]) || [];
+                oidMatches?.map((match) => /data-oid="([^"]*)"/.exec(match)?.[1]) || [];
             const uniqueOids = new Set(oidValues);
 
             expect(uniqueOids.size).toBe(5); // All OIDs should be unique
@@ -214,7 +214,10 @@ describe('addOidsToAst', () => {
 
             // Manually modify the AST to have a non-string oid value (simulating invalid state)
             ast.program.body.forEach((statement) => {
-                if (statement.type === 'ExpressionStatement' && statement.expression.type === 'JSXElement') {
+                if (
+                    statement.type === 'ExpressionStatement' &&
+                    statement.expression.type === 'JSXElement'
+                ) {
                     const openingElement = statement.expression.openingElement;
                     // Add an invalid oid attribute with a non-string value
                     const invalidOidAttr = {
@@ -250,7 +253,10 @@ describe('addOidsToAst', () => {
 
             // Manually modify the AST to have a null oid value
             ast.program.body.forEach((statement) => {
-                if (statement.type === 'ExpressionStatement' && statement.expression.type === 'JSXElement') {
+                if (
+                    statement.type === 'ExpressionStatement' &&
+                    statement.expression.type === 'JSXElement'
+                ) {
                     const openingElement = statement.expression.openingElement;
                     const invalidOidAttr = {
                         type: 'JSXAttribute',
@@ -277,7 +283,10 @@ describe('addOidsToAst', () => {
 
             // Manually modify the AST to have an expression container with boolean value
             ast.program.body.forEach((statement) => {
-                if (statement.type === 'ExpressionStatement' && statement.expression.type === 'JSXElement') {
+                if (
+                    statement.type === 'ExpressionStatement' &&
+                    statement.expression.type === 'JSXElement'
+                ) {
                     const openingElement = statement.expression.openingElement;
                     const invalidOidAttr = {
                         type: 'JSXAttribute',
@@ -319,10 +328,14 @@ describe('addOidsToAst', () => {
             // Add an invalid oid to one of the elements
             let elementCount = 0;
             ast.program.body.forEach((statement) => {
-                if (statement.type === 'ExpressionStatement' && statement.expression.type === 'JSXElement') {
+                if (
+                    statement.type === 'ExpressionStatement' &&
+                    statement.expression.type === 'JSXElement'
+                ) {
                     const traverse = (node: any) => {
                         if (node.type === 'JSXElement') {
-                            if (elementCount === 2) { // Third element (span)
+                            if (elementCount === 2) {
+                                // Third element (span)
                                 const invalidOidAttr = {
                                     type: 'JSXAttribute',
                                     name: {
@@ -362,8 +375,9 @@ describe('addOidsToAst', () => {
             const oidMatches = result.match(/data-oid="([^"]*)"/g);
             expect(oidMatches).toHaveLength(3);
 
-            const oidValues = oidMatches?.map((match) => match.match(/data-oid="([^"]*)"/)?.[1]) || [];
-            expect(oidValues.every(oid => typeof oid === 'string' && oid.length > 0)).toBe(true);
+            const oidValues =
+                oidMatches?.map((match) => /data-oid="([^"]*)"/.exec(match)?.[1]) || [];
+            expect(oidValues.every((oid) => typeof oid === 'string' && oid.length > 0)).toBe(true);
         });
 
         test('should ensure uniqueness when replacing invalid oids', async () => {
@@ -373,10 +387,14 @@ describe('addOidsToAst', () => {
             // Add invalid oids to both child elements
             let elementCount = 0;
             ast.program.body.forEach((statement) => {
-                if (statement.type === 'ExpressionStatement' && statement.expression.type === 'JSXElement') {
+                if (
+                    statement.type === 'ExpressionStatement' &&
+                    statement.expression.type === 'JSXElement'
+                ) {
                     const traverse = (node: any) => {
                         if (node.type === 'JSXElement') {
-                            if (elementCount === 1 || elementCount === 2) { // Child elements
+                            if (elementCount === 1 || elementCount === 2) {
+                                // Child elements
                                 const invalidOidAttr = {
                                     type: 'JSXAttribute',
                                     name: {
@@ -407,7 +425,10 @@ describe('addOidsToAst', () => {
 
             const globalOids = new Set(['existing-oid']);
             const { ast: astWithIds, modified } = addOidsToAst(ast, globalOids);
-            const result = await getContentFromAst(astWithIds, '<div><span>First</span><p>Second</p></div>');
+            const result = await getContentFromAst(
+                astWithIds,
+                '<div><span>First</span><p>Second</p></div>',
+            );
 
             expect(modified).toBe(true); // Should modify to fix invalid oids and add missing ones
 
@@ -416,7 +437,8 @@ describe('addOidsToAst', () => {
             expect(oidMatches).toHaveLength(3); // Should have 3 OIDs total (wrapper + 2 children)
 
             // Extract just the OID values
-            const oidValues = oidMatches?.map((match) => match.match(/data-oid="([^"]*)"/)?.[1]) || [];
+            const oidValues =
+                oidMatches?.map((match) => /data-oid="([^"]*)"/.exec(match)?.[1]) || [];
             const uniqueOids = new Set(oidValues);
 
             expect(uniqueOids.size).toBe(3); // All OIDs should be unique
@@ -430,9 +452,12 @@ describe('addOidsToAst', () => {
 
             // Manually add multiple oid attributes to the same element
             ast.program.body.forEach((statement) => {
-                if (statement.type === 'ExpressionStatement' && statement.expression.type === 'JSXElement') {
+                if (
+                    statement.type === 'ExpressionStatement' &&
+                    statement.expression.type === 'JSXElement'
+                ) {
                     const openingElement = statement.expression.openingElement;
-                    
+
                     // Add first valid oid
                     const firstOidAttr = {
                         type: 'JSXAttribute',
@@ -445,7 +470,7 @@ describe('addOidsToAst', () => {
                             value: 'first-oid',
                         },
                     };
-                    
+
                     // Add second valid oid
                     const secondOidAttr = {
                         type: 'JSXAttribute',
@@ -469,11 +494,11 @@ describe('addOidsToAst', () => {
             expect(modified).toBe(true); // Should modify to remove duplicates
             expect(result).not.toContain('data-oid="first-oid"'); // Should not contain original oids
             expect(result).not.toContain('data-oid="second-oid"'); // Should not contain original oids
-            
+
             // Should have exactly one oid attribute
             const oidMatches = result.match(/data-oid="([^"]*)"/g);
             expect(oidMatches).toHaveLength(1);
-            
+
             // Should have a new valid 7-character OID
             const oidValue = oidMatches?.[0]?.match(/data-oid="([^"]*)"/)?.[1];
             expect(oidValue).toBeDefined();
@@ -486,9 +511,12 @@ describe('addOidsToAst', () => {
 
             // Add multiple oid attributes with mix of valid and invalid values
             ast.program.body.forEach((statement) => {
-                if (statement.type === 'ExpressionStatement' && statement.expression.type === 'JSXElement') {
+                if (
+                    statement.type === 'ExpressionStatement' &&
+                    statement.expression.type === 'JSXElement'
+                ) {
                     const openingElement = statement.expression.openingElement;
-                    
+
                     // Add valid string oid
                     const validOidAttr = {
                         type: 'JSXAttribute',
@@ -501,7 +529,7 @@ describe('addOidsToAst', () => {
                             value: 'valid-oid',
                         },
                     };
-                    
+
                     // Add invalid numeric oid
                     const invalidOidAttr = {
                         type: 'JSXAttribute',
@@ -529,11 +557,11 @@ describe('addOidsToAst', () => {
             expect(modified).toBe(true); // Should modify to remove all and create new
             expect(result).not.toContain('data-oid="valid-oid"'); // Should not contain original valid oid
             expect(result).not.toContain('data-oid={123}'); // Should not contain invalid expression
-            
+
             // Should have exactly one oid attribute
             const oidMatches = result.match(/data-oid="([^"]*)"/g);
             expect(oidMatches).toHaveLength(1);
-            
+
             // Should have a new valid OID
             const oidValue = oidMatches?.[0]?.match(/data-oid="([^"]*)"/)?.[1];
             expect(oidValue).toBeDefined();
@@ -548,10 +576,14 @@ describe('addOidsToAst', () => {
             // Add multiple oids to each child element
             let elementCount = 0;
             ast.program.body.forEach((statement) => {
-                if (statement.type === 'ExpressionStatement' && statement.expression.type === 'JSXElement') {
+                if (
+                    statement.type === 'ExpressionStatement' &&
+                    statement.expression.type === 'JSXElement'
+                ) {
                     const traverse = (node: any) => {
                         if (node.type === 'JSXElement') {
-                            if (elementCount === 1) { // First child (span)
+                            if (elementCount === 1) {
+                                // First child (span)
                                 const oid1 = {
                                     type: 'JSXAttribute',
                                     name: { type: 'JSXIdentifier', name: 'data-oid' },
@@ -563,7 +595,8 @@ describe('addOidsToAst', () => {
                                     value: { type: 'StringLiteral', value: 'span-oid-2' },
                                 };
                                 node.openingElement.attributes.push(oid1, oid2);
-                            } else if (elementCount === 2) { // Second child (p)
+                            } else if (elementCount === 2) {
+                                // Second child (p)
                                 const oid1 = {
                                     type: 'JSXAttribute',
                                     name: { type: 'JSXIdentifier', name: 'data-oid' },
@@ -577,7 +610,7 @@ describe('addOidsToAst', () => {
                                 node.openingElement.attributes.push(oid1, oid2);
                             }
                             elementCount++;
-                            
+
                             if (node.children) {
                                 node.children.forEach(traverse);
                             }
@@ -588,7 +621,10 @@ describe('addOidsToAst', () => {
             });
 
             const { ast: astWithIds, modified } = addOidsToAst(ast);
-            const result = await getContentFromAst(astWithIds, '<div><span>First</span><p>Second</p></div>');
+            const result = await getContentFromAst(
+                astWithIds,
+                '<div><span>First</span><p>Second</p></div>',
+            );
 
             expect(modified).toBe(true); // Should modify all elements
 
@@ -597,18 +633,19 @@ describe('addOidsToAst', () => {
             expect(result).not.toContain('span-oid-2');
             expect(result).not.toContain('p-oid-1');
             expect(result).not.toContain('p-oid-2');
-            
+
             // Should have exactly 3 oid attributes (wrapper + 2 children)
             const oidMatches = result.match(/data-oid="([^"]*)"/g);
             expect(oidMatches).toHaveLength(3);
-            
+
             // All oids should be unique
-            const oidValues = oidMatches?.map((match) => match.match(/data-oid="([^"]*)"/)?.[1]) || [];
+            const oidValues =
+                oidMatches?.map((match) => /data-oid="([^"]*)"/.exec(match)?.[1]) || [];
             const uniqueOids = new Set(oidValues);
             expect(uniqueOids.size).toBe(3);
-            
+
             // All oids should be valid 7-character strings
-            expect(oidValues.every(oid => oid && oid.length === 7)).toBe(true);
+            expect(oidValues.every((oid) => oid?.length === 7)).toBe(true);
         });
 
         test('should actually remove multiple oids from the generated code', async () => {
@@ -621,17 +658,17 @@ describe('addOidsToAst', () => {
             const result = await getContentFromAst(astWithIds, inputContent);
 
             expect(modified).toBe(true);
-            
+
             // Verify the original duplicate oids are completely gone
             expect(result).not.toContain('data-oid="first-oid"');
             expect(result).not.toContain('data-oid="second-oid"');
-            
+
             // Should have exactly one data-oid attribute
             const oidCount = (result.match(/data-oid=/g) || []).length;
             expect(oidCount).toBe(1);
-            
+
             // Verify it has a new valid oid
-            const oidMatch = result.match(/data-oid="([^"]*)"/);
+            const oidMatch = /data-oid="([^"]*)"/.exec(result);
             expect(oidMatch).not.toBeNull();
             expect(oidMatch![1]).toHaveLength(7);
         });
@@ -650,17 +687,17 @@ describe('addOidsToAst', () => {
             const result = await getContentFromAst(astWithIds, inputContent);
 
             expect(modified).toBe(true);
-            
+
             // Multiple oids should be removed and replaced
             expect(result).not.toContain('data-oid="div1"');
             expect(result).not.toContain('data-oid="div2"');
             expect(result).not.toContain('data-oid="span1"');
             expect(result).not.toContain('data-oid="span2"');
             expect(result).not.toContain('data-oid="span3"');
-            
+
             // Single valid oid should be preserved (no conflicts in this test)
             expect(result).toContain('data-oid="p1"');
-            
+
             // Should have exactly 3 data-oid attributes (one per element)
             const oidCount = (result.match(/data-oid=/g) || []).length;
             expect(oidCount).toBe(3);
@@ -672,16 +709,19 @@ describe('addOidsToAst', () => {
 
             // Manually add multiple oid attributes with mix of valid strings and invalid types
             ast.program.body.forEach((statement) => {
-                if (statement.type === 'ExpressionStatement' && statement.expression.type === 'JSXElement') {
+                if (
+                    statement.type === 'ExpressionStatement' &&
+                    statement.expression.type === 'JSXElement'
+                ) {
                     const openingElement = statement.expression.openingElement;
-                    
+
                     // Add first valid string oid
                     const validOid1 = {
                         type: 'JSXAttribute',
                         name: { type: 'JSXIdentifier', name: 'data-oid' },
                         value: { type: 'StringLiteral', value: 'valid-string-1' },
                     };
-                    
+
                     // Add invalid numeric oid
                     const invalidNumericOid = {
                         type: 'JSXAttribute',
@@ -691,14 +731,14 @@ describe('addOidsToAst', () => {
                             expression: { type: 'Literal', value: 456, raw: '456' },
                         },
                     };
-                    
+
                     // Add second valid string oid
                     const validOid2 = {
                         type: 'JSXAttribute',
                         name: { type: 'JSXIdentifier', name: 'data-oid' },
                         value: { type: 'StringLiteral', value: 'valid-string-2' },
                     };
-                    
+
                     // Add invalid boolean oid
                     const invalidBooleanOid = {
                         type: 'JSXAttribute',
@@ -711,9 +751,9 @@ describe('addOidsToAst', () => {
 
                     openingElement.attributes.push(
                         validOid1 as any,
-                        invalidNumericOid as any, 
+                        invalidNumericOid as any,
                         validOid2 as any,
-                        invalidBooleanOid as any
+                        invalidBooleanOid as any,
                     );
                 }
             });
@@ -722,19 +762,19 @@ describe('addOidsToAst', () => {
             const result = await getContentFromAst(astWithIds, '<div>Content</div>');
 
             expect(modified).toBe(true);
-            
+
             // All original oids (both valid and invalid) should be removed
             expect(result).not.toContain('data-oid="valid-string-1"');
             expect(result).not.toContain('data-oid="valid-string-2"');
             expect(result).not.toContain('data-oid={456}');
             expect(result).not.toContain('data-oid={true}');
-            
+
             // Should have exactly one data-oid attribute
             const oidCount = (result.match(/data-oid=/g) || []).length;
             expect(oidCount).toBe(1);
-            
+
             // Should be a new valid 7-character string oid
-            const oidMatch = result.match(/data-oid="([^"]*)"/);
+            const oidMatch = /data-oid="([^"]*)"/.exec(result);
             expect(oidMatch).not.toBeNull();
             expect(oidMatch![1]).toHaveLength(7);
             expect(typeof oidMatch![1]).toBe('string');
@@ -750,9 +790,9 @@ describe('addOidsToAst', () => {
 
             expect(modified).toBe(true);
             expect(result).not.toContain('data-oid=""');
-            
+
             // Should have exactly one valid oid
-            const oidMatch = result.match(/data-oid="([^"]*)"/);
+            const oidMatch = /data-oid="([^"]*)"/.exec(result);
             expect(oidMatch).not.toBeNull();
             expect(oidMatch![1]).toHaveLength(7);
             expect(oidMatch?.[1]?.trim()).not.toBe('');
@@ -769,12 +809,12 @@ describe('addOidsToAst', () => {
             expect(modified).toBe(true);
             expect(result).not.toContain('data-oid=""');
             expect(result).not.toContain('data-oid="valid-oid"');
-            
+
             // Should have exactly one new valid oid (all removed due to multiple + invalid)
             const oidCount = (result.match(/data-oid=/g) || []).length;
             expect(oidCount).toBe(1);
-            
-            const oidMatch = result.match(/data-oid="([^"]*)"/);
+
+            const oidMatch = /data-oid="([^"]*)"/.exec(result);
             expect(oidMatch![1]).toHaveLength(7);
         });
 
@@ -788,9 +828,9 @@ describe('addOidsToAst', () => {
 
             expect(modified).toBe(true);
             expect(result).not.toContain('data-oid="   "');
-            
+
             // Should have exactly one valid oid
-            const oidMatch = result.match(/data-oid="([^"]*)"/);
+            const oidMatch = /data-oid="([^"]*)"/.exec(result);
             expect(oidMatch).not.toBeNull();
             expect(oidMatch![1]).toHaveLength(7);
             expect(oidMatch?.[1]?.trim()).not.toBe('');
@@ -802,21 +842,24 @@ describe('addOidsToAst', () => {
 
             // Add multiple whitespace-only oids
             ast.program.body.forEach((statement) => {
-                if (statement.type === 'ExpressionStatement' && statement.expression.type === 'JSXElement') {
+                if (
+                    statement.type === 'ExpressionStatement' &&
+                    statement.expression.type === 'JSXElement'
+                ) {
                     const openingElement = statement.expression.openingElement;
-                    
+
                     const spacesOid = {
                         type: 'JSXAttribute',
                         name: { type: 'JSXIdentifier', name: 'data-oid' },
                         value: { type: 'StringLiteral', value: '   ' },
                     };
-                    
+
                     const tabsOid = {
                         type: 'JSXAttribute',
                         name: { type: 'JSXIdentifier', name: 'data-oid' },
                         value: { type: 'StringLiteral', value: '\t\t' },
                     };
-                    
+
                     const newlinesOid = {
                         type: 'JSXAttribute',
                         name: { type: 'JSXIdentifier', name: 'data-oid' },
@@ -826,7 +869,7 @@ describe('addOidsToAst', () => {
                     openingElement.attributes.push(
                         spacesOid as any,
                         tabsOid as any,
-                        newlinesOid as any
+                        newlinesOid as any,
                     );
                 }
             });
@@ -838,12 +881,12 @@ describe('addOidsToAst', () => {
             expect(result).not.toContain('data-oid="   "');
             expect(result).not.toContain('data-oid="\t\t"');
             expect(result).not.toContain('data-oid="\n\r\n"');
-            
+
             // Should have exactly one valid oid (all whitespace-only removed)
             const oidCount = (result.match(/data-oid=/g) || []).length;
             expect(oidCount).toBe(1);
-            
-            const oidMatch = result.match(/data-oid="([^"]*)"/);
+
+            const oidMatch = /data-oid="([^"]*)"/.exec(result);
             expect(oidMatch![1]).toHaveLength(7);
             expect(oidMatch?.[1]?.trim()).toBe(oidMatch?.[1]); // Should not have leading/trailing whitespace
         });
@@ -859,15 +902,15 @@ describe('addOidsToAst', () => {
             expect(modified).toBe(true);
             expect(result).not.toContain('data-oid="img1"');
             expect(result).not.toContain('data-oid="img2"');
-            
+
             // Should have exactly one valid oid
             const oidCount = (result.match(/data-oid=/g) || []).length;
             expect(oidCount).toBe(1);
-            
+
             // Should preserve other attributes
             expect(result).toContain('src="test.jpg"');
-            
-            const oidMatch = result.match(/data-oid="([^"]*)"/);
+
+            const oidMatch = /data-oid="([^"]*)"/.exec(result);
             expect(oidMatch![1]).toHaveLength(7);
         });
 
@@ -877,21 +920,24 @@ describe('addOidsToAst', () => {
 
             // Manually add mixed oids to self-closing element
             ast.program.body.forEach((statement) => {
-                if (statement.type === 'ExpressionStatement' && statement.expression.type === 'JSXElement') {
+                if (
+                    statement.type === 'ExpressionStatement' &&
+                    statement.expression.type === 'JSXElement'
+                ) {
                     const openingElement = statement.expression.openingElement;
-                    
+
                     const validOid = {
                         type: 'JSXAttribute',
                         name: { type: 'JSXIdentifier', name: 'data-oid' },
                         value: { type: 'StringLiteral', value: 'valid-br-oid' },
                     };
-                    
+
                     const emptyOid = {
                         type: 'JSXAttribute',
                         name: { type: 'JSXIdentifier', name: 'data-oid' },
                         value: { type: 'StringLiteral', value: '' },
                     };
-                    
+
                     const invalidOid = {
                         type: 'JSXAttribute',
                         name: { type: 'JSXIdentifier', name: 'data-oid' },
@@ -904,7 +950,7 @@ describe('addOidsToAst', () => {
                     openingElement.attributes.push(
                         validOid as any,
                         emptyOid as any,
-                        invalidOid as any
+                        invalidOid as any,
                     );
                 }
             });
@@ -916,12 +962,12 @@ describe('addOidsToAst', () => {
             expect(result).not.toContain('data-oid="valid-br-oid"');
             expect(result).not.toContain('data-oid=""');
             expect(result).not.toContain('data-oid={123}');
-            
+
             // Should have exactly one valid oid (all removed due to multiple + invalid)
             const oidCount = (result.match(/data-oid=/g) || []).length;
             expect(oidCount).toBe(1);
-            
-            const oidMatch = result.match(/data-oid="([^"]*)"/);
+
+            const oidMatch = /data-oid="([^"]*)"/.exec(result);
             expect(oidMatch![1]).toHaveLength(7);
         });
 
@@ -931,9 +977,12 @@ describe('addOidsToAst', () => {
 
             // Add JSX expression containers with different types of expressions
             ast.program.body.forEach((statement) => {
-                if (statement.type === 'ExpressionStatement' && statement.expression.type === 'JSXElement') {
+                if (
+                    statement.type === 'ExpressionStatement' &&
+                    statement.expression.type === 'JSXElement'
+                ) {
                     const openingElement = statement.expression.openingElement;
-                    
+
                     // Variable expression
                     const variableOid = {
                         type: 'JSXAttribute',
@@ -943,8 +992,8 @@ describe('addOidsToAst', () => {
                             expression: { type: 'Identifier', name: 'someVariable' },
                         },
                     };
-                    
-                    // Function call expression  
+
+                    // Function call expression
                     const functionOid = {
                         type: 'JSXAttribute',
                         name: { type: 'JSXIdentifier', name: 'data-oid' },
@@ -957,7 +1006,7 @@ describe('addOidsToAst', () => {
                             },
                         },
                     };
-                    
+
                     // Member expression
                     const memberOid = {
                         type: 'JSXAttribute',
@@ -972,7 +1021,7 @@ describe('addOidsToAst', () => {
                             },
                         },
                     };
-                    
+
                     // Template literal expression
                     const templateOid = {
                         type: 'JSXAttribute',
@@ -982,8 +1031,16 @@ describe('addOidsToAst', () => {
                             expression: {
                                 type: 'TemplateLiteral',
                                 quasis: [
-                                    { type: 'TemplateElement', value: { raw: 'id-', cooked: 'id-' }, tail: false },
-                                    { type: 'TemplateElement', value: { raw: '', cooked: '' }, tail: true }
+                                    {
+                                        type: 'TemplateElement',
+                                        value: { raw: 'id-', cooked: 'id-' },
+                                        tail: false,
+                                    },
+                                    {
+                                        type: 'TemplateElement',
+                                        value: { raw: '', cooked: '' },
+                                        tail: true,
+                                    },
                                 ],
                                 expressions: [{ type: 'Identifier', name: 'counter' }],
                             },
@@ -994,7 +1051,7 @@ describe('addOidsToAst', () => {
                         variableOid as any,
                         functionOid as any,
                         memberOid as any,
-                        templateOid as any
+                        templateOid as any,
                     );
                 }
             });
@@ -1007,12 +1064,12 @@ describe('addOidsToAst', () => {
             expect(result).not.toContain('data-oid={generateId()}');
             expect(result).not.toContain('data-oid={obj.id}');
             expect(result).not.toContain('data-oid={`id-${counter}`}');
-            
+
             // Should have exactly one valid oid (all expressions treated as invalid)
             const oidCount = (result.match(/data-oid=/g) || []).length;
             expect(oidCount).toBe(1);
-            
-            const oidMatch = result.match(/data-oid="([^"]*)"/);
+
+            const oidMatch = /data-oid="([^"]*)"/.exec(result);
             expect(oidMatch![1]).toHaveLength(7);
         });
 
@@ -1022,15 +1079,18 @@ describe('addOidsToAst', () => {
 
             // Add mix of string literal and expression
             ast.program.body.forEach((statement) => {
-                if (statement.type === 'ExpressionStatement' && statement.expression.type === 'JSXElement') {
+                if (
+                    statement.type === 'ExpressionStatement' &&
+                    statement.expression.type === 'JSXElement'
+                ) {
                     const openingElement = statement.expression.openingElement;
-                    
+
                     const validStringOid = {
                         type: 'JSXAttribute',
                         name: { type: 'JSXIdentifier', name: 'data-oid' },
                         value: { type: 'StringLiteral', value: 'valid-string-oid' },
                     };
-                    
+
                     const expressionOid = {
                         type: 'JSXAttribute',
                         name: { type: 'JSXIdentifier', name: 'data-oid' },
@@ -1040,10 +1100,7 @@ describe('addOidsToAst', () => {
                         },
                     };
 
-                    openingElement.attributes.push(
-                        validStringOid as any,
-                        expressionOid as any
-                    );
+                    openingElement.attributes.push(validStringOid as any, expressionOid as any);
                 }
             });
 
@@ -1053,12 +1110,12 @@ describe('addOidsToAst', () => {
             expect(modified).toBe(true);
             expect(result).not.toContain('data-oid="valid-string-oid"');
             expect(result).not.toContain('data-oid={dynamicId}');
-            
+
             // Should have exactly one new valid oid (all removed due to multiple + invalid)
             const oidCount = (result.match(/data-oid=/g) || []).length;
             expect(oidCount).toBe(1);
-            
-            const oidMatch = result.match(/data-oid="([^"]*)"/);
+
+            const oidMatch = /data-oid="([^"]*)"/.exec(result);
             expect(oidMatch![1]).toHaveLength(7);
         });
 
@@ -1068,28 +1125,31 @@ describe('addOidsToAst', () => {
 
             // Add spread attributes mixed with oids
             ast.program.body.forEach((statement) => {
-                if (statement.type === 'ExpressionStatement' && statement.expression.type === 'JSXElement') {
+                if (
+                    statement.type === 'ExpressionStatement' &&
+                    statement.expression.type === 'JSXElement'
+                ) {
                     const openingElement = statement.expression.openingElement;
-                    
+
                     // Add spread attribute
                     const spreadAttr = {
                         type: 'JSXSpreadAttribute',
                         argument: { type: 'Identifier', name: 'props' },
                     };
-                    
+
                     // Add multiple oids
                     const oid1 = {
                         type: 'JSXAttribute',
                         name: { type: 'JSXIdentifier', name: 'data-oid' },
                         value: { type: 'StringLiteral', value: 'oid-before-spread' },
                     };
-                    
+
                     const oid2 = {
                         type: 'JSXAttribute',
                         name: { type: 'JSXIdentifier', name: 'data-oid' },
                         value: { type: 'StringLiteral', value: 'oid-after-spread' },
                     };
-                    
+
                     // Add regular attribute for context
                     const classAttr = {
                         type: 'JSXAttribute',
@@ -1101,7 +1161,7 @@ describe('addOidsToAst', () => {
                         oid1 as any,
                         spreadAttr as any,
                         oid2 as any,
-                        classAttr as any
+                        classAttr as any,
                     );
                 }
             });
@@ -1112,16 +1172,16 @@ describe('addOidsToAst', () => {
             expect(modified).toBe(true);
             expect(result).not.toContain('data-oid="oid-before-spread"');
             expect(result).not.toContain('data-oid="oid-after-spread"');
-            
+
             // Should preserve spread and other attributes
             expect(result).toContain('{...props}');
             expect(result).toContain('className="test-class"');
-            
+
             // Should have exactly one valid oid (multiples removed)
             const oidCount = (result.match(/data-oid=/g) || []).length;
             expect(oidCount).toBe(1);
-            
-            const oidMatch = result.match(/data-oid="([^"]*)"/);
+
+            const oidMatch = /data-oid="([^"]*)"/.exec(result);
             expect(oidMatch![1]).toHaveLength(7);
         });
 
@@ -1132,9 +1192,12 @@ describe('addOidsToAst', () => {
 
             // Add another explicit oid to trigger multiple handling
             ast.program.body.forEach((statement) => {
-                if (statement.type === 'ExpressionStatement' && statement.expression.type === 'JSXElement') {
+                if (
+                    statement.type === 'ExpressionStatement' &&
+                    statement.expression.type === 'JSXElement'
+                ) {
                     const openingElement = statement.expression.openingElement;
-                    
+
                     const additionalOid = {
                         type: 'JSXAttribute',
                         name: { type: 'JSXIdentifier', name: 'data-oid' },
@@ -1151,15 +1214,15 @@ describe('addOidsToAst', () => {
             expect(modified).toBe(true);
             expect(result).not.toContain('data-oid="explicit-oid"');
             expect(result).not.toContain('data-oid="second-explicit-oid"');
-            
+
             // Should preserve spread attribute
             expect(result).toContain('{...someProps}');
-            
+
             // Should have exactly one valid oid (all explicit ones removed due to multiples)
             const oidCount = (result.match(/data-oid=/g) || []).length;
             expect(oidCount).toBe(1);
-            
-            const oidMatch = result.match(/data-oid="([^"]*)"/);
+
+            const oidMatch = /data-oid="([^"]*)"/.exec(result);
             expect(oidMatch![1]).toHaveLength(7);
         });
     });

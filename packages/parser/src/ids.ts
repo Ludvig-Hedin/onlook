@@ -1,8 +1,8 @@
 import { EditorAttributes } from '@onlook/constants';
 import { createOid } from '@onlook/utility';
 
-import { isReactFragment } from './helpers';
 import type { T } from './packages';
+import { isReactFragment } from './helpers';
 import { t, traverse } from './packages';
 
 /**

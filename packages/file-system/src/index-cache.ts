@@ -13,7 +13,7 @@ const loadingPromises = new Map<string, Promise<Record<string, JsxElementMetadat
 export async function getOrLoadIndex(
     cacheKey: string,
     indexPath: string,
-    readFile: (path: string) => Promise<string | Uint8Array>
+    readFile: (path: string) => Promise<string | Uint8Array>,
 ): Promise<Record<string, JsxElementMetadata>> {
     const cached = staticMemoryMap.get(cacheKey);
     if (cached !== undefined) {
@@ -60,11 +60,16 @@ export async function getOrLoadIndex(
     return loadPromise;
 }
 
-export function saveIndexToCache(cacheKey: string, index: Record<string, JsxElementMetadata>): void {
+export function saveIndexToCache(
+    cacheKey: string,
+    index: Record<string, JsxElementMetadata>,
+): void {
     staticMemoryMap.set(cacheKey, { ...index });
 }
 
-export function getIndexFromCache(cacheKey: string): Record<string, JsxElementMetadata> | undefined {
+export function getIndexFromCache(
+    cacheKey: string,
+): Record<string, JsxElementMetadata> | undefined {
     return staticMemoryMap.get(cacheKey);
 }
 
