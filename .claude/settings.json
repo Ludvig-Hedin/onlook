@@ -1,0 +1,12 @@
+{
+    "mcpServers": {
+        "weblab": {
+            "command": "bun",
+            "args": ["run", "packages/mcp/src/server.ts"],
+            "cwd": "/Users/ludvighedin/Programming/personal/AB/coder-new/onlook",
+            "env": {
+                "WEBLAB_PROJECT_ROOT": "/Users/ludvighedin/Programming/personal/AB/coder-new/onlook"
+            }
+        }
+    }
+}
