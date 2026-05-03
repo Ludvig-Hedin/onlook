@@ -128,7 +128,7 @@ export default function GitHubInstallCallbackPage() {
                 {/* Header - Above Card */}
                 <div className="flex items-center gap-4 mb-8 justify-center">
                     <div className="p-4 bg-gray-800 rounded-xl">
-                        <Icons.OnlookLogo className="w-8 h-8 text-white" />
+                        <Icons.WeblabLogo className="w-8 h-8 text-white" />
                     </div>
                     <Icons.DotsHorizontal className="w-8 h-8 text-gray-400" />
                     <div className="p-4 bg-gray-800 rounded-xl">

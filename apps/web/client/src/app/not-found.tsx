@@ -16,7 +16,7 @@ export default function NotFound() {
                     animate={{ opacity: 1 }}
                     transition={{ duration: 1, delay: 0.7, ease: "easeOut" }}
                 >
-                    <Illustrations.OnlookLogoSeal className="w-[90vw] h-[90vw] max-w-[1000px] max-h-[1000px] text-foreground-primary/10" />
+                    <Illustrations.WeblabLogoSeal className="w-[90vw] h-[90vw] max-w-[1000px] max-h-[1000px] text-foreground-primary/10" />
                 </motion.div>
 
                 {/* Content - centered in viewport */}

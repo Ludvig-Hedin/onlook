@@ -7,7 +7,7 @@ export class IDE {
     static readonly CURSOR = new IDE('Cursor', IdeType.CURSOR, 'cursor', 'CursorLogo');
     static readonly ZED = new IDE('Zed', IdeType.ZED, 'zed', 'ZedLogo');
     static readonly WINDSURF = new IDE('Windsurf', IdeType.WINDSURF, 'windsurf', 'WindsurfLogo');
-    static readonly ONLOOK = new IDE('Code Panel', IdeType.ONLOOK, 'onlook', 'OnlookLogo');
+    static readonly ONLOOK = new IDE('Code Panel', IdeType.ONLOOK, 'onlook', 'WeblabLogo');
 
     private constructor(
         public readonly displayName: string,

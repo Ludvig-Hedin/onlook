@@ -10,7 +10,7 @@ import { motion } from 'motion/react';
 import { AiFrontendHero } from '../../_components/hero/ai-frontend-hero';
 import { CTASection } from '../../_components/landing-page/cta-section';
 import { FAQSection } from '../../_components/landing-page/faq-section';
-import { OnlookInterfaceMockup } from '../../_components/landing-page/onlook-interface-mockup';
+import { WeblabInterfaceMockup } from '../../_components/landing-page/weblab-interface-mockup';
 import { WebsiteLayout } from '../../_components/website-layout';
 
 const aiFrontendFaqs = [
@@ -179,7 +179,7 @@ export default function AiForFrontendPage() {
                         className="hidden md:block w-screen h-[44rem] items-center justify-center mb-24"
                         {...getBlurAnimationProps(0.2)}
                     >
-                        <OnlookInterfaceMockup />
+                        <WeblabInterfaceMockup />
                     </motion.div>
 
                     <div className="mx-auto max-w-6xl px-8">

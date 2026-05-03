@@ -2,7 +2,7 @@
 
 import { Routes } from '@/utils/constants';
 import { NAVIGATION_CATEGORIES } from '@/utils/constants/navigation';
-import { BrandWordmark } from '@onlook/ui/brand';
+import { BrandLogo } from '@onlook/ui/brand';
 import { Icons } from '@onlook/ui/icons';
 import { cn } from '@onlook/ui/utils';
 import { usePathname } from 'next/navigation';
@@ -15,7 +15,7 @@ import { AuthButton } from './user';
 const LINKS = [
     {
         href: Routes.HOME,
-        child: <BrandWordmark className="h-3" />,
+        child: <BrandLogo className="h-4" />,
     },
 ];
 

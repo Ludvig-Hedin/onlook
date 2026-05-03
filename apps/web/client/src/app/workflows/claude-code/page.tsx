@@ -10,7 +10,7 @@ import { motion } from 'motion/react';
 import { ClaudeCodeHero } from '../../_components/hero/claude-code-hero';
 import { CTASection } from '../../_components/landing-page/cta-section';
 import { FAQSection } from '../../_components/landing-page/faq-section';
-import { OnlookInterfaceMockup } from '../../_components/landing-page/onlook-interface-mockup';
+import { WeblabInterfaceMockup } from '../../_components/landing-page/weblab-interface-mockup';
 import { WebsiteLayout } from '../../_components/website-layout';
 
 const claudeCodeFaqs = [
@@ -170,7 +170,7 @@ export default function ClaudeCodeWorkflowPage() {
                         className="hidden md:block w-screen h-[44rem] items-center justify-center mb-24"
                         {...getBlurAnimationProps(0.2)}
                     >
-                        <OnlookInterfaceMockup />
+                        <WeblabInterfaceMockup />
                     </motion.div>
 
                     {/* Editor Mockup - Mobile */}
@@ -179,7 +179,7 @@ export default function ClaudeCodeWorkflowPage() {
                         {...getBlurAnimationProps(0.2)}
                     >
                         <div className="absolute top-1/2 right-10 transform -translate-y-1/2 h-[800px] w-[1000px]">
-                            <OnlookInterfaceMockup />
+                            <WeblabInterfaceMockup />
                         </div>
                     </motion.div>
 
