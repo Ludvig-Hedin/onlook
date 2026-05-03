@@ -1,5 +1,6 @@
-import { BINARY_EXTENSIONS, IMAGE_EXTENSIONS } from '@onlook/constants';
 import mime from 'mime-lite';
+
+import { BINARY_EXTENSIONS, IMAGE_EXTENSIONS } from '@onlook/constants';
 
 /**
  * Check if a file is binary based on its extension
@@ -98,7 +99,8 @@ export const getMimeType = (fileName: string): string => {
     // Video formats
     if (lowerCasedFileName.endsWith('.mp4')) return 'video/mp4';
     if (lowerCasedFileName.endsWith('.webm')) return 'video/webm';
-    if (lowerCasedFileName.endsWith('.ogg') || lowerCasedFileName.endsWith('.ogv')) return 'video/ogg';
+    if (lowerCasedFileName.endsWith('.ogg') || lowerCasedFileName.endsWith('.ogv'))
+        return 'video/ogg';
     if (lowerCasedFileName.endsWith('.mov')) return 'video/quicktime';
     if (lowerCasedFileName.endsWith('.avi')) return 'video/x-msvideo';
 
@@ -119,7 +121,11 @@ export const isImageFile = (fileName: string): boolean => {
  */
 export const isVideoFile = (fileNameOrMimeType: string): boolean => {
     // If it looks like a MIME type (starts with 'video/' pattern), check it directly
-    if (fileNameOrMimeType.startsWith('video/') || fileNameOrMimeType.startsWith('audio/') || fileNameOrMimeType.startsWith('image/')) {
+    if (
+        fileNameOrMimeType.startsWith('video/') ||
+        fileNameOrMimeType.startsWith('audio/') ||
+        fileNameOrMimeType.startsWith('image/')
+    ) {
         return fileNameOrMimeType.toLowerCase().startsWith('video/');
     }
     // Otherwise, treat it as a filename or file path

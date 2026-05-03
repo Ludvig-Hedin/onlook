@@ -1,5 +1,7 @@
-import { DefaultSettings } from '@onlook/constants';
 import imageCompression from 'browser-image-compression';
+
+import { DefaultSettings } from '@onlook/constants';
+
 import { isImageFile } from './file';
 import { normalizePath } from './folder';
 
@@ -10,7 +12,7 @@ export async function compressImageInBrowser(
         maxSizeMB?: number;
         maxWidthOrHeight?: number;
         quality?: number;
-    }
+    },
 ): Promise<string | undefined> {
     const options = {
         maxSizeMB: compressionOptions?.maxSizeMB ?? 0.2,
@@ -51,10 +53,10 @@ export function addBase64Prefix(mimeType: string, base64: string): string {
  * Example: url("https://xxx-3000.csb.app/images/a.jpg") -> url("/images/c.jpg")
  */
 export function urlToRelativePath(url: string): string {
-    const urlMatch = url.match(/url\s*\(\s*["']?([^"')]+)["']?\s*\)/);
+    const urlMatch = /url\s*\(\s*["']?([^"')]+)["']?\s*\)/.exec(url);
 
     // If it's not a url() function or no URL found, return as is
-    if (!urlMatch || !urlMatch[1]) {
+    if (!urlMatch?.[1]) {
         return url;
     }
 

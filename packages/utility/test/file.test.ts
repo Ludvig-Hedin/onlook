@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'bun:test';
+
 import { getMimeType, isImageFile, isVideoFile } from '../src/file';
 
 describe('getMimeType', () => {

@@ -1,4 +1,5 @@
-import { describe, it, expect, beforeEach, afterEach } from 'bun:test';
+import { afterEach, beforeEach, describe, expect, it } from 'bun:test';
+
 import { inferPageFromUrl } from '../src/urls';
 
 // Mock console.error to suppress expected error logs in tests
