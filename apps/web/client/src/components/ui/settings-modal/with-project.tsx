@@ -1,5 +1,7 @@
-import { useEditorEngine } from '@/components/store/editor';
-import { useStateManager } from '@/components/store/state';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { observer } from 'mobx-react-lite';
+import { AnimatePresence, motion } from 'motion/react';
+
 import type { PageNode } from '@onlook/models';
 import { Button } from '@onlook/ui/button';
 import { Icons } from '@onlook/ui/icons';
@@ -7,13 +9,21 @@ import { Separator } from '@onlook/ui/separator';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@onlook/ui/tooltip';
 import { cn } from '@onlook/ui/utils';
 import { capitalizeFirstLetter } from '@onlook/utility';
-import { observer } from 'mobx-react-lite';
-import { AnimatePresence, motion } from 'motion/react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+
+import type { SettingTab } from './helpers';
+import { useEditorEngine } from '@/components/store/editor';
+import { useStateManager } from '@/components/store/state';
+import { AccountTab } from './account-tab';
+import { AITab } from './ai-tab';
+import { AppearanceTab } from './appearance-tab';
 import DomainTab from './domain';
-import { SettingsTabValue, type SettingTab } from './helpers';
-import { PreferencesTab } from './preferences-tab';
+import { EditorTab } from './editor-tab';
+import { GitTab } from './git-tab';
+import { GitHubTab } from './github-tab';
+import { SettingsTabValue } from './helpers';
+import { LanguageTab } from './language-tab';
 import { ProjectTab } from './project';
+import { ShortcutsTab } from './shortcuts-tab';
 import { SiteTab } from './site';
 import { PageTab } from './site/page';
 import { SubscriptionTab } from './subscription-tab';
@@ -55,13 +65,44 @@ export const SettingsModalWithProjects = observer(() => {
 
     const globalTabs: SettingTab[] = [
         {
-            label: SettingsTabValue.PREFERENCES,
+            label: SettingsTabValue.ACCOUNT,
             icon: <Icons.Person className="mr-2 h-4 w-4" />,
-            component: (
-                <PreferencesTab
-                    onOpenShortcuts={() => editorEngine.state.setHotkeysOpen(true)}
-                />
-            ),
+            component: <AccountTab />,
+        },
+        {
+            label: SettingsTabValue.APPEARANCE,
+            icon: <Icons.Sun className="mr-2 h-4 w-4" />,
+            component: <AppearanceTab />,
+        },
+        {
+            label: SettingsTabValue.LANGUAGE,
+            icon: <Icons.Globe className="mr-2 h-4 w-4" />,
+            component: <LanguageTab />,
+        },
+        {
+            label: SettingsTabValue.EDITOR,
+            icon: <Icons.MixerHorizontal className="mr-2 h-4 w-4" />,
+            component: <EditorTab />,
+        },
+        {
+            label: SettingsTabValue.AI,
+            icon: <Icons.Sparkles className="mr-2 h-4 w-4" />,
+            component: <AITab />,
+        },
+        {
+            label: SettingsTabValue.SHORTCUTS,
+            icon: <Icons.Keyboard className="mr-2 h-4 w-4" />,
+            component: <ShortcutsTab />,
+        },
+        {
+            label: SettingsTabValue.GITHUB,
+            icon: <Icons.GitHubLogo className="mr-2 h-4 w-4" />,
+            component: <GitHubTab />,
+        },
+        {
+            label: SettingsTabValue.GIT,
+            icon: <Icons.Branch className="mr-2 h-4 w-4" />,
+            component: <GitTab />,
         },
         {
             label: SettingsTabValue.SUBSCRIPTION,

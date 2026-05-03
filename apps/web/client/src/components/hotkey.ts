@@ -119,3 +119,32 @@ export class Hotkey {
             .join(' ');
     }
 }
+
+export type HotkeyKey = string;
+
+/** All default hotkeys keyed by their static property name (e.g. 'UNDO', 'REDO') */
+export const DEFAULT_HOTKEYS: Record<string, Hotkey> = Object.fromEntries(
+    (Object.entries(Hotkey) as [string, unknown][]).filter(([, v]) => v instanceof Hotkey),
+) as Record<string, Hotkey>;
+
+/** Converts a command string like "mod+z" into a human-readable form like "⌘ Z" */
+export function makeReadableCommand(command: string): string {
+    const isMac =
+        typeof navigator !== 'undefined' && navigator.platform.toUpperCase().includes('MAC');
+    return command
+        .replace('mod', isMac ? '⌘' : 'Ctrl')
+        .split('+')
+        .map((value) => {
+            if (value === 'shift') return '⇧';
+            if (value === 'alt') return isMac ? '⌥' : 'Alt';
+            if (value === 'ctrl') return isMac ? '⌃' : 'Ctrl';
+            if (value === 'equal') return '=';
+            if (value === 'minus') return '-';
+            if (value === 'plus') return '+';
+            if (value === 'period') return '.';
+            if (value === 'slash') return '/';
+            if (value === '`') return '`';
+            return capitalizeFirstLetter(value);
+        })
+        .join(' ');
+}

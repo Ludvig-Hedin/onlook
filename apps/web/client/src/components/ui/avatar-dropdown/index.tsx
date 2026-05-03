@@ -47,7 +47,7 @@ export const CurrentUserAvatar = ({ className }: { className?: string }) => {
     };
 
     const handleOpenSettings = () => {
-        stateManager.settingsTab = SettingsTabValue.PREFERENCES;
+        stateManager.settingsTab = SettingsTabValue.ACCOUNT;
         stateManager.isSettingsModalOpen = true;
         setOpen(false);
     };

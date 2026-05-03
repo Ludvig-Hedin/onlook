@@ -14,7 +14,7 @@ import { HotkeyLabel } from '@onlook/ui/hotkey-label';
 import { Hotkey } from '@/components/hotkey';
 import { useEditorEngine } from '@/components/store/editor';
 
-const SHORTCUT_SECTIONS = [
+const HOTKEY_SECTIONS = [
     {
         title: 'Modes',
         hotkeys: [
@@ -82,6 +82,34 @@ const SHORTCUT_SECTIONS = [
     },
 ] as const;
 
+// Exported for use in the Shortcuts settings tab — same sections as string keys
+export const SHORTCUT_SECTIONS: { title: string; keys: string[] }[] = [
+    {
+        title: 'Modes',
+        keys: ['SELECT', 'CODE', 'PREVIEW', 'PAN', 'COMMENT', 'MODE_DESIGN', 'MODE_CODE', 'MODE_PREVIEW'],
+    },
+    {
+        title: 'Panels',
+        keys: ['SIDEBAR_LAYERS', 'SIDEBAR_BRAND', 'SIDEBAR_PAGES', 'SIDEBAR_IMAGES', 'SIDEBAR_BRANCHES', 'TOGGLE_TERMINAL', 'SHOW_HOTKEYS'],
+    },
+    {
+        title: 'Insert',
+        keys: ['OPEN_ELEMENT_PALETTE', 'INSERT_DIV_F', 'INSERT_DIV_D', 'INSERT_FLEX_DIV', 'INSERT_TEXT', 'INSERT_BUTTON'],
+    },
+    {
+        title: 'Canvas',
+        keys: ['ZOOM_FIT', 'ZOOM_IN', 'ZOOM_OUT'],
+    },
+    {
+        title: 'Actions',
+        keys: ['UNDO', 'REDO', 'COPY', 'PASTE', 'CUT', 'DUPLICATE', 'DELETE', 'ENTER', 'GROUP', 'WRAP_IN_DIV', 'UNGROUP'],
+    },
+    {
+        title: 'AI',
+        keys: ['ADD_AI_CHAT', 'NEW_AI_CHAT', 'CHAT_MODE_TOGGLE', 'OPEN_MODEL_PICKER'],
+    },
+];
+
 export const KeyboardShortcutsModal = observer(() => {
     const editorEngine = useEditorEngine();
 
@@ -98,7 +126,7 @@ export const KeyboardShortcutsModal = observer(() => {
                     </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 sm:grid-cols-2">
-                    {SHORTCUT_SECTIONS.map((section) => (
+                    {HOTKEY_SECTIONS.map((section) => (
                         <div
                             key={section.title}
                             className="border-border/60 bg-background-secondary/40 rounded-lg border p-4"

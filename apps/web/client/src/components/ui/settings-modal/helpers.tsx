@@ -1,11 +1,21 @@
 export enum SettingsTabValue {
+    // Global tabs
+    ACCOUNT = 'account',
+    APPEARANCE = 'appearance',
+    LANGUAGE = 'language',
+    EDITOR = 'editor',
+    AI = 'ai',
+    SHORTCUTS = 'shortcuts',
+    GITHUB = 'github',
+    GIT = 'git',
+    SUBSCRIPTION = 'subscription',
+    // Project tabs
+    SITE = 'site',
     DOMAIN = 'domain',
     PROJECT = 'project',
-    PREFERENCES = 'account',
-    SUBSCRIPTION = 'subscription',
     VERSIONS = 'versions',
-    ADVANCED = 'advanced',
-    SITE = 'site',
+    // Legacy alias
+    PREFERENCES = 'account',
 }
 
 export interface SettingTab {
