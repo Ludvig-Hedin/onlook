@@ -67,6 +67,30 @@ export const DefaultSettings = {
         enableBunReplace: true,
         buildFlags: '--no-lint',
     },
+    AI_SETTINGS: {
+        defaultModel: 'moonshotai/kimi-k2',
+        showSuggestions: true,
+        showMiniChat: false,
+        autoApplyCode: true,
+        expandCodeBlocks: false,
+        maxImages: 5,
+    },
+    APPEARANCE_SETTINGS: {
+        theme: 'system' as const,
+        accentColor: 'blue' as const,
+        fontFamily: 'sans' as const,
+        fontSize: 'medium' as const,
+        uiDensity: 'comfortable' as const,
+    },
+    LANGUAGE_SETTINGS: {
+        locale: 'en' as const,
+    },
+    GIT_SETTINGS: {
+        autoCommit: false,
+        autoPush: false,
+        commitMessageFormat: 'feat: {description}',
+        defaultBranchPattern: 'feature/{timestamp}',
+    },
 };
 
 export const DEFAULT_COLOR_NAME = 'DEFAULT';
