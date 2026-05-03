@@ -1,5 +1,6 @@
-import { EditorAttributes } from '@onlook/constants';
 import { nanoid } from 'nanoid/non-secure';
+
+import { EditorAttributes } from '@onlook/constants';
 
 export function getOrAssignDomId(node: HTMLElement): string {
     let domId = node.getAttribute(EditorAttributes.DATA_ONLOOK_DOM_ID);

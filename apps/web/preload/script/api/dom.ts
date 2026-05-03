@@ -1,6 +1,8 @@
-import { EditorAttributes } from '@onlook/constants';
-import type { LayerNode } from '@onlook/models';
 import debounce from 'lodash/debounce';
+
+import type { LayerNode } from '@onlook/models';
+import { EditorAttributes } from '@onlook/constants';
+
 import { isValidHtmlElement } from '../helpers/dom';
 import { getInstanceId, getOid, getOrAssignDomId } from '../helpers/ids';
 import { publishDomProcessed } from './events/publish';
@@ -88,13 +90,11 @@ export function buildLayerTree(root: HTMLElement): Map<string, LayerNode> | null
         acceptNode: (node: Node) => {
             const element = node as HTMLElement;
 
-            if (FILTER_CONDITIONS.some(condition => condition(element))) {
+            if (FILTER_CONDITIONS.some((condition) => condition(element))) {
                 return NodeFilter.FILTER_REJECT;
             }
 
-            return isValidHtmlElement(element)
-                ? NodeFilter.FILTER_ACCEPT
-                : NodeFilter.FILTER_SKIP;
+            return isValidHtmlElement(element) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP;
         },
     });
 
@@ -118,7 +118,7 @@ export function buildLayerTree(root: HTMLElement): Map<string, LayerNode> | null
 
                 // Add this node's domId to parent's children array
                 const parentNode = layerMap.get(parentDomId);
-                if (parentNode && parentNode.children) {
+                if (parentNode?.children) {
                     parentNode.children.push(layerNode.domId);
                 }
             }
@@ -141,9 +141,7 @@ function processNode(node: HTMLElement): LayerNode {
         .trim()
         .slice(0, 500);
     const style = window.getComputedStyle(node);
-    const component = node.getAttribute(EditorAttributes.DATA_ONLOOK_COMPONENT_NAME) as
-        | string
-        | null;
+    const component = node.getAttribute(EditorAttributes.DATA_ONLOOK_COMPONENT_NAME);
     const tagName = node.tagName.toLowerCase();
     const htmlId = node.getAttribute('id');
     const hasCustomAttributes = Array.from(node.attributes).some((attribute) => {

@@ -1,13 +1,11 @@
 import type { RemoveElementAction } from '@onlook/models/actions';
+
 import { getHtmlElement } from '../../../helpers';
 import { getBranchId } from '../../state';
 import { getElementLocation } from '../helpers';
 import { getActionElement } from './helpers';
 
-export function getRemoveAction(
-    domId: string,
-    frameId: string,
-): RemoveElementAction | null {
+export function getRemoveAction(domId: string, frameId: string): RemoveElementAction | null {
     const el = getHtmlElement(domId);
     if (!el) {
         console.warn('Element not found for domId:', domId);
