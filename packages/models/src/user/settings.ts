@@ -9,21 +9,21 @@ export interface UserSettings {
     customShortcuts: Record<string, string>;
 }
 
-export interface ChatSettings {
+/** Shared behaviour flags that live in a single DB column set and appear in both chat and AI settings. */
+export interface AIBehaviorSettings {
     showSuggestions: boolean;
+    showMiniChat: boolean;
     autoApplyCode: boolean;
     expandCodeBlocks: boolean;
-    showMiniChat: boolean;
+}
+
+export interface ChatSettings extends AIBehaviorSettings {
     defaultModel?: string;
     ollamaBaseUrl?: string;
 }
 
-export interface AISettings {
+export interface AISettings extends AIBehaviorSettings {
     defaultModel: string;
-    showSuggestions: boolean;
-    showMiniChat: boolean;
-    autoApplyCode: boolean;
-    expandCodeBlocks: boolean;
     maxImages: number;
 }
 

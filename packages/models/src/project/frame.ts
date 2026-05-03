@@ -1,4 +1,5 @@
-import { Orientation, Theme } from '@onlook/constants';
+import type { Orientation, Theme } from '@onlook/constants';
+
 import type { RectDimension, RectPosition } from './rect';
 
 export interface Frame {

@@ -1,5 +1,7 @@
-import type { ChatTools } from '@onlook/ai';
 import type { FinishReason, JSONValue, LanguageModelUsage, UIMessage, UIMessagePart } from 'ai';
+
+import type { ChatTools } from '@onlook/ai';
+
 import type { MessageCheckpoints } from './checkpoint';
 import type { MessageContext } from './context';
 

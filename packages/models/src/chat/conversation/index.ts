@@ -1,8 +1,8 @@
 import type { ChatSuggestion } from '../suggestion';
 
 export enum AgentType {
-    ROOT = "root",
-    USER = "user",
+    ROOT = 'root',
+    USER = 'user',
 }
 
 export interface ChatConversation {

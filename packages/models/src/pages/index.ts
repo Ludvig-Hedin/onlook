@@ -4,13 +4,7 @@ export type { OGImage };
 
 export type PageNodeKind = 'page' | 'folder';
 
-export type PageEditorIcon =
-    | 'file'
-    | 'globe'
-    | 'image'
-    | 'section'
-    | 'button'
-    | 'text';
+export type PageEditorIcon = 'file' | 'globe' | 'image' | 'section' | 'button' | 'text';
 
 export interface PageEditorSettings {
     displayName?: string;
