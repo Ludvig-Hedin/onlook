@@ -43,6 +43,7 @@
         "openai": "^4.103.0",
         "zod": "^4.1.3",
         "@onlook/ui": "*",
+        "ollama-ai-provider-v2": "^3.5.0",
         "uuid": "^11.1.0"
     }
 }
