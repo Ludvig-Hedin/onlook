@@ -364,7 +364,7 @@ export const Create = observer(
                                         'bg-transparent transition-[height] duration-300 ease-in-out focus-visible:ring-0 dark:bg-transparent',
                                     )}
                                     placeholder="Describe what you want to build"
-                                    style={{ border: 'none !important' }}
+                                    style={{ border: 'none !important', resize: 'none' }}
                                     value={inputValue}
                                     onChange={(e) => {
                                         setInputValue(e.target.value);
@@ -404,7 +404,6 @@ export const Create = observer(
                                         handleDrop(e);
                                     }}
                                     rows={3}
-                                    style={{ resize: 'none' }}
                                 />
                             </div>
                             <div
@@ -415,10 +414,7 @@ export const Create = observer(
                                         : 'pointer-events-none h-0 opacity-0',
                                 )}
                                 aria-live="polite"
-                            >
-                                {charactersRemaining > 0
-                                    ? `${charactersRemaining} more character${charactersRemaining === 1 ? '' : 's'} to start designing`
-                                    : ''}
+                            >    
                             </div>
                             <div className="flex w-full flex-row items-center justify-between px-0 pt-2 pb-2">
                                 <div className="flex flex-row justify-start gap-1.5">
