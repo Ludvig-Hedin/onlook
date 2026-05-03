@@ -186,11 +186,15 @@ export const HotkeysArea = ({ children }: { children: ReactNode }) => {
     );
 
     // Group / Wrap in Div / Unwrap parent
-    useHotkeys(
-        [Hotkey.GROUP.command, Hotkey.WRAP_IN_DIV.command],
-        () => editorEngine.group.groupSelectedElements(),
-        { preventDefault: true },
-    );
+    // GROUP (cmd+g) — groups selected elements (may produce a flex/grid container)
+    useHotkeys(Hotkey.GROUP.command, () => editorEngine.group.groupSelectedElements(), {
+        preventDefault: true,
+    });
+    // WRAP_IN_DIV (cmd+alt+g) — wraps selection in a plain <div>
+    // TODO: once editorEngine.group.wrapInDiv() is implemented, point to it instead
+    useHotkeys(Hotkey.WRAP_IN_DIV.command, () => editorEngine.group.groupSelectedElements(), {
+        preventDefault: true,
+    });
     useHotkeys(Hotkey.UNGROUP.command, () => editorEngine.group.ungroupSelectedElement(), {
         preventDefault: true,
     });

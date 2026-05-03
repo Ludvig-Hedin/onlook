@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { commentReplies, projectComments } from '@onlook/db';
 import { createTRPCRouter, protectedProcedure } from '../../trpc';
 import { verifyProjectAccess } from '../project/helper';
+import { sanitiseAuthorName } from './helpers';
 
 export const replyRouter = createTRPCRouter({
     create: protectedProcedure
@@ -27,10 +28,11 @@ export const replyRouter = createTRPCRouter({
                     commentId: input.commentId,
                     content: input.content,
                     authorId: ctx.user.id,
-                    authorName:
+                    authorName: sanitiseAuthorName(
                         ctx.user.user_metadata?.name ??
                         ctx.user.user_metadata?.full_name ??
                         ctx.user.email,
+                    ),
                 })
                 .returning();
             if (!reply) throw new Error('Reply not created');

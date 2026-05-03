@@ -4,6 +4,8 @@ import { projectComments } from '@onlook/db';
 import { createTRPCRouter, protectedProcedure } from '../../trpc';
 import { verifyProjectAccess } from '../project/helper';
 
+import { sanitiseAuthorName } from './helpers';
+
 export const commentRouter = createTRPCRouter({
     list: protectedProcedure
         .input(z.object({ projectId: z.string() }))
@@ -40,10 +42,11 @@ export const commentRouter = createTRPCRouter({
                     elementSelector: input.elementSelector ?? null,
                     content: input.content,
                     authorId: ctx.user.id,
-                    authorName:
+                    authorName: sanitiseAuthorName(
                         ctx.user.user_metadata?.name ??
                         ctx.user.user_metadata?.full_name ??
                         ctx.user.email,
+                    ),
                 })
                 .returning();
             if (!comment) throw new Error('Comment not created');

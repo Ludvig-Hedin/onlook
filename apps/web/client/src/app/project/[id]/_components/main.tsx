@@ -36,11 +36,14 @@ export const Main = observer(() => {
         leftPanelRef,
         rightPanelRef,
     );
-    const [isMobile, setIsMobile] = useState<boolean | undefined>(undefined);
+    // Lazy initialiser reads window synchronously on first client render so
+    // there is no undefined→boolean transition and no blank-flash frame.
+    const [isMobile, setIsMobile] = useState<boolean>(
+        () => (typeof window !== 'undefined' ? window.innerWidth < 768 : false),
+    );
 
     useEffect(() => {
         const check = () => setIsMobile(window.innerWidth < 768);
-        check();
         window.addEventListener('resize', check);
         return () => window.removeEventListener('resize', check);
     }, []);
@@ -113,10 +116,6 @@ export const Main = observer(() => {
                 </div>
             </div>
         );
-    }
-
-    if (isMobile === undefined) {
-        return null;
     }
 
     if (isMobile) {
