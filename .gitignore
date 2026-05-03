@@ -51,3 +51,6 @@ mise.toml
 # Temporary files
 .tmp/
 .worktrees
+
+# Generated design index (Weblab visual editor artifact)
+packages/ui/.t3/
